@@ -1,0 +1,47 @@
+name: Build and test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        go: ['1.18.x']
+    name: Test with Go ${{ matrix.go }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: ':99.0'
+    defaults:
+      run:
+        shell: go test ./...
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+          stable: false
+
+      - name: Install dependencies
+        if: ${{ startsWith(matrix.os, 'ubuntu-') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install libasound2-dev libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev
+      - name: Build the project
+        run: make
+
+      # Publish the website
+      # - name: GitHub Pages action
+      #   if: ${{ github.ref == 'refs/heads/main' }} # Publish only when the push is on main
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_branch: gh-pages
+      #     publish_dir: .dist
+      #     allow_empty_commit: false
+      #     keep_files: false
+      #     exclude_assets: '.gitignore'
+      #     force_orphan: true
