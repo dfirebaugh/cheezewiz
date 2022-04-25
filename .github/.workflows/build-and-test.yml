@@ -33,15 +33,15 @@ jobs:
       - name: Build the project
         run: make
 
-      # Publish the website
-      # - name: GitHub Pages action
-      #   if: ${{ github.ref == 'refs/heads/main' }} # Publish only when the push is on main
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_branch: gh-pages
-      #     publish_dir: .dist
-      #     allow_empty_commit: false
-      #     keep_files: false
-      #     exclude_assets: '.gitignore'
-      #     force_orphan: true
+      Publish the website
+      - name: GitHub Pages action
+        if: ${{ github.ref == 'refs/heads/main' }} # Publish only when the push is on main
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .dist
+          allow_empty_commit: false
+          keep_files: false
+          exclude_assets: '.gitignore'
+          force_orphan: true
