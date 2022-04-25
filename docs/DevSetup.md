@@ -10,3 +10,15 @@
 go get ./... # pull down dependencies
 ```
 
+
+
+## Run the app
+
+```
+make run
+```
+
+alternatively:
+```
+go run ./cmd/client
+```
