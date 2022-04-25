@@ -29,5 +29,8 @@ web:
 		&& cp web/index.html .dist/ \
 		&& cp web/main.html .dist/
 
+web-server: ## for testing - note: requires node
+	npx es-dev-server --root-dir .dist
+
 clean:
 	rm -rf .dist/
