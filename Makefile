@@ -1,4 +1,4 @@
-PROJECTNAME=cheesewiz
+PROJECTNAME=cheezewiz
 
 all: build build-windows
 
