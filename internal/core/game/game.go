@@ -3,7 +3,7 @@
 package game
 
 import (
-	"cheesewiz/internal/mediator"
+	"cheezewiz/internal/mediator"
 	"image/color"
 	"log"
 

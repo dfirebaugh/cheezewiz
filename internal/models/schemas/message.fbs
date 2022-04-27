@@ -1,0 +1,20 @@
+namespace message;
+
+table MessageReply {
+  uid:string;
+  body:string;
+  source:string;
+  destination:string;
+}
+
+table MessageRequest {
+  uid:string;
+  body:string;
+  source:string;
+  destination:string;
+}
+
+rpc_service MessageHandler {
+  PublishMessage(MessageRequest):MessageReply;
+  SubscribeMessage(MessageRequest):MessageReply (streaming: "server");
+}

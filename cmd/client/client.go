@@ -1,7 +1,11 @@
 package main
 
-import "cheesewiz/internal/game"
+import (
+	"cheezewiz/config"
+	"cheezewiz/internal/core/game"
+)
 
 func main() {
-	game.New(1024, 1024).Run()
+	c := config.Get()
+	game.New(c.Window.Height, c.Window.Width).Run()
 }

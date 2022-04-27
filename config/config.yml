@@ -1,0 +1,5 @@
+window:
+  height: 1024
+  width: 1024
+server: 0.0.0.0
+port: 3003

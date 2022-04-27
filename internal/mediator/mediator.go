@@ -3,28 +3,31 @@ package mediator
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"cheesewiz/internal/chat"
-	"cheesewiz/internal/input"
+	"cheezewiz/internal/console"
+	"cheezewiz/internal/input"
+	"cheezewiz/internal/services/chatservice"
 )
 
 type Mediator struct {
-	chat  *chat.Chat
-	input input.Input
+	console *console.Console
+	input   input.Input
 }
 
 func New() Mediator {
-	c := chat.New()
+	c := console.New(chatservice.NewClient())
 	return Mediator{
-		chat: c,
+		console: c,
 		input: input.Input{
 			Chat: c,
 		},
 	}
 }
+
 func (m *Mediator) Update() {
 	m.input.Update()
-	m.chat.Update()
+	m.console.Update()
 }
+
 func (m *Mediator) Render(dst *ebiten.Image) {
-	m.chat.Render(dst)
+	m.console.Render(dst)
 }

@@ -1,6 +1,6 @@
 PROJECTNAME=cheezewiz
 
-all: build build-windows-cross wasm web
+all: build build-windows-cross build-server-windows-cross wasm web
 
 run:
 	go run ./cmd/client
@@ -13,6 +13,9 @@ build-win: ## build from windows
 
 build-windows-cross: # cross-compile to windows exe
 	GOOS=windows go build -o .dist/$(PROJECTNAME).exe ./cmd/client
+
+build-server-windows-cross: # cross-compile to windows exe
+	GOOS=windows go build -o .dist/$(PROJECTNAME)-server.exe ./cmd/server
 
 test:
 	go test ./...
