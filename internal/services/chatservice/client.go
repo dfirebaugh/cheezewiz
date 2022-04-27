@@ -86,7 +86,7 @@ func (c *chatClient) receive(stream message.MessageHandler_SubscribeMessageClien
 			break
 		}
 
-		c.response = fmt.Sprintf("frm srvr: [%s->%s]:%s", msg.Source(), msg.Destination(), msg.Body())
+		c.response = fmt.Sprintf("[%s->%s]:%s", msg.Source(), msg.Destination(), msg.Body())
 	}
 
 }

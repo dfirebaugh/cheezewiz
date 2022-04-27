@@ -80,6 +80,9 @@ func (c *Console) Render(screen *ebiten.Image) {
 	// ebitenutil.DebugPrintAt(screen, c.chatClient.GetResponse(), 10, 230)
 }
 
+func (c *Console) IsOpen() bool {
+	return c.isOpen
+}
 func (c *Console) Open() {
 	c.isOpen = true
 }
@@ -116,6 +119,14 @@ func (c *Console) handleEnter() {
 func (c *Console) handleSlash() {
 	// If the / key is pressed, submit
 	if !repeatingKeyPressed(ebiten.KeySlash) {
+		return
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyShift) {
+		return
+	}
+
+	if c.IsOpen() {
 		return
 	}
 

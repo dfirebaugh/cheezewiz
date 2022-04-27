@@ -36,12 +36,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return 256, 256
+	return outsideWidth / 2, outsideHeight / 2
 }
 
 func (g *Game) Run() {
 	ebiten.SetWindowSize(g.Width, g.Height)
-	ebiten.SetWindowTitle("TypeWriter (Ebiten Demo)")
+	ebiten.SetWindowTitle("Cheezewiz")
 	ebiten.SetWindowResizable(true)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

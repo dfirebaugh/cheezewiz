@@ -8,6 +8,7 @@ import (
 type chat interface {
 	ToggleOpen()
 	Open()
+	IsOpen() bool
 }
 
 type Input struct {
@@ -24,6 +25,14 @@ func (Input) isSlashJustPressed() bool {
 
 func (i Input) Update() {
 	if i.isSlashJustPressed() {
+		if ebiten.IsKeyPressed(ebiten.KeyShift) {
+			return
+		}
+
+		if i.Chat.IsOpen() {
+			return
+		}
+
 		i.Chat.Open()
 	}
 	if i.isEnterJustPressed() {
