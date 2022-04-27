@@ -1,6 +1,7 @@
 package chatservice
 
 import (
+	"cheezewiz/config"
 	"cheezewiz/internal/models/message"
 	"context"
 	"fmt"
@@ -31,7 +32,7 @@ func (*chatClient) getMessageHandlerClient(cc *grpc.ClientConn) (message.Message
 }
 
 func (*chatClient) getConnection() *grpc.ClientConn {
-	conn, err := grpc.Dial(fmt.Sprintf("164.90.194.111:%d", Port), grpc.WithInsecure(), grpc.WithDefaultCallOptions(grpc.ForceCodec(flatbuffers.FlatbuffersCodec{})))
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", config.Get().Server, config.Get().Port), grpc.WithInsecure(), grpc.WithDefaultCallOptions(grpc.ForceCodec(flatbuffers.FlatbuffersCodec{})))
 	if err != nil {
 		log.Fatalf("Failed to dial: %v", err)
 	}
