@@ -7,6 +7,7 @@ import (
 	"cheezewiz/pkg/grpcwrapper"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 )
@@ -31,6 +32,8 @@ func (greeterRegister) RegisterServer(grpcServer *grpc.Server) {
 }
 
 func main() {
+	logrus.SetLevel(logrus.InfoLevel)
+
 	grpcServer := grpcwrapper.New(greeterRegister{}, kasp, kaep)
 	grpcServer.Run(config.Get().Server, config.Get().Port)
 }

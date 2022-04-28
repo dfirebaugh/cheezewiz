@@ -1,24 +1,27 @@
 PROJECTNAME=cheezewiz
 
-all: build build-windows-cross build-server-windows-cross wasm web
+all: client server windows-client-cross-compile windows-server-windows-cross-compile wasm web
 
 run:
 	go run ./cmd/client
 
-build:
-	go build -o .dist/$(PROJECTNAME) ./cmd/client
-
-build-win: ## build from windows
-	go build -o .dist/$(PROJECTNAME).exe ./cmd/client
-
-build-windows-cross: # cross-compile to windows exe
-	GOOS=windows go build -o .dist/$(PROJECTNAME).exe ./cmd/client
-
-build-server-windows-cross: # cross-compile to windows exe
-	GOOS=windows go build -o .dist/$(PROJECTNAME)-server.exe ./cmd/server
-
 test:
 	go test ./...
+
+client:
+	go build -o .dist/$(PROJECTNAME) ./cmd/client
+
+server:
+	go build -o .dist/$(PROJECTNAME)-server ./cmd/server
+
+windows-client: ## build from windows
+	go build -o .dist/$(PROJECTNAME).exe ./cmd/client
+
+windows-client-cross-compile: # cross-compile to windows exe
+	GOOS=windows go build -o .dist/$(PROJECTNAME).exe ./cmd/client
+
+windows-server-windows-cross-compile: # cross-compile to windows exe
+	GOOS=windows go build -o .dist/$(PROJECTNAME)-server.exe ./cmd/server
 
 wasm:
 	GOOS=js GOARCH=wasm go build -o .dist/$(PROJECTNAME).wasm ./cmd/client

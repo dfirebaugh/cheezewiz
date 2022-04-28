@@ -7,7 +7,7 @@ import (
 
 type chat interface {
 	ToggleOpen()
-	Open()
+	SetOpen(bool)
 	IsOpen() bool
 }
 
@@ -33,7 +33,7 @@ func (i Input) Update() {
 			return
 		}
 
-		i.Chat.Open()
+		i.Chat.SetOpen(true)
 	}
 	if i.isEnterJustPressed() {
 		i.Chat.ToggleOpen()

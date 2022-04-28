@@ -59,6 +59,7 @@ func (c *chatClient) PublishMessage(source string, destination string, content s
 
 func (c *chatClient) SubscribeMessage(source string, destination string) error {
 	conn := c.getConnection()
+	// defer conn.Close()
 
 	client, ctx := c.getMessageHandlerClient(conn)
 	builder := buildMessage(source, destination, "")
@@ -86,9 +87,8 @@ func (c *chatClient) receive(stream message.MessageHandler_SubscribeMessageClien
 			break
 		}
 
-		c.response = fmt.Sprintf("[%s->%s]:%s", msg.Source(), msg.Destination(), msg.Body())
+		c.response = fmt.Sprintf("[%s]:%s", msg.Source(), msg.Body())
 	}
-
 }
 
 func (c *chatClient) GetResponse() string {

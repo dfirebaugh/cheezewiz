@@ -6,6 +6,7 @@ import (
 	"cheezewiz/internal/console"
 	"cheezewiz/internal/input"
 	"cheezewiz/internal/services/chatservice"
+	consoleService "cheezewiz/internal/services/console"
 )
 
 type Mediator struct {
@@ -14,7 +15,7 @@ type Mediator struct {
 }
 
 func New() Mediator {
-	c := console.New(chatservice.NewClient())
+	c := console.New(consoleService.New(chatservice.NewClient()))
 	return Mediator{
 		console: c,
 		input: input.Input{
