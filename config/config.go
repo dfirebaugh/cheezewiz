@@ -7,7 +7,9 @@ import (
 )
 
 type Config struct {
-	Window struct {
+	Title      string `yaml:"title"`
+	SpriteSize float64    `yaml:"sprite-size"`
+	Window     struct {
 		Height int `yaml:"height"`
 		Width  int `yaml:"width"`
 	} `yaml:"window"`

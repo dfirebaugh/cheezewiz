@@ -1,7 +1,8 @@
-package chatservice
+package server
 
 import (
-	"cheezewiz/internal/models/message"
+	"cheezewiz/internal/net"
+	"cheezewiz/internal/net/models/message"
 	"context"
 
 	flatbuffers "github.com/google/flatbuffers/go"
@@ -14,7 +15,7 @@ type chatServer struct {
 	listeners []message.MessageHandler_SubscribeMessageServer
 }
 
-func NewServer() *chatServer {
+func New() *chatServer {
 	return &chatServer{
 		listeners: []message.MessageHandler_SubscribeMessageServer{},
 	}
@@ -24,13 +25,13 @@ func (c *chatServer) PublishMessage(ctx context.Context, request *message.Messag
 	logrus.Debugf("publishing message: [%s->%s]: %s", string(request.Source()), string(request.Destination()), string(request.Body()))
 
 	for _, s := range c.listeners {
-		err := s.Send(buildMessageFromRequest(request))
+		err := s.Send(net.BuildMessageFromRequest(request))
 
 		if err != nil {
 			c.removeListener(s)
 		}
 	}
-	return buildMessageFromRequest(request), nil
+	return net.BuildMessageFromRequest(request), nil
 }
 
 func (c *chatServer) SubscribeMessage(request *message.MessageRequest, stream message.MessageHandler_SubscribeMessageServer) error {

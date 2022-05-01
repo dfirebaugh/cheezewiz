@@ -1,35 +1,12 @@
-package chatservice
+package net
 
 import (
-	"cheezewiz/internal/models/message"
-	"fmt"
+	"cheezewiz/internal/net/models/message"
 
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
-type brokerMessage struct {
-	destination string
-	source      string
-	message     string
-}
-
-func (m brokerMessage) GetPayload() interface{} {
-	return m.message
-}
-func (m brokerMessage) GetRequestor() string {
-	return m.source
-}
-func (m brokerMessage) GetTopic() string {
-	return m.destination
-}
-func (m brokerMessage) Hash() string {
-	return m.String()
-}
-func (m brokerMessage) String() string {
-	return fmt.Sprintf("%s|%s|%s", m.source, m.destination, m.message)
-}
-
-func buildMessage(source string, destination string, content string) *flatbuffers.Builder {
+func BuildMessage(source string, destination string, content string) *flatbuffers.Builder {
 	b := flatbuffers.NewBuilder(0)
 
 	s := b.CreateString(source)
@@ -46,7 +23,7 @@ func buildMessage(source string, destination string, content string) *flatbuffer
 	return b
 }
 
-func buildMessageFromRequest(request *message.MessageRequest) *flatbuffers.Builder {
+func BuildMessageFromRequest(request *message.MessageRequest) *flatbuffers.Builder {
 	bodyRaw := request.Body()
 	sourceRaw := request.Source()
 	destinationRaw := request.Destination()

@@ -1,8 +1,9 @@
-package chatservice
+package client
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/models/message"
+	"cheezewiz/internal/net"
+	"cheezewiz/internal/net/models/message"
 	"context"
 	"fmt"
 	"io"
@@ -18,7 +19,7 @@ type chatClient struct {
 	response string
 }
 
-func NewClient() *chatClient {
+func New() *chatClient {
 	return &chatClient{}
 }
 
@@ -45,7 +46,7 @@ func (c *chatClient) PublishMessage(source string, destination string, content s
 	defer conn.Close()
 
 	client, ctx, cancel := withCancel(c.getMessageHandlerClient(conn))
-	builder := buildMessage(source, destination, content)
+	builder := net.BuildMessage(source, destination, content)
 
 	defer cancel()
 
@@ -62,7 +63,7 @@ func (c *chatClient) SubscribeMessage(source string, destination string) error {
 	// defer conn.Close()
 
 	client, ctx := c.getMessageHandlerClient(conn)
-	builder := buildMessage(source, destination, "")
+	builder := net.BuildMessage(source, destination, "")
 
 	stream, err := client.SubscribeMessage(ctx, builder, grpc.CallContentSubtype("flatbuffers"))
 	if err != nil {

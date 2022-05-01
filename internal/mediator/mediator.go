@@ -1,34 +1,41 @@
 package mediator
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
+	"cheezewiz/internal/scene"
+	"fmt"
+	"os"
 
-	"cheezewiz/internal/console"
-	"cheezewiz/internal/input"
-	"cheezewiz/internal/services/chatservice"
-	consoleService "cheezewiz/internal/services/console"
+	"code.rocketnine.space/tslocum/gohan"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+type iscene interface {
+	Draw(screen *ebiten.Image)
+	Update()
+}
+
 type Mediator struct {
-	console *console.Console
-	input   input.Input
+	scene iscene
 }
 
 func New() Mediator {
-	c := console.New(consoleService.New(chatservice.NewClient()))
 	return Mediator{
-		console: c,
-		input: input.Input{
-			Chat: c,
-		},
+		scene: scene.Init(),
 	}
 }
 
-func (m *Mediator) Update() {
-	m.input.Update()
-	m.console.Update()
+func (m Mediator) Update() {
+	m.scene.Update()
 }
 
-func (m *Mediator) Render(dst *ebiten.Image) {
-	m.console.Render(dst)
+func (m Mediator) Draw(dst *ebiten.Image) {
+	ebitenutil.DebugPrint(dst, fmt.Sprintf("# of entities: %d\n#renders per loop:%d", gohan.CurrentEntities(), gohan.CurrentDraws()))
+
+	m.scene.Draw(dst)
+}
+
+func (m Mediator) Exit() {
+	// do something on exit?
+	os.Exit(0)
 }
