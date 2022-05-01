@@ -3,7 +3,6 @@ package vm
 import (
 	"cheezewiz/internal/ecs/entity"
 	"cheezewiz/internal/ecs/system"
-	"cheezewiz/internal/input"
 
 	"code.rocketnine.space/tslocum/gohan"
 	"github.com/robertkrimen/otto"
@@ -24,7 +23,7 @@ func Build(s scene) *otto.Otto {
 	})
 
 	vm.Set("addPlayerControlSystem", func(call otto.FunctionCall) otto.Value {
-		gohan.AddSystem(system.NewPlayerControl(input.Keyboard{}))
+		gohan.AddSystem(system.NewPlayerControl())
 		return otto.Value{}
 	})
 	vm.Set("addMovementSystem", func(call otto.FunctionCall) otto.Value {
@@ -33,6 +32,10 @@ func Build(s scene) *otto.Otto {
 	})
 	vm.Set("addRenderSystem", func(call otto.FunctionCall) otto.Value {
 		gohan.AddSystem(system.NewRenderer())
+		return otto.Value{}
+	})
+	vm.Set("addAnimationSystem", func(call otto.FunctionCall) otto.Value {
+		gohan.AddSystem(system.NewAnimator())
 		return otto.Value{}
 	})
 

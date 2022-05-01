@@ -6,6 +6,7 @@ function init() {
     addPlayerControlSystem();
     addMovementSystem();
     addRenderSystem();
+    addAnimationSystem();
     addPlayerEntity();
 }
 

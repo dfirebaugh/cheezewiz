@@ -3,12 +3,12 @@ module cheezewiz
 go 1.18
 
 require (
-	code.rocketnine.space/tslocum/brownboxbatman v1.0.0
 	code.rocketnine.space/tslocum/gohan v0.0.0-20220210202103-249d54733206
 	github.com/google/flatbuffers v2.0.6+incompatible
 	github.com/hajimehoshi/ebiten/v2 v2.3.0
 	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
 	github.com/sirupsen/logrus v1.8.1
+	github.com/yohamta/ganim8/v2 v2.0.22
 	google.golang.org/grpc v1.46.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
@@ -17,10 +17,7 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220320163800-277f93cfa958 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/hajimehoshi/oto/v2 v2.1.0 // indirect
 	github.com/jezek/xgb v1.0.0 // indirect
-	github.com/jfreymuth/oggvorbis v1.0.3 // indirect
-	github.com/jfreymuth/vorbis v1.0.2 // indirect
 	github.com/stretchr/testify v1.7.1 // indirect
 	golang.org/x/exp v0.0.0-20211221223016-e29036178569 // indirect
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a // indirect

@@ -7,22 +7,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type controller interface {
-	IsUpPressed() bool
-	IsDownPressed() bool
-	IsLeftPressed() bool
-	IsRightPressed() bool
-}
-
 type playerControl struct {
 	Position   *component.Position
 	Velocity   *component.Velocity
-	Asset      *component.Asset
-	controller controller
+	Animation  *component.Animation
+	Controller *component.Controller
 }
 
-func NewPlayerControl(controller controller) gohan.System {
-	return &playerControl{controller: controller}
+func NewPlayerControl() gohan.System {
+	return &playerControl{}
 }
 
 const (
@@ -86,16 +79,16 @@ func (i *playerControl) accelerateRight() {
 }
 
 func (i *playerControl) handleInput() {
-	if i.controller.IsUpPressed() {
+	if i.Controller.Controller.IsUpPressed() {
 		i.accelerateUp()
 	}
-	if i.controller.IsLeftPressed() {
+	if i.Controller.Controller.IsLeftPressed() {
 		i.accelerateLeft()
 	}
-	if i.controller.IsDownPressed() {
+	if i.Controller.Controller.IsDownPressed() {
 		i.accelerateDown()
 	}
-	if i.controller.IsRightPressed() {
+	if i.Controller.Controller.IsRightPressed() {
 		i.accelerateRight()
 	}
 }
