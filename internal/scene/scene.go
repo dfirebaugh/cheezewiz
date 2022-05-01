@@ -1,30 +1,36 @@
 package scene
 
 import (
-	"cheezewiz/internal/ecs/entity"
-	"cheezewiz/internal/ecs/system"
-	"cheezewiz/internal/input"
+	"cheezewiz/internal/vm"
 	"os"
+
+	_ "embed"
 
 	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/sirupsen/logrus"
 )
 
-type scene struct {
+type Scene struct {
 	Player gohan.Entity
 }
 
-func Init() *scene {
-	s := &scene{}
+//go:embed main.js
+var mainRaw string
 
-	s.addSystems()
-	s.Player = entity.NewPlayer()
+func Init() *Scene {
+	s := &Scene{}
+	v := vm.Build(s)
+	vm.Run(v, string(mainRaw))
 
 	return s
 }
 
-func (s *scene) Update() {
+func (s *Scene) SetPlayer(player gohan.Entity) {
+	s.Player = player
+}
+
+func (s *Scene) Update() {
 	err := gohan.Update()
 	if err != nil {
 		logrus.Error(err)
@@ -33,17 +39,13 @@ func (s *scene) Update() {
 		s.Exit()
 	}
 }
-func (s *scene) Draw(screen *ebiten.Image) {
+func (s *Scene) Draw(screen *ebiten.Image) {
 	err := gohan.Draw(screen)
 	if err != nil {
 		panic(err)
 	}
 }
-func (s *scene) addSystems() {
-	gohan.AddSystem(system.NewPlayerControl(input.Keyboard{}))
-	gohan.AddSystem(system.NewMovement())
-	gohan.AddSystem(system.NewRenderer())
-}
-func (s *scene) Exit() {
+
+func (s *Scene) Exit() {
 	os.Exit(0)
 }

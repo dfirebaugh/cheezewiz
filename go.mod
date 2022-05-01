@@ -7,6 +7,7 @@ require (
 	code.rocketnine.space/tslocum/gohan v0.0.0-20220210202103-249d54733206
 	github.com/google/flatbuffers v2.0.6+incompatible
 	github.com/hajimehoshi/ebiten/v2 v2.3.0
+	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
 	github.com/sirupsen/logrus v1.8.1
 	google.golang.org/grpc v1.46.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
@@ -30,4 +31,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
+	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )
