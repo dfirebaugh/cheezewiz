@@ -16,12 +16,12 @@ type Scene struct {
 }
 
 //go:embed main.js
-var mainRaw string
+var main string
 
 func Init() *Scene {
 	s := &Scene{}
 	v := vm.Build(s)
-	vm.Run(v, string(mainRaw))
+	vm.Run(v, main)
 
 	return s
 }
