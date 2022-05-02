@@ -39,7 +39,7 @@ func NewPlayer() gohan.Entity {
 	)
 	stillSprite := ganim8.NewSprite(
 		ebiten.NewImageFromImage(bytes2Image(&images.CHARACTER_MONSTER_SLIME_BLUE)),
-		grid.GetFrames("1", 5),
+		grid.GetFrames("5", 5),
 	)
 
 	op := ganim8.DrawOpts(20, 20)
