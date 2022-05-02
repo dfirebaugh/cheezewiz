@@ -20,6 +20,8 @@ import (
 func NewPlayer() gohan.Entity {
 	player := gohan.NewEntity()
 
+	controller := input.Keyboard{}
+
 	c := config.Get()
 	player.AddComponent(&component.Position{
 		X: float64(c.Window.Width) / 4,
@@ -37,7 +39,7 @@ func NewPlayer() gohan.Entity {
 	)
 	stillSprite := ganim8.NewSprite(
 		ebiten.NewImageFromImage(bytes2Image(&images.CHARACTER_MONSTER_SLIME_BLUE)),
-		grid.GetFrames("1", 1),
+		grid.GetFrames("1", 5),
 	)
 
 	op := ganim8.DrawOpts(20, 20)
@@ -45,16 +47,25 @@ func NewPlayer() gohan.Entity {
 
 	player.AddComponent(&component.Animation{
 		Walk:        ganim8.NewAnimation(walkSprite, 100*time.Millisecond, ganim8.Nop),
-		Still:       ganim8.NewAnimation(walkSprite, 100*time.Millisecond, ganim8.Nop),
+		Still:       ganim8.NewAnimation(stillSprite, 100*time.Millisecond, ganim8.Nop),
 		Grid:        grid,
 		WalkSprite:  walkSprite,
 		StillSprite: stillSprite,
-		SpriteSize:  16,
+		SpriteSize:  c.SpriteSize,
 		DrawOptions: op,
 	})
 
 	player.AddComponent(&component.Controller{
-		Controller: input.Keyboard{},
+		Controller: controller,
+	})
+
+	player.AddComponent(&component.Movable{
+		IsMoving: func() bool {
+			return controller.IsLeftPressed() ||
+				controller.IsRightPressed() ||
+				controller.IsUpPressed() ||
+				controller.IsDownPressed()
+		},
 	})
 
 	return player

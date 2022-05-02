@@ -12,6 +12,7 @@ type animator struct {
 	Position   *component.Position
 	Animation  *component.Animation
 	Controller *component.Controller
+	Movable    *component.Movable
 }
 
 func NewAnimator() gohan.System {
@@ -21,7 +22,7 @@ func NewAnimator() gohan.System {
 func (a *animator) Update(_ gohan.Entity) error {
 	now := time.Now()
 
-	if a.Controller.Controller.IsDownPressed() || a.Controller.Controller.IsDownPressed() || a.Controller.Controller.IsDownPressed() || a.Controller.Controller.IsDownPressed() {
+	if a.Movable.IsMoving() {
 		a.Animation.Walk.Update(now.Sub(a.Animation.PrevUpdateTime))
 	} else {
 		a.Animation.Still.Update(now.Sub(a.Animation.PrevUpdateTime))
@@ -35,7 +36,7 @@ func (a *animator) Draw(entity gohan.Entity, screen *ebiten.Image) error {
 
 	a.Animation.DrawOptions.SetPos(a.Position.X-a.Animation.SpriteSize, a.Position.Y-a.Animation.SpriteSize)
 
-	if a.Controller.Controller.IsDownPressed() || a.Controller.Controller.IsDownPressed() || a.Controller.Controller.IsDownPressed() || a.Controller.Controller.IsDownPressed() {
+	if a.Movable.IsMoving() {
 		a.Animation.Walk.Draw(screen, a.Animation.DrawOptions)
 	} else {
 		a.Animation.Still.Draw(screen, a.Animation.DrawOptions)
