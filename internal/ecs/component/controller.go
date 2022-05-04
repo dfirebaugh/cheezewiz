@@ -1,6 +1,6 @@
 package component
 
-type InputController interface {
+type PlayerInput interface {
 	IsUpPressed() bool
 	IsDownPressed() bool
 	IsLeftPressed() bool
@@ -8,5 +8,5 @@ type InputController interface {
 }
 
 type Controller struct {
-	Controller InputController
+	Controller PlayerInput
 }
