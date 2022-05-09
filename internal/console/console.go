@@ -1,6 +1,8 @@
 package console
 
 import (
+	"cheezewiz/pkg/utility"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -95,7 +97,7 @@ func (c *Console) handleEnter() {
 	if !(repeatingKeyPressed(ebiten.KeyEnter) || repeatingKeyPressed(ebiten.KeyNumpadEnter)) {
 		return
 	}
-	if len(c.text) == 0 {
+	if utility.IsStringEmpty(c.text) {
 		return
 	}
 	c.Submit()
@@ -115,7 +117,7 @@ func (c *Console) handleSlash() {
 		return
 	}
 
-	if len(c.text) == 0 {
+	if utility.IsStringEmpty(c.text) {
 		return
 	}
 
@@ -167,7 +169,7 @@ func repeatingKeyPressed(key ebiten.Key) bool {
 
 func (c *Console) handleResponse() {
 	r := c.service.GetResponse()
-	if len(r) == 0 {
+	if utility.IsStringEmpty(r) {
 		return
 	}
 	c.response = r
