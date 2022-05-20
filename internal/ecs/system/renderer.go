@@ -4,31 +4,31 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/ecs/component"
 
-	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type renderer struct {
-	Position *component.Position
-	Asset    *component.Asset
-
-	op *ebiten.DrawImageOptions
+type Renderable interface {
+	GetAsset() *component.Asset
+	GetPosition() *component.Position
+	GetDrawOptions() *ebiten.DrawImageOptions
 }
 
-func NewRenderer() gohan.System {
-	return &renderer{
-		op: &ebiten.DrawImageOptions{},
-	}
+type Renderer struct {
+	Level *component.Level
 }
 
-func (s *renderer) Update(_ gohan.Entity) error {
-	return gohan.ErrUnregister
-}
-
-func (s *renderer) Draw(entity gohan.Entity, screen *ebiten.Image) error {
+func (r Renderer) Render(screen *ebiten.Image) {
 	c := config.Get()
-	s.op.GeoM.Reset()
-	s.op.GeoM.Translate(s.Position.X-c.SpriteSize, s.Position.Y-c.SpriteSize)
-	screen.DrawImage(s.Asset.Image, s.op)
-	return nil
+	for _, id := range r.Level.Entities {
+		if _, ok := r.Level.EntityMap[id].(Renderable); !ok {
+			println("entity doens't match contract")
+			continue
+		}
+
+		entity := r.Level.EntityMap[id].(Renderable)
+
+		entity.GetDrawOptions().GeoM.Reset()
+		entity.GetDrawOptions().GeoM.Translate(entity.GetPosition().X-c.SpriteSize, entity.GetPosition().Y-c.SpriteSize)
+		screen.DrawImage(entity.GetAsset().Image, entity.GetDrawOptions())
+	}
 }

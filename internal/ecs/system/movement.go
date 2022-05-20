@@ -3,26 +3,30 @@ package system
 import (
 	"cheezewiz/internal/ecs/component"
 
-	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type movement struct {
-	Position *component.Position
-	Velocity *component.Velocity
+type Movable interface {
+	GetPosition() *component.Position
+	GetVelocity() *component.Velocity
 }
 
-func NewMovement() gohan.System {
-	return &movement{}
+type Movement struct {
+	Level *component.Level
 }
 
-func (m *movement) Update(entity gohan.Entity) error {
-	m.Position.X = m.Position.X + m.Velocity.X
-	m.Position.Y = m.Position.Y + m.Velocity.Y
-
-	return nil
+func (m *Movement) AttachLevel(lvl *component.Level) {
+	m.Level = lvl
 }
+func (m Movement) Update() {
+	for _, id := range m.Level.Entities {
+		if _, ok := m.Level.EntityMap[id].(Movable); !ok {
+			continue
+		}
+		entity := m.Level.EntityMap[id].(Movable)
 
-func (m *movement) Draw(_ gohan.Entity, _ *ebiten.Image) error {
-	return gohan.ErrUnregister
+		entity.GetPosition().X = entity.GetPosition().X + entity.GetVelocity().X
+		entity.GetPosition().Y = entity.GetPosition().Y + entity.GetVelocity().Y
+	}
 }
+func (m Movement) Render(screen *ebiten.Image) {}

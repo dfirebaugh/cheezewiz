@@ -4,12 +4,10 @@ import (
 	"bytes"
 	"cheezewiz/config"
 	"cheezewiz/internal/ecs/component"
-	"cheezewiz/internal/input"
 	"image"
 	"log"
 	"time"
 
-	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/ganim8/v2"
 	"github.com/yohamta/ganim8/v2/examples/assets/images"
@@ -17,20 +15,37 @@ import (
 	_ "image/png"
 )
 
-func NewPlayer() gohan.Entity {
-	player := gohan.NewEntity()
+type Player struct {
+	Position   *component.Position
+	Velocity   *component.Velocity
+	Animation  *component.Animation
+	Movable    *component.Movable
+	Controller *component.Controller
 
-	controller := input.Keyboard{}
+	Op *ebiten.DrawImageOptions
+}
 
+func (p Player) GetPosition() *component.Position {
+	return p.Position
+}
+func (p Player) GetVelocity() *component.Velocity {
+	return p.Velocity
+}
+func (p Player) GetAnimation() *component.Animation {
+	return p.Animation
+}
+func (p Player) GetMovable() *component.Movable {
+	return p.Movable
+}
+func (p Player) GetDrawOptions() *ebiten.DrawImageOptions {
+	return p.Op
+}
+func (p Player) GetController() *component.Controller {
+	return p.Controller
+}
+
+func NewPlayer(controller component.PlayerInput) *Player {
 	c := config.Get()
-	player.AddComponent(&component.Position{
-		X: float64(c.Window.Width) / 4,
-		Y: float64(c.Window.Height) / 4,
-	})
-	player.AddComponent(&component.Velocity{
-		X: 0,
-		Y: 0,
-	})
 
 	grid := ganim8.NewGrid(100, 100, 500, 600)
 	walkSprite := ganim8.NewSprite(
@@ -45,30 +60,37 @@ func NewPlayer() gohan.Entity {
 	op := ganim8.DrawOpts(20, 20)
 	op.SetOrigin(20, 20)
 
-	player.AddComponent(&component.Animation{
-		Walk:        ganim8.NewAnimation(walkSprite, 100*time.Millisecond, ganim8.Nop),
-		Still:       ganim8.NewAnimation(stillSprite, 100*time.Millisecond, ganim8.Nop),
-		Grid:        grid,
-		WalkSprite:  walkSprite,
-		StillSprite: stillSprite,
-		SpriteSize:  c.SpriteSize,
-		DrawOptions: op,
-	})
-
-	player.AddComponent(&component.Controller{
-		Controller: controller,
-	})
-
-	player.AddComponent(&component.Movable{
-		IsMoving: func() bool {
-			return controller.IsLeftPressed() ||
-				controller.IsRightPressed() ||
-				controller.IsUpPressed() ||
-				controller.IsDownPressed()
+	return &Player{
+		Position: &component.Position{
+			X: float64(c.Window.Width) / 4,
+			Y: float64(c.Window.Height) / 4,
 		},
-	})
-
-	return player
+		Velocity: &component.Velocity{
+			X: 0,
+			Y: 0,
+		},
+		Animation: &component.Animation{
+			Walk:        ganim8.NewAnimation(walkSprite, 100*time.Millisecond, ganim8.Nop),
+			Still:       ganim8.NewAnimation(stillSprite, 100*time.Millisecond, ganim8.Nop),
+			Grid:        grid,
+			WalkSprite:  walkSprite,
+			StillSprite: stillSprite,
+			SpriteSize:  c.SpriteSize,
+			DrawOptions: op,
+		},
+		Movable: &component.Movable{
+			IsMoving: func() bool {
+				return controller.IsLeftPressed() ||
+					controller.IsRightPressed() ||
+					controller.IsUpPressed() ||
+					controller.IsDownPressed()
+			},
+		},
+		Op: &ebiten.DrawImageOptions{},
+		Controller: &component.Controller{
+			Controller: controller,
+		},
+	}
 }
 
 func bytes2Image(rawImage *[]byte) image.Image {

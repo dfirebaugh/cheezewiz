@@ -4,42 +4,61 @@ import (
 	"cheezewiz/internal/ecs/component"
 	"time"
 
-	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type animator struct {
-	Position   *component.Position
-	Animation  *component.Animation
-	Controller *component.Controller
-	Movable    *component.Movable
+// recurse through all entities
+// if entity matches archetype for that system, apply the
+//  system transforms to the entity
+type Animatable interface {
+	// GetAsset() *component.Asset
+	GetAnimation() *component.Animation
+	GetPosition() *component.Position
+	GetMovable() *component.Movable
+	GetDrawOptions() *ebiten.DrawImageOptions
 }
 
-func NewAnimator() gohan.System {
-	return &animator{}
+type Animator struct {
+	Level *component.Level
 }
 
-func (a *animator) Update(_ gohan.Entity) error {
+func (a *Animator) AttachLevel(lvl *component.Level) {
+	a.Level = lvl
+}
+func (a Animator) Update() {
 	now := time.Now()
+	for _, id := range a.Level.Entities {
+		if _, ok := a.Level.EntityMap[id].(Animatable); !ok {
+			println("entity doens't match contract")
+			continue
+		}
+		entity := a.Level.EntityMap[id].(Animatable)
 
-	if a.Movable.IsMoving() {
-		a.Animation.Walk.Update(now.Sub(a.Animation.PrevUpdateTime))
-	} else {
-		a.Animation.Still.Update(now.Sub(a.Animation.PrevUpdateTime))
+		if entity.GetMovable().IsMoving() {
+			entity.GetAnimation().Walk.Update(now.Sub(entity.GetAnimation().PrevUpdateTime))
+		} else {
+			entity.GetAnimation().Still.Update(now.Sub(entity.GetAnimation().PrevUpdateTime))
+		}
+		entity.GetAnimation().PrevUpdateTime = now
 	}
-	a.Animation.PrevUpdateTime = now
-	return nil
 }
 
-func (a *animator) Draw(entity gohan.Entity, screen *ebiten.Image) error {
-	a.Animation.DrawOptions.Reset()
+func (a Animator) Render(screen *ebiten.Image) {
+	for _, id := range a.Level.Entities {
+		if _, ok := a.Level.EntityMap[id].(Animatable); !ok {
+			println("entity doens't match contract")
+			continue
+		}
 
-	a.Animation.DrawOptions.SetPos(a.Position.X-a.Animation.SpriteSize, a.Position.Y-a.Animation.SpriteSize)
+		entity := a.Level.EntityMap[id].(Animatable)
 
-	if a.Movable.IsMoving() {
-		a.Animation.Walk.Draw(screen, a.Animation.DrawOptions)
-	} else {
-		a.Animation.Still.Draw(screen, a.Animation.DrawOptions)
+		entity.GetAnimation().DrawOptions.Reset()
+		entity.GetAnimation().DrawOptions.SetPos(entity.GetPosition().X-entity.GetAnimation().SpriteSize, entity.GetPosition().Y-entity.GetAnimation().SpriteSize)
+
+		if entity.GetMovable().IsMoving() {
+			entity.GetAnimation().Walk.Draw(screen, entity.GetAnimation().DrawOptions)
+		} else {
+			entity.GetAnimation().Still.Draw(screen, entity.GetAnimation().DrawOptions)
+		}
 	}
-	return nil
 }

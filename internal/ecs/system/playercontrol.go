@@ -3,20 +3,8 @@ package system
 import (
 	"cheezewiz/internal/ecs/component"
 
-	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 )
-
-type playerControl struct {
-	Position   *component.Position
-	Velocity   *component.Velocity
-	Animation  *component.Animation
-	Controller *component.Controller
-}
-
-func NewPlayerControl() gohan.System {
-	return &playerControl{}
-}
 
 const (
 	topSpeed     = 3.3
@@ -24,71 +12,96 @@ const (
 	deceleration = 8.88
 )
 
-func (i *playerControl) Update(entity gohan.Entity) error {
-	i.handleInput()
-	i.handleDeceleration()
-	return nil
+type Controllable interface {
+	GetPosition() *component.Position
+	GetVelocity() *component.Velocity
+	GetAnimation() *component.Animation
+	GetController() *component.Controller
 }
 
-func (i *playerControl) Draw(_ gohan.Entity, _ *ebiten.Image) error {
-	return gohan.ErrUnregister
+type Control struct {
+	Level *component.Level
 }
+
+type ControllableEntity struct {
+	Controllable
+}
+
+func (c *Control) AttachLevel(lvl *component.Level) {
+	c.Level = lvl
+}
+
+func (c Control) Update() {
+	for _, id := range c.Level.Entities {
+		if _, ok := c.Level.EntityMap[id].(Controllable); !ok {
+			continue
+		}
+		ctrl := c.Level.EntityMap[id].(Controllable)
+		e := &ControllableEntity{
+			Controllable: ctrl,
+		}
+
+		e.handleInput()
+		e.handleDeceleration()
+	}
+}
+func (c Control) Render(screen *ebiten.Image) {}
 
 // handleDeceleration asymptotes toward zero
-func (i *playerControl) handleDeceleration() {
+func (e *ControllableEntity) handleDeceleration() {
 	// add a limit so we don't forever go toward zero
-	if i.Velocity.Y >= 0.002 || i.Velocity.Y <= -0.002 {
-		i.Velocity.Y = i.Velocity.Y - (i.Velocity.Y / deceleration)
+	if e.GetVelocity().Y >= 0.002 || e.GetVelocity().Y <= -0.002 {
+		e.GetVelocity().Y = e.GetVelocity().Y - (e.GetVelocity().Y / deceleration)
 	}
 
-	if i.Velocity.X >= 0.002 || i.Velocity.X <= -0.002 {
-		i.Velocity.X = i.Velocity.X - (i.Velocity.X / deceleration)
+	if e.GetVelocity().X >= 0.002 || e.GetVelocity().X <= -0.002 {
+		e.GetVelocity().X = e.GetVelocity().X - (e.GetVelocity().X / deceleration)
 	}
 }
 
-func (i *playerControl) accelerateUp() {
-	if i.Velocity.Y <= -topSpeed {
+func (e *ControllableEntity) accelerateUp() {
+	if e.GetVelocity().Y <= -topSpeed {
 		return
 	}
-	i.Velocity.Y -= acceleration
-	i.Velocity.Y = -topSpeed
+	e.GetVelocity().Y -= acceleration
+	e.GetVelocity().Y = -topSpeed
 }
 
-func (i *playerControl) accelerateLeft() {
-	if i.Velocity.X <= -topSpeed {
+func (e *ControllableEntity) accelerateLeft() {
+	if e.GetVelocity().X <= -topSpeed {
 		return
 	}
-	i.Velocity.X -= acceleration
-	i.Velocity.X = -topSpeed
+	e.GetVelocity().X -= acceleration
+	e.GetVelocity().X = -topSpeed
 }
 
-func (i *playerControl) accelerateDown() {
-	if i.Velocity.Y >= topSpeed {
+func (e *ControllableEntity) accelerateDown() {
+	if e.GetVelocity().Y >= topSpeed {
 		return
 	}
-	i.Velocity.Y += acceleration
-	i.Velocity.Y = topSpeed
+	e.GetVelocity().Y += acceleration
+	e.GetVelocity().Y = topSpeed
 }
 
-func (i *playerControl) accelerateRight() {
-	if i.Velocity.X >= topSpeed {
+func (e *ControllableEntity) accelerateRight() {
+	if e.GetVelocity().X >= topSpeed {
 		return
 	}
-	i.Velocity.X += acceleration
-	i.Velocity.X = topSpeed
+	e.GetVelocity().X += acceleration
+	e.GetVelocity().X = topSpeed
 }
 
-func (i *playerControl) handleInput() {
-	if i.Controller.Controller.IsUpPressed() {
-		i.accelerateUp()
+func (e *ControllableEntity) handleInput() {
+	if e.GetController().Controller.IsUpPressed() {
+		e.accelerateUp()
 	}
-	if i.Controller.Controller.IsLeftPressed() {
-		i.accelerateLeft()
+	if e.GetController().Controller.IsLeftPressed() {
+		e.accelerateLeft()
 	}
-	if i.Controller.Controller.IsDownPressed() {
-		i.accelerateDown()
+	if e.GetController().Controller.IsDownPressed() {
+		e.accelerateDown()
 	}
-	if i.Controller.Controller.IsRightPressed() {
-		i.accelerateRight()
+	if e.GetController().Controller.IsRightPressed() {
+		e.accelerateRight()
 	}
 }

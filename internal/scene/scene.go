@@ -1,18 +1,28 @@
 package scene
 
 import (
-	"cheezewiz/internal/vm"
+	"cheezewiz/internal/ecs/component"
+	"cheezewiz/internal/ecs/entity"
+	"cheezewiz/internal/ecs/system"
+	"cheezewiz/internal/input"
 	"os"
 
 	_ "embed"
 
 	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/sirupsen/logrus"
 )
 
+type System interface {
+	Update()
+	Render(screen *ebiten.Image)
+	AttachLevel(*component.Level)
+}
+
 type Scene struct {
-	Player gohan.Entity
+	Player  gohan.Entity
+	Level   *component.Level
+	Systems []System
 }
 
 //go:embed main.js
@@ -20,29 +30,39 @@ var main string
 
 func Init() *Scene {
 	s := &Scene{}
-	v := vm.Build(s)
-	vm.Run(v, main)
+	s.Level = &component.Level{
+		EntityMap: make(map[int]interface{}),
+		Entities:  []int{},
+	}
+
+	s.Level.Add(entity.NewPlayer(input.Keyboard{}))
+	s.AddSystem(&system.Animator{})
+	s.AddSystem(&system.Movement{})
+	s.AddSystem(&system.Control{})
+
+	// v := vm.Build(s)
+	// vm.Run(v, main)
 
 	return s
 }
 
-func (s *Scene) SetPlayer(player gohan.Entity) {
-	s.Player = player
+func (s *Scene) AddSystem(sys System) {
+	sys.AttachLevel(s.Level)
+	s.Systems = append(s.Systems, sys)
 }
 
 func (s *Scene) Update() {
-	err := gohan.Update()
-	if err != nil {
-		logrus.Error(err)
+	for _, system := range s.Systems {
+		system.Update()
 	}
+
 	if ebiten.IsWindowBeingClosed() {
 		s.Exit()
 	}
 }
 func (s *Scene) Draw(screen *ebiten.Image) {
-	err := gohan.Draw(screen)
-	if err != nil {
-		panic(err)
+	for _, system := range s.Systems {
+		system.Render(screen)
 	}
 }
 
