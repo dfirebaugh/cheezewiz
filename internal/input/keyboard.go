@@ -16,3 +16,6 @@ func (Keyboard) IsLeftPressed() bool {
 func (Keyboard) IsRightPressed() bool {
 	return ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight)
 }
+func (Keyboard) IsSpacePressed() bool {
+	return ebiten.IsKeyPressed(ebiten.KeySpace)
+}
