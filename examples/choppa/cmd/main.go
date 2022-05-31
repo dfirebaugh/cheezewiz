@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cheezewiz/config"
+	"cheezewiz/examples/choppa/config"
 	"cheezewiz/examples/choppa/internal/mediator"
 	"cheezewiz/pkg/ebitenwrapper"
 	"image/color"

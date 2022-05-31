@@ -17,7 +17,7 @@ func MakeProjectile(w donburi.World, origin *component.PositionData) {
 	tick := (*component.TickData)(entry.Component(component.Tick))
 
 	*velocity = component.VelocityData{
-		L: 5,
+		L: 35,
 		M: 0,
 	}
 
