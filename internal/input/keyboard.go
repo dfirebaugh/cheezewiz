@@ -1,6 +1,9 @@
 package input
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+)
 
 type Keyboard struct{}
 
@@ -13,9 +16,18 @@ func (Keyboard) IsDownPressed() bool {
 func (Keyboard) IsLeftPressed() bool {
 	return ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft)
 }
+func (Keyboard) IsLeftJustPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyA) || inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft)
+}
 func (Keyboard) IsRightPressed() bool {
 	return ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight)
 }
+func (Keyboard) IsRightJustPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyD) || inpututil.IsKeyJustPressed(ebiten.KeyArrowRight)
+}
 func (Keyboard) IsSpacePressed() bool {
 	return ebiten.IsKeyPressed(ebiten.KeySpace)
+}
+func (Keyboard) IsSpaceJustPressed() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
 }
