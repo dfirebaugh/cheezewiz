@@ -24,5 +24,5 @@ func MakeProjectile(w donburi.World, origin *component.PositionData) {
 	tick.EOL = 50
 
 	position.X = origin.X
-	position.Y = origin.Y
+	position.Y = origin.Y + 32/2
 }

@@ -67,7 +67,7 @@ func (r Render) renderProjectciles(w donburi.World, screen *ebiten.Image) {
 		position := component.GetPosition(entry)
 		ebitenutil.DrawRect(
 			screen,
-			position.X, position.Y+32/2,
+			position.X, position.Y,
 			100, 1,
 			colornames.Tomato,
 		)

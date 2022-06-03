@@ -4,9 +4,12 @@ import (
 	"cheezewiz/examples/choppa/internal/component"
 	"cheezewiz/examples/choppa/internal/entity"
 
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
+	"golang.org/x/exp/shiny/materialdesign/colornames"
 )
 
 type Collision struct {
@@ -65,6 +68,27 @@ func (c *Collision) Update(w donburi.World) {
 			}) {
 				w.Remove(entry.Entity())
 			}
+		})
+	})
+}
+
+func (c *Collision) Draw(w donburi.World, screen *ebiten.Image) {
+	renderRB := false
+	if !renderRB {
+		return
+	}
+	c.playerProjectileQuery.EachEntity(w, func(entry *donburi.Entry) {
+		pPosition := component.GetPosition(entry)
+
+		c.chippaQuery.EachEntity(w, func(entry *donburi.Entry) {
+			position := component.GetPosition(entry)
+			ebitenutil.DrawRect(screen, pPosition.X, pPosition.Y, 100, 5, colornames.Red100)
+			ebitenutil.DrawRect(screen, position.X, position.Y, 32, 32, colornames.Red100)
+		})
+		c.fighterQuery.EachEntity(w, func(entry *donburi.Entry) {
+			position := component.GetPosition(entry)
+			ebitenutil.DrawRect(screen, pPosition.X, pPosition.Y, 100, 5, colornames.Red100)
+			ebitenutil.DrawRect(screen, position.X, position.Y, 32, 32, colornames.Red100)
 		})
 	})
 }

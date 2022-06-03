@@ -24,6 +24,7 @@ type Drawable interface {
 
 func New() *Mediator {
 	renderer := system.NewRender()
+	collision := system.NewCollision()
 	m := &Mediator{
 		world: donburi.NewWorld(),
 		systems: []System{
@@ -32,9 +33,10 @@ func New() *Mediator {
 			system.NewVelocity(),
 			system.NewLifeSpan(),
 			system.NewSpawner(),
-			system.NewCollision(),
+			collision,
 		},
 		drawables: []Drawable{
+			collision,
 			renderer,
 		},
 	}
