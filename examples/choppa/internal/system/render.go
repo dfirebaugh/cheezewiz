@@ -65,11 +65,6 @@ func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 func (r Render) renderProjectciles(w donburi.World, screen *ebiten.Image) {
 	r.projectileQuery.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
-		alive := component.GetAlive(entry)
-
-		if !alive.IsAlive {
-			return
-		}
 		ebitenutil.DrawRect(
 			screen,
 			position.X, position.Y+32/2,
@@ -81,11 +76,6 @@ func (r Render) renderProjectciles(w donburi.World, screen *ebiten.Image) {
 
 func (r Render) renderFighter(w donburi.World, screen *ebiten.Image) {
 	r.fighterQuery.EachEntity(w, func(entry *donburi.Entry) {
-		alive := component.GetAlive(entry)
-
-		if !alive.IsAlive {
-			return
-		}
 		position := component.GetPosition(entry)
 		spriteSheet := component.GetSpriteSheet(entry)
 
@@ -100,13 +90,8 @@ func (r Render) renderChippas(w donburi.World, screen *ebiten.Image) {
 	r.chippaQuery.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		spriteSheet := component.GetSpriteSheet(entry)
-		alive := component.GetAlive(entry)
-
-		if !alive.IsAlive {
-			return
-		}
-
 		op := &ebiten.DrawImageOptions{}
+
 		op.GeoM.Translate(position.X, position.Y)
 		if r.count%11 == 0 {
 			screen.DrawImage(spriteSheet.IMG.SubImage(image.Rect(0, 0, 32, 32)).(*ebiten.Image), op)

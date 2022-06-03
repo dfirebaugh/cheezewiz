@@ -34,7 +34,6 @@ func (c *Collision) Update(w donburi.World) {
 
 		c.chippaQuery.EachEntity(w, func(entry *donburi.Entry) {
 			position := component.GetPosition(entry)
-			alive := component.GetAlive(entry)
 
 			if c.IsCollide(component.RigidBody{
 				X: pPosition.X,
@@ -47,12 +46,11 @@ func (c *Collision) Update(w donburi.World) {
 				W: 32,
 				H: 32,
 			}) {
-				alive.IsAlive = false
+				w.Remove(entry.Entity())
 			}
 		})
 		c.fighterQuery.EachEntity(w, func(entry *donburi.Entry) {
 			position := component.GetPosition(entry)
-			alive := component.GetAlive(entry)
 
 			if c.IsCollide(component.RigidBody{
 				X: pPosition.X,
@@ -65,7 +63,7 @@ func (c *Collision) Update(w donburi.World) {
 				W: 32,
 				H: 32,
 			}) {
-				alive.IsAlive = false
+				w.Remove(entry.Entity())
 			}
 		})
 	})

@@ -8,7 +8,7 @@ require (
 	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
 	github.com/sedyh/mizu v1.0.4
 	github.com/sirupsen/logrus v1.8.1
-	github.com/yohamta/donburi v0.0.6
+	github.com/yohamta/donburi v1.0.0
 	github.com/yohamta/ganim8/v2 v2.0.22
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

@@ -287,6 +287,8 @@ github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtX
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/yohamta/donburi v0.0.6 h1:PjW8C17dDPJztTD8UulUHGeDhaydQH4ns4RbNjVjoG4=
 github.com/yohamta/donburi v0.0.6/go.mod h1:zkSlxnciVNdbfo2gZUxAfL1eA3Urf0pbmwFd9EoCd/0=
+github.com/yohamta/donburi v1.0.0 h1:uRcL42KX4LRa6gKEN5aLZZwWf9sUhTcw2dRzVTW9jSU=
+github.com/yohamta/donburi v1.0.0/go.mod h1:i/25MjWa/7mMgNidjZyR8WH8KktnwPQqr2CmPupcy84=
 github.com/yohamta/ganim8/v2 v2.0.22 h1:8mvpwLb8nU31Oa5X4q3PPS8lRmyEILKKfZ5qynJY1Y0=
 github.com/yohamta/ganim8/v2 v2.0.22/go.mod h1:njHBLoIIswBEuFB08UJBnNNR4OL4D3wmF3aB1XkplyE=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

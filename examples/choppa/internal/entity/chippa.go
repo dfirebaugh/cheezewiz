@@ -16,14 +16,11 @@ var ChippaTag = donburi.NewTag()
 func MakeChippa(w donburi.World) {
 	screenWidth, screenHeight := ebiten.WindowSize()
 
-	p := w.Create(ChippaTag, component.Position, component.Velocity, component.SpriteSheet, component.IsAlive)
+	p := w.Create(ChippaTag, component.Position, component.Velocity, component.SpriteSheet)
 	entry := w.Entry(p)
 	position := (*component.PositionData)(entry.Component(component.Position))
 	velocity := (*component.VelocityData)(entry.Component(component.Velocity))
 	spriteSheet := (*component.SpriteSheetData)(entry.Component(component.SpriteSheet))
-	alive := (*component.AliveData)(entry.Component(component.IsAlive))
-
-	alive.IsAlive = true
 
 	*velocity = component.VelocityData{
 		L: -2,

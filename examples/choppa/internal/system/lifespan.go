@@ -20,12 +20,6 @@ func NewLifeSpan() *LifeSpan {
 }
 
 func (l LifeSpan) Update(w donburi.World) {
-	// currently disabled because of an index out of range error
-	// so, projectiles will not get destroyed until this is fixed
-	disabled := true
-	if disabled {
-		return
-	}
 	l.projectileLife(w)
 }
 
