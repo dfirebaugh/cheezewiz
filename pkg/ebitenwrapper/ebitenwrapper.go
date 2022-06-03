@@ -7,16 +7,16 @@ import (
 	ebiten "github.com/hajimehoshi/ebiten/v2"
 )
 
-type mediator interface {
+type scene interface {
 	Update()
 	Draw(screen *ebiten.Image)
 	Exit()
 }
 
 type Game struct {
-	Width    int
-	Height   int
-	Mediator mediator
+	Width  int
+	Height int
+	Scene  scene
 	ebiten.Game
 	WindowTitle     string
 	WindowScale     int
@@ -24,13 +24,13 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	g.Mediator.Update()
+	g.Scene.Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(g.BackgroundColor)
-	g.Mediator.Draw(screen)
+	g.Scene.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

@@ -2,7 +2,7 @@ package main
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/mediator"
+	"cheezewiz/examples/sprite/internal/mediator"
 	"cheezewiz/pkg/ebitenwrapper"
 	"image/color"
 	"os"
@@ -17,7 +17,7 @@ func main() {
 
 	c := config.Get()
 	game := &ebitenwrapper.Game{
-		Mediator:        mediator.New(),
+		Scene:           mediator.New(),
 		WindowTitle:     c.Title,
 		WindowScale:     2,
 		Width:           c.Window.Width,

@@ -1,48 +1,54 @@
 package scene
 
 import (
-	"cheezewiz/internal/vm"
+	"cheezewiz/internal/system"
 	"os"
 
-	_ "embed"
-
-	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/sirupsen/logrus"
+	"github.com/yohamta/donburi"
 )
 
-type Scene struct {
-	Player gohan.Entity
+type System interface {
+	Update(w donburi.World)
 }
 
-//go:embed main.js
-var main string
+type Drawable interface {
+	Draw(w donburi.World, screen *ebiten.Image)
+}
+type Scene struct {
+	world     donburi.World
+	systems   []System
+	drawables []Drawable
+}
 
 func Init() *Scene {
-	s := &Scene{}
-	v := vm.Build(s)
-	vm.Run(v, main)
+	renderer := system.NewRender()
+	collision := system.NewCollision()
+	s := &Scene{
+		world: donburi.NewWorld(),
+		systems: []System{
+			renderer,
+		},
+		drawables: []Drawable{
+			collision,
+			renderer,
+		},
+	}
 
 	return s
 }
 
-func (s *Scene) SetPlayer(player gohan.Entity) {
-	s.Player = player
-}
-
 func (s *Scene) Update() {
-	err := gohan.Update()
-	if err != nil {
-		logrus.Error(err)
+	for _, sys := range s.systems {
+		sys.Update(s.world)
 	}
 	if ebiten.IsWindowBeingClosed() {
 		s.Exit()
 	}
 }
 func (s *Scene) Draw(screen *ebiten.Image) {
-	err := gohan.Draw(screen)
-	if err != nil {
-		panic(err)
+	for _, sys := range s.drawables {
+		sys.Draw(s.world, screen)
 	}
 }
 

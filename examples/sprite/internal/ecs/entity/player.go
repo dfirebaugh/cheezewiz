@@ -3,7 +3,7 @@ package entity
 import (
 	"bytes"
 	"cheezewiz/config"
-	"cheezewiz/internal/ecs/component"
+	"cheezewiz/examples/sprite/internal/ecs/component"
 	"cheezewiz/internal/input"
 	"image"
 	"log"
