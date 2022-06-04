@@ -3,6 +3,7 @@ package event
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"fmt"
 	"math"
 	"math/rand"
 	"strconv"
@@ -49,6 +50,7 @@ func spawnWave(w donburi.World, args []string) {
 		return
 	}
 }
+
 func spawnBoss(w donburi.World, args []string) {
 
 	hp, _ := strconv.Atoi(args[1])
@@ -76,12 +78,21 @@ func spawnBoss(w donburi.World, args []string) {
 	//args[]
 }
 
+func outputHurryUp(w donburi.World, args []string) {
+	fmt.Println("HURRY UP")
+}
+
+func outputDeath(w donburi.World, args []string) {
+	fmt.Println("Death")
+}
+
 type JobName string
 
 const (
 	SpawnWave JobName = "SpawnWave"
 	SpawnBoss JobName = "SpawnBoss"
 	HurryUp   JobName = "HurryUp"
+	Death     JobName = "Death"
 )
 
 var JobTypes = make(map[JobName]Job, 1)
@@ -93,8 +104,20 @@ type SceneEvent struct {
 }
 
 func init() {
+	JobTypes[HurryUp] = Job{
+		json_name: string(HurryUp),
+		Callback:  outputHurryUp,
+		priority:  1,
+	}
+
+	JobTypes[HurryUp] = Job{
+		json_name: string(Death),
+		Callback:  outputHurryUp,
+		priority:  1,
+	}
+
 	JobTypes[SpawnWave] = Job{
-		json_name: "SpawnWave",
+		json_name: string(SpawnWave),
 		Callback:  spawnWave,
 		priority:  0,
 	}
