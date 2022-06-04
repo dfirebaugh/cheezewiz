@@ -57,6 +57,7 @@ func Init() *Scene {
 			collision,
 			system.NewScheduler(level.Events, world),
 			system.NewWorldViewPortLocation(),
+			system.NewProjectileContol(),
 		},
 		drawables: []Drawable{
 			collision,

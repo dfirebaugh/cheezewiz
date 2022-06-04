@@ -55,10 +55,13 @@ func (d *DamageBufferGroup) ConsumeDamage() {
 	d.PlayerDamage = nil
 
 	for _, elem := range d.EnemyDamage {
+		if elem.destination == nil {
+			continue
+		}
 		hc := component.GetHealth(elem.destination)
 		hc.HP -= elem.amount
 
-		logrus.Infof("Death for entity %d", elem.destination.Id())
+		logrus.Infof("Damage delt for entity %d with %d dmg", elem.destination.Id(), elem.amount)
 	}
 
 }

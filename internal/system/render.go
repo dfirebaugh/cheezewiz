@@ -4,6 +4,7 @@ import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"fmt"
+	"math"
 	"os"
 	"time"
 
@@ -27,6 +28,7 @@ type Render struct {
 	enemyQuery         *query.Query
 	backgroundQuery    *query.Query
 	worldViewPortQuery *query.Query
+	projectileQuery    *query.Query
 	tilemap_cache      *ebiten.Image
 }
 
@@ -36,6 +38,7 @@ func NewRender() *Render {
 		enemyQuery:         query.NewQuery(filter.Contains(entity.EnemyTag)),
 		backgroundQuery:    query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery: query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
+		projectileQuery:    query.NewQuery(filter.Contains(entity.ProjectileTag)),
 		tilemap_cache:      nil,
 	}
 }
@@ -44,12 +47,14 @@ func (r *Render) Update(w donburi.World) {
 	r.count++
 	r.updateEnemy(w)
 	r.updatePlayer(w)
+	r.updateProjectile(w)
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.renderTileMap(w, screen)
 	r.renderEnemy(w, screen)
 	r.renderPlayer(w, screen)
+	r.renderProjectile(w, screen)
 }
 
 func (r *Render) updatePlayer(w donburi.World) {
@@ -74,6 +79,29 @@ func (r Render) updateEnemy(w donburi.World) {
 		animation := component.GetAnimation(entry)
 		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
 		animation.Walk.PrevUpdateTime = now
+	})
+}
+
+func (r Render) updateProjectile(w donburi.World) {
+	now := time.Now()
+	r.projectileQuery.EachEntity(w, func(entry *donburi.Entry) {
+		animation := component.GetAnimation(entry)
+		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
+		animation.Walk.PrevUpdateTime = now
+	})
+}
+
+func (r Render) renderProjectile(w donburi.World, screen *ebiten.Image) {
+	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
+	worldViewLocationPos := component.GetPosition(worldViewLocation)
+
+	r.projectileQuery.EachEntity(w, func(entry *donburi.Entry) {
+		position := component.GetPosition(entry)
+		animation := component.GetAnimation(entry)
+		direction := component.GetDirection(entry)
+		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, direction.Angle+math.Pi)
+		// op.SetScale(-1, 0)
+		animation.Walk.Animation.Draw(screen, op)
 	})
 }
 

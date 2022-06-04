@@ -13,12 +13,14 @@ import (
 
 type attackMediator interface {
 	AddPlayerDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)
+	AddEnemyDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)
 }
 
 type Collision struct {
-	playerQuery    *query.Query
-	enemyQuery     *query.Query
-	attack_handler attackMediator
+	playerQuery     *query.Query
+	enemyQuery      *query.Query
+	projectileQuery *query.Query
+	attack_handler  attackMediator
 }
 
 func NewCollision(attack_handler attackMediator) *Collision {
@@ -29,11 +31,37 @@ func NewCollision(attack_handler attackMediator) *Collision {
 		enemyQuery: query.NewQuery(filter.Contains(
 			entity.EnemyTag,
 		)),
+		projectileQuery: query.NewQuery(filter.Contains(
+			entity.ProjectileTag,
+		)),
 		attack_handler: attack_handler,
 	}
 }
 
 func (c *Collision) Update(w donburi.World) {
+	c.projectileQuery.EachEntity(w, func(prjentry *donburi.Entry) {
+		projectilePos := component.GetPosition(prjentry)
+		c.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
+			enemyPosition := component.GetPosition(entry)
+			enemyHealth := component.GetHealth(entry)
+			if c.IsCollide(component.RigidBodyData{
+				H: float64(constant.SpriteSize) - 4,
+				W: float64(constant.SpriteSize) - 4,
+				X: projectilePos.X,
+				Y: projectilePos.Y,
+			}, component.RigidBodyData{
+				H: float64(constant.SpriteSize) - 4,
+				W: float64(constant.SpriteSize) - 4,
+				X: enemyPosition.X,
+				Y: enemyPosition.Y,
+			}) {
+				if enemyHealth.HP > 0 {
+					c.attack_handler.AddEnemyDamage(entry, 10, nil)
+				}
+			}
+		})
+	})
+
 	c.playerQuery.EachEntity(w, func(pentry *donburi.Entry) {
 		playerPosition := component.GetPosition(pentry)
 		playerHealth := component.GetHealth(pentry)

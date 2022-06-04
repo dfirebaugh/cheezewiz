@@ -15,3 +15,7 @@ func (a Attack) AddPlayerDamage(destination *donburi.Entry, amount float64, orig
 	a.D.AddPlayerDamage(destination, amount, origin)
 
 }
+func (a Attack) AddEnemyDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry) {
+	a.D.AddEnemyDamage(destination, amount, origin)
+
+}

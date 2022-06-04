@@ -28,6 +28,14 @@ func NewEnemyControl() *EnemyControl {
 
 func (e EnemyControl) Update(w donburi.World) {
 	e.query.EachEntity(w, func(entry *donburi.Entry) {
+		health := component.GetHealth(entry)
+		if health == nil {
+			return
+		}
+		if health.HP <= 0 {
+			w.Remove(entry.Entity())
+			return
+		}
 		entityPosition := component.GetPosition(entry)
 
 		var closestEntry *donburi.Entry
