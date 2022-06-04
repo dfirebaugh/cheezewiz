@@ -62,6 +62,7 @@ func Init() *Scene {
 			collision,
 			renderer,
 			timer,
+			system.NewExpbar(),
 		},
 	}
 
@@ -71,6 +72,7 @@ func Init() *Scene {
 }
 
 func addEntities(world donburi.World) {
+	entity.MakeExpBar(world)
 	entity.MakeWorld(world)
 	entity.MakeBackground(world)
 	entity.MakeTimer(world)

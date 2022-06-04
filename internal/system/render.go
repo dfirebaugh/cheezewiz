@@ -167,7 +167,7 @@ func (r *Render) playerSlots(w donburi.World, screen *ebiten.Image) {
 		sprite := component.GetSpriteSheet(entry)
 
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(padding, padding)
+		op.GeoM.Translate(padding, float64(config.Get().Window.Width/config.Get().ScaleFactor)-480)
 		screen.DrawImage(sprite.IMG, op)
 		op = &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-500, float64(config.Get().Window.Width/config.Get().ScaleFactor)-80)
@@ -176,7 +176,7 @@ func (r *Render) playerSlots(w donburi.World, screen *ebiten.Image) {
 		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-80)
 		screen.DrawImage(sprite.IMG, op)
 		op = &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-500)
+		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-480)
 		screen.DrawImage(sprite.IMG, op)
 	})
 }
