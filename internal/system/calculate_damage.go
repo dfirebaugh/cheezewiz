@@ -41,7 +41,7 @@ func (d *DamageBufferGroup) ConsumeDamage() {
 	for _, elem := range d.PlayerDamage { //Typecheck and warn!
 		playerHeath := component.GetHealth(elem.destination)
 		state := component.GetPlayerState(elem.destination)
-		logrus.Info("players' health: ", hc.HP, " Origin Health ")
+		logrus.Info("players' health: ", playerHeath.HP, " Origin Health ")
 
 		if playerHeath.HP > 0 {
 			playerHeath.HP -= elem.amount
