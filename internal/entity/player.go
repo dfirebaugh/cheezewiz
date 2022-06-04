@@ -16,7 +16,7 @@ import (
 var PlayerTag = donburi.NewTag()
 
 func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
-	b := w.Create(PlayerTag, component.Position, component.SpriteSheet, component.Animation, component.InputDevice)
+	b := w.Create(PlayerTag, component.Position, component.SpriteSheet, component.Animation, component.InputDevice, component.Health)
 	entry := w.Entry(b)
 	position := (*component.PositionData)(entry.Component(component.Position))
 	// spriteSheet := (*component.SpriteSheetData)(entry.Component(component.SpriteSheet))
@@ -24,6 +24,11 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	inputDevice.Device = controller
 
 	animation := (*component.AnimationData)(entry.Component(component.Animation))
+
+	health := (*component.HealthAspect)(entry.Component(component.Health))
+
+	health.HP = 80
+	health.MAXHP = 100
 
 	position.X = 0
 	position.Y = 0

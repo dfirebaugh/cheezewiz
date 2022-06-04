@@ -3,10 +3,11 @@ package component
 import "github.com/yohamta/donburi"
 
 type HealthAspect struct {
-	HP float64
+	MAXHP float64
+	HP    float64
 }
 
-var Health = donburi.NewComponentType(HealthAspect{HP: 100})
+var Health = donburi.NewComponentType(HealthAspect{})
 
 func GetHealth(e *donburi.Entry) *HealthAspect {
 	return (*HealthAspect)(e.Component(Health))

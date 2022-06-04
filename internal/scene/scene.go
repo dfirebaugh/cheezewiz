@@ -39,11 +39,8 @@ func Init() *Scene {
 			renderer,
 			system.NewPlayerControl(),
 			timer,
-<<<<<<< Updated upstream
 			system.NewRegisterPlayer(),
-=======
 			damageGroup,
->>>>>>> Stashed changes
 		},
 		drawables: []Drawable{
 			collision,
