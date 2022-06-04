@@ -3,3 +3,4 @@ window:
   height: 1024
   width: 1024
 tile-size: 32
+scale-factor: 2

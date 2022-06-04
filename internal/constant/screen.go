@@ -3,6 +3,6 @@ package constant
 type ScreenEnum int
 
 const (
-	ScreenHeight ScreenEnum = 512
+	ScreenHeight ScreenEnum = 1024
 	ScreenWidth  ScreenEnum = 1024
 )

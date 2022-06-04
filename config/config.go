@@ -7,14 +7,15 @@ import (
 )
 
 type Config struct {
-	Title    string  `yaml:"title"`
-	TileSize float64 `yaml:"tile-size"`
-	Window   struct {
+	Title      string  `yaml:"title"`
+	SpriteSize float64 `yaml:"sprite-size"`
+	Window     struct {
 		Height int `yaml:"height"`
 		Width  int `yaml:"width"`
 	} `yaml:"window"`
-	Server string `yaml:"server"`
-	Port   int    `yaml:"port"`
+	Server      string `yaml:"server"`
+	Port        int    `yaml:"port"`
+	ScaleFactor int    `yaml:"scale-factor"`
 }
 
 //go:embed config.yml

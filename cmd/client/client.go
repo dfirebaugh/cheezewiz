@@ -19,7 +19,7 @@ func main() {
 	game := &ebitenwrapper.Game{
 		Scene:           scene.Init(),
 		WindowTitle:     c.Title,
-		WindowScale:     2,
+		WindowScale:     c.ScaleFactor,
 		Width:           c.Window.Width,
 		Height:          c.Window.Height,
 		BackgroundColor: color.NRGBA{0x00, 0x40, 0x80, 0xff},
