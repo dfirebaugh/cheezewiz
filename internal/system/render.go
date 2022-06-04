@@ -47,6 +47,7 @@ func (r Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.renderTileMap(w, screen)
 	r.renderEnemy(w, screen)
 	r.renderPlayer(w, screen)
+
 }
 
 func (r Render) updatePlayer(w donburi.World) {

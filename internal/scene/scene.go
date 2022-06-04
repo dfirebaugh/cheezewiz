@@ -23,9 +23,13 @@ type Scene struct {
 	drawables []Drawable
 }
 
+const level1 string = "level1.json"
+
 func Init() *Scene {
 	// World
 	world := donburi.NewWorld()
+
+	loadWorld(level1)
 
 	// System
 	renderer := system.NewRender()

@@ -1,0 +1,11 @@
+{
+    "levelName": "garden",
+    "events": [
+        {
+            "time": 30,
+            "event": "SpawnWave",
+            "args": ["radish","10","5"]
+        }
+    ]
+}
+
