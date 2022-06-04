@@ -5,8 +5,11 @@ import "github.com/yohamta/donburi"
 type playerstate uint
 
 const (
-	IdleState    playerstate = 0
-	WalkingState             = 1
+	IdleState playerstate = iota
+	WalkingState
+	AttackingState
+	HurtState
+	DeathState
 )
 
 type PlayerState struct {

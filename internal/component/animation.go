@@ -14,8 +14,10 @@ type Action struct {
 }
 
 type AnimationData struct {
-	Walk Action
-	Idle Action
+	Walk  Action
+	Idle  Action
+	Hurt  Action
+	Death Action
 }
 
 var Animation = donburi.NewComponentType(AnimationData{})

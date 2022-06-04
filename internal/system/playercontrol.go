@@ -49,5 +49,9 @@ func (p PlayerControl) Update(w donburi.World) {
 			direction.IsRight = false
 			state.Current = component.WalkingState
 		}
+
+		if controller.Device.IsPrimaryAtkJustPressed() {
+			state.Current = component.HurtState
+		}
 	})
 }

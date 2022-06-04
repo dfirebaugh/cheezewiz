@@ -56,6 +56,7 @@ func Init() *Scene {
 			aicontroller,
 			collision,
 			system.NewScheduler(level.Events, world),
+			system.NewWorldViewPortLocation(),
 		},
 		drawables: []Drawable{
 			collision,
@@ -70,6 +71,7 @@ func Init() *Scene {
 }
 
 func addEntities(world donburi.World) {
+	entity.MakeWorld(world)
 	entity.MakeBackground(world)
 	entity.MakeTimer(world)
 	entity.MakePlayer(world, input.Keyboard{})
