@@ -9,17 +9,15 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
-type events []func()
-
 type Scheduler struct {
 	query  *query.Query
-	events map[uint32]events
+	events map[uint32][]func()
 }
 
 func NewScheduler(sceneEvents []event.SceneEvent, w donburi.World) *Scheduler {
 	scheduler := &Scheduler{
 		query:  query.NewQuery(filter.Contains(component.Countdown)),
-		events: map[uint32]events{},
+		events: map[uint32][]func(){},
 	}
 
 	for _, se := range sceneEvents {
@@ -48,8 +46,8 @@ func (s Scheduler) RunEvents(w donburi.World, now uint32) {
 		return
 	}
 
-	for _, e := range s.events[now] {
-		e()
+	for _, event := range s.events[now] {
+		event()
 	}
 
 	s.events[now] = nil
