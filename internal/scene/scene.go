@@ -31,13 +31,19 @@ func Init() *Scene {
 	renderer := system.NewRender()
 	collision := system.NewCollision()
 	timer := system.NewTimer()
+	damageGroup := system.NewDamagebufferGroup()
+
 	s := &Scene{
 		world: world,
 		systems: []System{
 			renderer,
 			system.NewPlayerControl(),
 			timer,
+<<<<<<< Updated upstream
 			system.NewRegisterPlayer(),
+=======
+			damageGroup,
+>>>>>>> Stashed changes
 		},
 		drawables: []Drawable{
 			collision,
