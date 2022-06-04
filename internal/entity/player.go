@@ -21,7 +21,6 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	b := w.Create(PlayerTag, component.Position, component.SpriteSheet, component.Animation, component.InputDevice, component.Health, component.Direction, component.State)
 	entry := w.Entry(b)
 	position := (*component.PositionData)(entry.Component(component.Position))
-	// spriteSheet := (*component.SpriteSheetData)(entry.Component(component.SpriteSheet))
 	inputDevice := (*component.InputDeviceData)(entry.Component(component.InputDevice))
 	inputDevice.Device = controller
 

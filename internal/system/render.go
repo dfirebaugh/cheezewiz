@@ -44,7 +44,6 @@ func (r *Render) Update(w donburi.World) {
 	r.count++
 	r.updateEnemy(w)
 	r.updatePlayer(w)
-
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
@@ -53,24 +52,18 @@ func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.renderPlayer(w, screen)
 }
 
-func (r Render) updatePlayer(w donburi.World) {
+func (r *Render) updatePlayer(w donburi.World) {
 	now := time.Now()
 
 	r.playerQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
-		state := component.GetPlayerState(entry)
 
-		switch state.Current {
-		case component.WalkingState:
-			animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
-			animation.Walk.PrevUpdateTime = now
-		case component.AttackingState:
-		case component.HurtState:
-			animation.Hurt.Animation.Update(now.Sub(animation.Hurt.PrevUpdateTime))
-			animation.Hurt.PrevUpdateTime = now
-		case component.DeathState:
-		default:
-		}
+		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
+		animation.Hurt.Animation.Update(now.Sub(animation.Hurt.PrevUpdateTime))
+		animation.Idle.Animation.Update(now.Sub(animation.Idle.PrevUpdateTime))
+		animation.Walk.PrevUpdateTime = now
+		animation.Hurt.PrevUpdateTime = now
+		animation.Idle.PrevUpdateTime = now
 	})
 }
 
@@ -84,7 +77,7 @@ func (r Render) updateEnemy(w donburi.World) {
 	})
 }
 
-func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
+func (r *Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
