@@ -14,7 +14,7 @@ import (
 
 var PlayerTag = donburi.NewTag()
 
-func NewPlayer(w donburi.World, controller input.PlayerInput) {
+func NewPlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	b := w.Create(PlayerTag, component.Position, component.SpriteSheet, component.Direction, component.InputDevice)
 	entry := w.Entry(b)
 	position := (*component.PositionData)(entry.Component(component.Position))
@@ -30,4 +30,6 @@ func NewPlayer(w donburi.World, controller input.PlayerInput) {
 
 	imgDecoded, _, _ := image.Decode(bytes.NewReader(assets.ChoppaRaw))
 	spriteSheet.IMG = ebiten.NewImageFromImage(imgDecoded)
+
+	return entry
 }

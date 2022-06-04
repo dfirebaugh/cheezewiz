@@ -34,6 +34,7 @@ func New() *Mediator {
 			system.NewVelocity(),
 			system.NewLifeSpan(),
 			system.NewSpawner(),
+			system.NewRegisterPlayer(),
 			collision,
 		},
 		drawables: []Drawable{
