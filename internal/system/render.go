@@ -29,6 +29,7 @@ type Render struct {
 	backgroundQuery    *query.Query
 	worldViewPortQuery *query.Query
 	playerSlot         *query.Query
+	jellyBeanQuery     *query.Query
 	tilemap_cache      *ebiten.Image
 }
 
@@ -39,6 +40,7 @@ func NewRender() *Render {
 		backgroundQuery:    query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery: query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
 		playerSlot:         query.NewQuery(filter.Contains(entity.SlotTag)),
+		jellyBeanQuery:     query.NewQuery(filter.Contains(entity.JellyBeanTag)),
 		tilemap_cache:      nil,
 	}
 }
@@ -51,6 +53,7 @@ func (r *Render) Update(w donburi.World) {
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.tileMap(w, screen)
+	r.jellyBeans(w, screen)
 	r.enemy(w, screen)
 	r.player(w, screen)
 	r.playerSlots(w, screen)
@@ -174,6 +177,20 @@ func (r *Render) playerSlots(w donburi.World, screen *ebiten.Image) {
 		screen.DrawImage(sprite.IMG, op)
 		op = &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-500)
+		screen.DrawImage(sprite.IMG, op)
+	})
+}
+
+func (r *Render) jellyBeans(w donburi.World, screen *ebiten.Image) {
+	r.jellyBeanQuery.EachEntity(w, func(entry *donburi.Entry) {
+		worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
+		worldViewLocationPos := component.GetPosition(worldViewLocation)
+		position := component.GetPosition(entry)
+
+		sprite := component.GetSpriteSheet(entry)
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y)
 		screen.DrawImage(sprite.IMG, op)
 	})
 }
