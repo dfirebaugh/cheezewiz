@@ -28,7 +28,7 @@ func (t *Timer) Update(world donburi.World) {
 	t.query.EachEntity(world, func(entry *donburi.Entry) {
 		countdown := component.GetCountdown(entry)
 		tpsCount++
-		if tpsCount%60 == 0 {
+		if tpsCount%60 == 0 && countdown.CountDownInSec > 0 {
 			countdown.CountDownInSec--
 		}
 	})
@@ -46,7 +46,7 @@ func displayTotalCountdown(countdown int) string {
 	var remainingSecs = countdown % 60
 
 	displayRemainingSecs := func() string {
-		if remainingSecs < 9 {
+		if remainingSecs <= 9 {
 			return fmt.Sprintf("0%d", remainingSecs)
 		}
 
