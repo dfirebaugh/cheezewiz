@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/constant"
 	"cheezewiz/internal/entity"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -33,13 +34,13 @@ func (c *Collision) Update(w donburi.World) {
 		c.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
 			enemyPosition := component.GetPosition(entry)
 			if c.IsCollide(component.RigidBodyData{
-				H: 32,
-				W: 32,
+				H: float64(constant.SpriteSize) - 4,
+				W: float64(constant.SpriteSize) - 4,
 				X: playerPosition.X,
 				Y: playerPosition.Y,
 			}, component.RigidBodyData{
-				H: 32,
-				W: 32,
+				H: float64(constant.SpriteSize) - 4,
+				W: float64(constant.SpriteSize) - 4,
 				X: enemyPosition.X,
 				Y: enemyPosition.Y,
 			}) {

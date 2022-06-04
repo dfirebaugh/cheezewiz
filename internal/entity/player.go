@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cheezewiz/assets"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/constant"
 	"cheezewiz/internal/input"
 	"image"
 	"time"
@@ -34,7 +35,7 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	position.Y = float64(200)
 	imgDecoded, _, _ := image.Decode(bytes.NewReader(assets.CheezeWizRaw))
 
-	grid := ganim8.NewGrid(32, 32, imgDecoded.Bounds().Dx(), imgDecoded.Bounds().Dy())
+	grid := ganim8.NewGrid(int(constant.SpriteSize), int(constant.SpriteSize), imgDecoded.Bounds().Dx(), imgDecoded.Bounds().Dy())
 
 	animation.Idle.Sprite = ganim8.NewSprite(ebiten.NewImageFromImage(imgDecoded), grid.GetFrames("1", 1))
 	animation.Idle.Animation = ganim8.NewAnimation(animation.Idle.Sprite, 100*time.Millisecond, ganim8.Nop)

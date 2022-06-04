@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cheezewiz/assets"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/constant"
 	"image"
 	"time"
 
@@ -30,7 +31,7 @@ func MakeEnemy(w donburi.World, x float64, y float64) *donburi.Entry {
 
 	imgDecoded, _, _ := image.Decode(bytes.NewReader(assets.RadishEnemyRaw))
 
-	grid := ganim8.NewGrid(32, 32, imgDecoded.Bounds().Dx(), imgDecoded.Bounds().Dy())
+	grid := ganim8.NewGrid(int(constant.SpriteSize), int(constant.SpriteSize), imgDecoded.Bounds().Dx(), imgDecoded.Bounds().Dy())
 
 	animation.Walk.Sprite = ganim8.NewSprite(ebiten.NewImageFromImage(imgDecoded), grid.GetFrames("1-3", 1))
 	animation.Walk.Animation = ganim8.NewAnimation(animation.Walk.Sprite, 100*time.Millisecond, ganim8.Nop)
