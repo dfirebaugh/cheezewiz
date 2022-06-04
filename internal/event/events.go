@@ -22,7 +22,7 @@ type Job struct {
 func spawnWave(w donburi.World, args []string) {
 	playerQuery := query.NewQuery(filter.Contains(entity.PlayerTag))
 
-	firstplayer, _ := playerQuery.FirstEntity()
+	firstplayer, _ := playerQuery.FirstEntity(w)
 
 	pPos := component.GetPosition(firstplayer)
 	playerVector := vector.NewWithValues([]float64{pPos.X, pPos.Y})
