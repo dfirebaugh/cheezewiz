@@ -1,6 +1,8 @@
 package scene
 
 import (
+	"cheezewiz/internal/entity"
+	"cheezewiz/internal/input"
 	"cheezewiz/internal/system"
 	"os"
 
@@ -28,12 +30,15 @@ func Init() *Scene {
 		world: donburi.NewWorld(),
 		systems: []System{
 			renderer,
+			system.NewPlayerControl(),
 		},
 		drawables: []Drawable{
 			collision,
 			renderer,
 		},
 	}
+
+	entity.MakePlayer(s.world, input.Keyboard{})
 
 	return s
 }
