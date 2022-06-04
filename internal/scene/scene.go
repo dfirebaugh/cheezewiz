@@ -32,6 +32,7 @@ func Init() *Scene {
 	collision := system.NewCollision()
 	timer := system.NewTimer()
 	damageGroup := system.NewDamagebufferGroup()
+	aicontroller := system.NewEnemyControl()
 
 	s := &Scene{
 		world: world,
@@ -41,6 +42,7 @@ func Init() *Scene {
 			timer,
 			system.NewRegisterPlayer(),
 			damageGroup,
+			aicontroller,
 		},
 		drawables: []Drawable{
 			collision,
