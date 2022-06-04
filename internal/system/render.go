@@ -3,10 +3,13 @@ package system
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/lafriks/go-tiled/render"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -19,15 +22,17 @@ type Renderable interface {
 }
 
 type Render struct {
-	count       int
-	playerQuery *query.Query
-	enemyQuery  *query.Query
+	count           int
+	playerQuery     *query.Query
+	enemyQuery      *query.Query
+	backgroundQuery *query.Query
 }
 
 func NewRender() *Render {
 	return &Render{
-		playerQuery: query.NewQuery(filter.Contains(entity.PlayerTag)),
-		enemyQuery:  query.NewQuery(filter.Contains(entity.EnemyTag)),
+		playerQuery:     query.NewQuery(filter.Contains(entity.PlayerTag)),
+		enemyQuery:      query.NewQuery(filter.Contains(entity.EnemyTag)),
+		backgroundQuery: query.NewQuery(filter.Contains(entity.BackgroundTag)),
 	}
 }
 
@@ -39,9 +44,9 @@ func (r *Render) Update(w donburi.World) {
 }
 
 func (r Render) Draw(w donburi.World, screen *ebiten.Image) {
+	r.renderTileMap(w, screen)
 	r.renderEnemy(w, screen)
 	r.renderPlayer(w, screen)
-
 }
 
 func (r Render) updatePlayer(w donburi.World) {
@@ -81,6 +86,26 @@ func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
 		op := ganim8.DrawOpts(position.X, position.Y)
+		// op.SetScale(-1, 0)
 		animation.Walk.Animation.Draw(screen, op)
+	})
+}
+
+func (r Render) renderTileMap(w donburi.World, screen *ebiten.Image) {
+	r.backgroundQuery.EachEntity(w, func(entry *donburi.Entry) {
+		tiles := component.GetTileMap(entry)
+
+		renderer, err := render.NewRenderer(tiles.Map)
+		if err != nil {
+			fmt.Printf("map unsupported for rendering: %s", err.Error())
+			os.Exit(2)
+		}
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(0, 0)
+		if err = renderer.RenderVisibleLayers(); err != nil {
+			fmt.Println(err)
+			return
+		}
+		screen.DrawImage(ebiten.NewImageFromImage(renderer.Result), op)
 	})
 }

@@ -58,9 +58,9 @@ func Init() *Scene {
 }
 
 func addEntities(world donburi.World) {
+	entity.MakeBackground(world)
 	entity.MakeTimer(world)
 	entity.MakePlayer(world, input.Keyboard{})
-
 	entity.MakeEnemy(world, 50, 50)
 }
 
