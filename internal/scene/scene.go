@@ -43,6 +43,7 @@ func Init() *Scene {
 			system.NewRegisterPlayer(),
 			damageGroup,
 			aicontroller,
+			collision,
 		},
 		drawables: []Drawable{
 			collision,
