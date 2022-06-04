@@ -2,4 +2,4 @@ title: Cheesewiz
 window:
   height: 1024
   width: 1024
-sprite-size: 16
+tile-size: 32

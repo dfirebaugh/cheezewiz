@@ -6,3 +6,6 @@ import (
 
 //go:embed cheezewiz.png
 var CheezeWizRaw []byte
+
+//go:embed cheezewiz-damaged.png
+var CheezeWizHurtRaw []byte

@@ -49,7 +49,6 @@ func (r Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.renderTileMap(w, screen)
 	r.renderEnemy(w, screen)
 	r.renderPlayer(w, screen)
-
 }
 
 func (r Render) updatePlayer(w donburi.World) {
@@ -87,11 +86,14 @@ func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 			op.SetPos(position.X+32-r.x_scrool, position.Y)
 		}
 
-		if state.Current == component.WalkingState {
+		switch state.Current {
+		case component.WalkingState:
 			animation.Walk.Animation.Draw(screen, op)
-		}
-
-		if state.Current == component.IdleState {
+		case component.AttackingState:
+		case component.HurtState:
+			animation.Hurt.Animation.Draw(screen, op)
+		case component.DeathState:
+		default:
 			animation.Idle.Animation.Draw(screen, op)
 		}
 
@@ -106,7 +108,6 @@ func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
 		op := ganim8.DrawOpts(position.X-r.x_scrool, position.Y)
-		// op.SetScale(-1, 0)
 		animation.Walk.Animation.Draw(screen, op)
 	})
 }
