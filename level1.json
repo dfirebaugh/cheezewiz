@@ -20,6 +20,16 @@
             "time": 111,
             "event": "SpawnWave",
             "args": ["radish","23","5"]
+        },
+        {
+            "time": 30,
+            "event": "HurryUp",
+            "args": []
+        },
+        {
+            "time": 0,
+            "event": "Death",
+            "args": []
         }
     ]
 }

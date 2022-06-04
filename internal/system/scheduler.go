@@ -24,8 +24,9 @@ func NewScheduler(sceneEvents []event.SceneEvent, w donburi.World) *Scheduler {
 		scheduler.events[se.Time] = append(scheduler.events[se.Time], func() func() {
 			world := w
 			args := se.EventArgs
+			name := se.EventName
 			return func() {
-				event.JobTypes[se.EventName].Callback(world, args)
+				event.JobTypes[name].Callback(world, args)
 			}
 		}())
 	}

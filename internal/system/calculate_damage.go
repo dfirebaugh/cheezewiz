@@ -39,10 +39,13 @@ func (d *DamageBufferGroup) AddEnemyDamage(reciever *donburi.Entry, amount float
 
 func (d *DamageBufferGroup) ConsumeDamage() {
 	for _, elem := range d.PlayerDamage { //Typecheck and warn!
-		hc := component.GetHealth(elem.destination)
+		playerHeath := component.GetHealth(elem.destination)
 		state := component.GetPlayerState(elem.destination)
 		logrus.Info("players' health: ", hc.HP, " Origin Health ")
-		hc.HP -= elem.amount
+
+		if playerHeath.HP > 0 {
+			playerHeath.HP -= elem.amount
+		}
 
 		state.Current = component.HurtState
 
