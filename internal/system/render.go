@@ -74,8 +74,25 @@ func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 		position := component.GetPosition(entry)
 		health := component.GetHealth(entry)
 		animation := component.GetAnimation(entry)
+		direction := component.GetDirection(entry)
+		state := component.GetPlayerState(entry)
+
 		op := ganim8.DrawOpts(position.X, position.Y)
-		animation.Walk.Animation.Draw(screen, op)
+
+		if direction.IsRight {
+			op.SetScale(-1, 1)
+			op.SetPos(position.X+32, position.Y)
+		}
+
+		if state.Current == component.WalkingState {
+			animation.Walk.Animation.Draw(screen, op)
+		}
+
+		if state.Current == component.IdleState {
+			animation.Idle.Animation.Draw(screen, op)
+		}
+
+		state.ResetState()
 
 		ebitenutil.DrawRect(screen, position.X, position.Y+35, health.MAXHP/3, 3, colornames.Grey100)
 		ebitenutil.DrawRect(screen, position.X, position.Y+35, health.HP/3, 3, colornames.Red600)

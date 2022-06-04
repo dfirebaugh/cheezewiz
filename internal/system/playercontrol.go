@@ -25,21 +25,29 @@ func (p PlayerControl) Update(w donburi.World) {
 	p.query.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		controller := component.GetInputDevice(entry)
+		direction := component.GetDirection(entry)
+		state := component.GetPlayerState(entry)
 
 		if controller.Device.IsUpPressed() {
 			position.Y -= playerSpeed
+			state.Current = component.WalkingState
 		}
 
 		if controller.Device.IsDownPressed() {
 			position.Y += playerSpeed
+			state.Current = component.WalkingState
 		}
 
 		if controller.Device.IsRightPressed() {
 			position.X += playerSpeed
+			direction.IsRight = true
+			state.Current = component.WalkingState
 		}
 
 		if controller.Device.IsLeftPressed() {
 			position.X -= playerSpeed
+			direction.IsRight = false
+			state.Current = component.WalkingState
 		}
 	})
 }
