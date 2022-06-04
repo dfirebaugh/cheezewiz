@@ -76,6 +76,7 @@ func addEntities(world donburi.World) {
 	entity.MakeTimer(world)
 	entity.MakePlayer(world, input.Keyboard{})
 	entity.MakeEnemy(world, 50, 50)
+	entity.MakeSlot(world)
 }
 
 func (s *Scene) Update() {

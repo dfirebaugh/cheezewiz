@@ -1,6 +1,7 @@
 package system
 
 import (
+	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"fmt"
@@ -27,6 +28,7 @@ type Render struct {
 	enemyQuery         *query.Query
 	backgroundQuery    *query.Query
 	worldViewPortQuery *query.Query
+	playerSlot         *query.Query
 	tilemap_cache      *ebiten.Image
 }
 
@@ -36,6 +38,7 @@ func NewRender() *Render {
 		enemyQuery:         query.NewQuery(filter.Contains(entity.EnemyTag)),
 		backgroundQuery:    query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery: query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
+		playerSlot:         query.NewQuery(filter.Contains(entity.SlotTag)),
 		tilemap_cache:      nil,
 	}
 }
@@ -47,9 +50,10 @@ func (r *Render) Update(w donburi.World) {
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
-	r.renderTileMap(w, screen)
-	r.renderEnemy(w, screen)
-	r.renderPlayer(w, screen)
+	r.tileMap(w, screen)
+	r.enemy(w, screen)
+	r.player(w, screen)
+	r.playerSlots(w, screen)
 }
 
 func (r *Render) updatePlayer(w donburi.World) {
@@ -77,7 +81,7 @@ func (r Render) updateEnemy(w donburi.World) {
 	})
 }
 
-func (r *Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
+func (r *Render) player(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
@@ -112,7 +116,7 @@ func (r *Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 		ebitenutil.DrawRect(screen, position.X-worldViewLocationPos.X, position.Y+35-worldViewLocationPos.Y, health.HP/3, 3, colornames.Red600)
 	})
 }
-func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
+func (r Render) enemy(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
@@ -125,7 +129,7 @@ func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
 	})
 }
 
-func (r *Render) renderTileMap(w donburi.World, screen *ebiten.Image) {
+func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
 
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
@@ -148,10 +152,28 @@ func (r *Render) renderTileMap(w donburi.World, screen *ebiten.Image) {
 				return
 			}
 			r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
-			println("Rendering map")
-
 		}
 
 		screen.DrawImage(r.tilemap_cache, op)
+	})
+}
+
+func (r *Render) playerSlots(w donburi.World, screen *ebiten.Image) {
+	padding := float64(15)
+	r.playerSlot.EachEntity(w, func(entry *donburi.Entry) {
+		sprite := component.GetSpriteSheet(entry)
+
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(padding, padding)
+		screen.DrawImage(sprite.IMG, op)
+		op = &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-500, float64(config.Get().Window.Width/config.Get().ScaleFactor)-80)
+		screen.DrawImage(sprite.IMG, op)
+		op = &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-80)
+		screen.DrawImage(sprite.IMG, op)
+		op = &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-500)
+		screen.DrawImage(sprite.IMG, op)
 	})
 }
