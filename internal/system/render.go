@@ -27,6 +27,7 @@ type Render struct {
 	enemyQuery         *query.Query
 	backgroundQuery    *query.Query
 	worldViewPortQuery *query.Query
+	tilemap_cache      *ebiten.Image
 }
 
 func NewRender() *Render {
@@ -35,6 +36,7 @@ func NewRender() *Render {
 		enemyQuery:         query.NewQuery(filter.Contains(entity.EnemyTag)),
 		backgroundQuery:    query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery: query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
+		tilemap_cache:      nil,
 	}
 }
 
@@ -45,7 +47,7 @@ func (r *Render) Update(w donburi.World) {
 
 }
 
-func (r Render) Draw(w donburi.World, screen *ebiten.Image) {
+func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.renderTileMap(w, screen)
 	r.renderEnemy(w, screen)
 	r.renderPlayer(w, screen)
@@ -119,24 +121,33 @@ func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
 	})
 }
 
-func (r Render) renderTileMap(w donburi.World, screen *ebiten.Image) {
+func (r *Render) renderTileMap(w donburi.World, screen *ebiten.Image) {
+
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
 	r.backgroundQuery.EachEntity(w, func(entry *donburi.Entry) {
-		tiles := component.GetTileMap(entry)
 
-		renderer, err := render.NewRenderer(tiles.Map)
-		if err != nil {
-			fmt.Printf("map unsupported for rendering: %s", err.Error())
-			os.Exit(2)
-		}
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(0-worldViewLocationPos.X, 0-worldViewLocationPos.Y)
-		if err = renderer.RenderVisibleLayers(); err != nil {
-			fmt.Println(err)
-			return
+
+		if r.tilemap_cache == nil {
+			println("Creating new tile cache")
+			tiles := component.GetTileMap(entry)
+			renderer, err := render.NewRenderer(tiles.Map)
+			if err != nil {
+				fmt.Printf("map unsupported for rendering: %s", err.Error())
+				os.Exit(2)
+			}
+			if err = renderer.RenderVisibleLayers(); err != nil {
+				fmt.Println(err)
+				return
+			}
+			r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
+			println("Rendering map")
+
 		}
-		screen.DrawImage(ebiten.NewImageFromImage(renderer.Result), op)
+
+		screen.DrawImage(r.tilemap_cache, op)
 	})
 }
