@@ -40,12 +40,13 @@ func (d *DamageBufferGroup) AddEnemyDamage(reciever *donburi.Entry, amount float
 func (d *DamageBufferGroup) ConsumeDamage() {
 	for _, elem := range d.PlayerDamage { //Typecheck and warn!
 		hc := component.GetHealth(elem.destination)
-		println("players' health: ", hc.HP, " Origin Health ")
+		state := component.GetPlayerState(elem.destination)
+		logrus.Info("players' health: ", hc.HP, " Origin Health ")
 		hc.HP -= elem.amount
 
-		logrus.Infof("Death for entity %d", elem.destination.Id())
-		// println("We got to this loop!")
+		state.Current = component.HurtState
 
+		logrus.Infof("Death for entity %d", elem.destination.Id())
 	}
 
 	d.PlayerDamage = nil
@@ -59,7 +60,7 @@ func (d *DamageBufferGroup) ConsumeDamage() {
 
 }
 
-func (d DamageBufferGroup) Update(w donburi.World) {
+func (d *DamageBufferGroup) Update(w donburi.World) {
 	d.ConsumeDamage()
 }
 

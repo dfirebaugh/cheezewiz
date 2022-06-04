@@ -51,7 +51,7 @@ func NewPlayer() gohan.Entity {
 		Grid:        grid,
 		WalkSprite:  walkSprite,
 		StillSprite: stillSprite,
-		SpriteSize:  c.SpriteSize,
+		SpriteSize:  c.TileSize,
 		DrawOptions: op,
 	})
 

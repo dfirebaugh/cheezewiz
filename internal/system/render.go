@@ -56,8 +56,19 @@ func (r Render) updatePlayer(w donburi.World) {
 
 	r.playerQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
-		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
-		animation.Walk.PrevUpdateTime = now
+		state := component.GetPlayerState(entry)
+
+		switch state.Current {
+		case component.WalkingState:
+			animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
+			animation.Walk.PrevUpdateTime = now
+		case component.AttackingState:
+		case component.HurtState:
+			animation.Hurt.Animation.Update(now.Sub(animation.Hurt.PrevUpdateTime))
+			animation.Hurt.PrevUpdateTime = now
+		case component.DeathState:
+		default:
+		}
 	})
 }
 

@@ -3,6 +3,7 @@ package entity
 import (
 	"bytes"
 	"cheezewiz/assets"
+	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/constant"
 	"cheezewiz/internal/input"
@@ -31,8 +32,8 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	health.HP = 100
 	health.MAXHP = 100
 
-	position.X = float64(200)
-	position.Y = float64(200)
+	position.X = float64(config.Get().Window.Height/config.Get().ScaleFactor) / 2
+	position.Y = float64(config.Get().Window.Height/config.Get().ScaleFactor) / 2
 	imgDecoded, _, _ := image.Decode(bytes.NewReader(assets.CheezeWizRaw))
 	hurtIMGDecoded, _, _ := image.Decode(bytes.NewReader(assets.CheezeWizHurtRaw))
 
@@ -45,6 +46,5 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	animation.Hurt.Sprite = ganim8.NewSprite(ebiten.NewImageFromImage(hurtIMGDecoded), grid.GetFrames("1-3", 1))
 	animation.Hurt.Animation = ganim8.NewAnimation(animation.Hurt.Sprite, 100*time.Millisecond, ganim8.Nop)
 
-	println(entry.Id())
 	return entry
 }

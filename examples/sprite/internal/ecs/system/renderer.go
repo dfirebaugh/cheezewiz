@@ -28,7 +28,7 @@ func (s *renderer) Update(_ gohan.Entity) error {
 func (s *renderer) Draw(entity gohan.Entity, screen *ebiten.Image) error {
 	c := config.Get()
 	s.op.GeoM.Reset()
-	s.op.GeoM.Translate(s.Position.X-c.SpriteSize, s.Position.Y-c.SpriteSize)
+	s.op.GeoM.Translate(s.Position.X-c.TileSize, s.Position.Y-c.TileSize)
 	screen.DrawImage(s.Asset.Image, s.op)
 	return nil
 }
