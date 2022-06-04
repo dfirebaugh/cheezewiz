@@ -25,9 +25,9 @@ func (Keyboard) IsRightPressed() bool {
 func (Keyboard) IsRightJustPressed() bool {
 	return inpututil.IsKeyJustPressed(ebiten.KeyD) || inpututil.IsKeyJustPressed(ebiten.KeyArrowRight)
 }
-func (Keyboard) IsSpacePressed() bool {
+func (Keyboard) IsPrimaryAtkPressed() bool {
 	return ebiten.IsKeyPressed(ebiten.KeySpace)
 }
-func (Keyboard) IsSpaceJustPressed() bool {
+func (Keyboard) IsPrimaryAtkJustPressed() bool {
 	return inpututil.IsKeyJustPressed(ebiten.KeySpace)
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cheezewiz/examples/choppa/assets"
 	"cheezewiz/examples/choppa/internal/component"
+	"cheezewiz/internal/input"
 	"image"
 	_ "image/png"
 
@@ -13,12 +14,15 @@ import (
 
 var PlayerTag = donburi.NewTag()
 
-func NewPlayer(w donburi.World) {
-	b := w.Create(PlayerTag, component.Position, component.SpriteSheet, component.Direction)
+func NewPlayer(w donburi.World, controller input.PlayerInput) {
+	b := w.Create(PlayerTag, component.Position, component.SpriteSheet, component.Direction, component.InputDevice)
 	entry := w.Entry(b)
 	position := (*component.PositionData)(entry.Component(component.Position))
 	spriteSheet := (*component.SpriteSheetData)(entry.Component(component.SpriteSheet))
 	facing := (*component.DirectionData)(entry.Component(component.Direction))
+
+	inputDevice := (*component.InputDeviceData)(entry.Component(component.InputDevice))
+	inputDevice.Device = controller
 
 	facing.IsRight = true
 	position.X = 0

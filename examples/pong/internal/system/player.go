@@ -31,9 +31,5 @@ func (p *Player) Update(w engine.World) {
 		if k.IsDownPressed() {
 			pos.Y += 4
 		}
-
-		if k.IsSpacePressed() {
-			println("SPACE!!!")
-		}
 	})
 }

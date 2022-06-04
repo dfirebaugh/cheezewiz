@@ -3,7 +3,6 @@ package system
 import (
 	"cheezewiz/examples/choppa/internal/component"
 	"cheezewiz/examples/choppa/internal/entity"
-	"cheezewiz/internal/input"
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
@@ -25,32 +24,25 @@ func NewPlayer() *Player {
 func (p Player) Update(w donburi.World) {
 	p.query.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
+		controller := component.GetInputDevice(entry)
 
-		k := input.Keyboard{}
-
-		if k.IsUpPressed() {
+		if controller.Device.IsUpPressed() {
 			position.Y -= playerSpeed
 		}
 
-		if k.IsDownPressed() {
+		if controller.Device.IsDownPressed() {
 			position.Y += playerSpeed
 		}
 
-		if k.IsRightJustPressed() {
-			// p.flipRight(entry)
-		}
-		if k.IsRightPressed() {
+		if controller.Device.IsRightPressed() {
 			position.X += playerSpeed
 		}
 
-		if k.IsLeftJustPressed() {
-			// p.flipLeft(entry)
-		}
-		if k.IsLeftPressed() {
+		if controller.Device.IsLeftPressed() {
 			position.X -= playerSpeed
 		}
 
-		if k.IsSpaceJustPressed() {
+		if controller.Device.IsPrimaryAtkJustPressed() {
 			entity.MakeProjectile(w, position)
 		}
 	})

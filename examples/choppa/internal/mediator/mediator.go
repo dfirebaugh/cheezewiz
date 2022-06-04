@@ -3,6 +3,7 @@ package mediator
 import (
 	"cheezewiz/examples/choppa/internal/entity"
 	"cheezewiz/examples/choppa/internal/system"
+	"cheezewiz/internal/input"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
@@ -40,7 +41,7 @@ func New() *Mediator {
 			renderer,
 		},
 	}
-	entity.NewPlayer(m.world)
+	entity.NewPlayer(m.world, input.Keyboard{})
 	return m
 }
 

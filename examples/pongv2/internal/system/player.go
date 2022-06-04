@@ -33,9 +33,5 @@ func (p *Player) Update(w donburi.World) {
 		if k.IsDownPressed() {
 			position.Y += 4
 		}
-
-		if k.IsSpacePressed() {
-			println("SPACE!!!")
-		}
 	})
 }
