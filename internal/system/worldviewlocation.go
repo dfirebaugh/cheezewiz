@@ -36,7 +36,7 @@ func (worldViewPortLocation *WorldViewPortLocation) Update(w donburi.World) {
 	worldViewPortPos := component.GetPosition(worldViewPort)
 
 	worldViewPortPos.X = getWorldViewCenterLocation(playerPosition.X, config.Get().Window.Height) + 20
-	worldViewPortPos.Y = getWorldViewCenterLocation(playerPosition.Y, config.Get().Window.Width)
+	worldViewPortPos.Y = 0
 }
 
 func getWorldViewCenterLocation(coordinate float64, windowDim int) float64 {

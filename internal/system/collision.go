@@ -6,6 +6,7 @@ import (
 	"cheezewiz/internal/entity"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -21,6 +22,7 @@ type Collision struct {
 	enemyQuery      *query.Query
 	projectileQuery *query.Query
 	attack_handler  attackMediator
+	jellyBeanQuery  *query.Query
 }
 
 func NewCollision(attack_handler attackMediator) *Collision {
@@ -34,6 +36,7 @@ func NewCollision(attack_handler attackMediator) *Collision {
 		projectileQuery: query.NewQuery(filter.Contains(
 			entity.ProjectileTag,
 		)),
+		jellyBeanQuery: query.NewQuery(filter.Contains(entity.JellyBeanTag)),
 		attack_handler: attack_handler,
 	}
 }
@@ -81,6 +84,26 @@ func (c *Collision) Update(w donburi.World) {
 				if playerHealth.HP > 0 {
 					c.attack_handler.AddPlayerDamage(pentry, 1, nil)
 				}
+			}
+		})
+
+		c.jellyBeanQuery.EachEntity(w, func(entry *donburi.Entry) {
+			position := component.GetPosition(entry)
+			xp := component.GetXP(entry)
+			if c.IsCollide(component.RigidBodyData{
+				H: float64(constant.SpriteSize) - 4,
+				W: float64(constant.SpriteSize) - 4,
+				X: playerPosition.X,
+				Y: playerPosition.Y,
+			}, component.RigidBodyData{
+				H: float64(constant.SpriteSize) - 4,
+				W: float64(constant.SpriteSize) - 4,
+				X: position.X,
+				Y: position.Y,
+			}) {
+				// trigger sopmething about XP
+				logrus.Infof("player gains %d xp", xp.Value)
+				w.Remove(entry.Entity())
 			}
 		})
 	})

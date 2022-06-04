@@ -17,7 +17,7 @@ func MakeTimer(w donburi.World) {
 
 	*position = component.PositionData{
 		X: float64(constant.ScreenHeight/4) - 20,
-		Y: 20,
+		Y: 40,
 	}
 
 	countdown := (*component.CountdownData)(entry.Component(component.Countdown))
