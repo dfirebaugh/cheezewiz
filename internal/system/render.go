@@ -21,27 +21,43 @@ type Renderable interface {
 type Render struct {
 	count       int
 	playerQuery *query.Query
+	enemyQuery  *query.Query
 }
 
 func NewRender() *Render {
 	return &Render{
 		playerQuery: query.NewQuery(filter.Contains(entity.PlayerTag)),
+		enemyQuery:  query.NewQuery(filter.Contains(entity.EnemyTag)),
 	}
 }
 
 func (r *Render) Update(w donburi.World) {
 	r.count++
+	r.updateEnemy(w)
 	r.updatePlayer(w)
+
 }
 
 func (r Render) Draw(w donburi.World, screen *ebiten.Image) {
+	r.renderEnemy(w, screen)
 	r.renderPlayer(w, screen)
+
 }
 
 func (r Render) updatePlayer(w donburi.World) {
 	now := time.Now()
 
 	r.playerQuery.EachEntity(w, func(entry *donburi.Entry) {
+		animation := component.GetAnimation(entry)
+		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
+		animation.Walk.PrevUpdateTime = now
+	})
+}
+
+func (r Render) updateEnemy(w donburi.World) {
+	now := time.Now()
+
+	r.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
 		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
 		animation.Walk.PrevUpdateTime = now
@@ -58,5 +74,13 @@ func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 
 		ebitenutil.DrawRect(screen, position.X, position.Y+35, health.MAXHP/3, 3, colornames.Grey100)
 		ebitenutil.DrawRect(screen, position.X, position.Y+35, health.HP/3, 3, colornames.Red600)
+	})
+}
+func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
+	r.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
+		position := component.GetPosition(entry)
+		animation := component.GetAnimation(entry)
+		op := ganim8.DrawOpts(position.X, position.Y)
+		animation.Walk.Animation.Draw(screen, op)
 	})
 }
