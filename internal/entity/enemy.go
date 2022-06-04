@@ -33,7 +33,7 @@ func MakeEnemy(w donburi.World, x float64, y float64) *donburi.Entry {
 
 	grid := ganim8.NewGrid(int(constant.SpriteSize), int(constant.SpriteSize), imgDecoded.Bounds().Dx(), imgDecoded.Bounds().Dy())
 
-	animation.Walk.Sprite = ganim8.NewSprite(ebiten.NewImageFromImage(imgDecoded), grid.GetFrames("1-3", 1))
+	animation.Walk.Sprite = ganim8.NewSprite(ebiten.NewImageFromImage(imgDecoded), grid.GetFrames("1-4", 1))
 	animation.Walk.Animation = ganim8.NewAnimation(animation.Walk.Sprite, 100*time.Millisecond, ganim8.Nop)
 
 	return entry

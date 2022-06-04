@@ -13,21 +13,22 @@ type damageToken struct {
 	destination *donburi.Entry
 }
 
-type damageBufferGroup struct {
+type DamageBufferGroup struct {
 	PlayerDamage []damageToken
 	EnemyDamage  []damageToken
 }
 
-func (d damageBufferGroup) AddPlayerDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry) {
+func (d *DamageBufferGroup) AddPlayerDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry) {
 	damage := damageToken{
 		origin:      origin,
 		amount:      amount,
 		destination: reciever,
 	}
 	d.PlayerDamage = append(d.PlayerDamage, damage)
+
 }
 
-func (d damageBufferGroup) AddEnemyDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry) {
+func (d *DamageBufferGroup) AddEnemyDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry) {
 	damage := damageToken{
 		origin:      origin,
 		amount:      amount,
@@ -36,35 +37,34 @@ func (d damageBufferGroup) AddEnemyDamage(reciever *donburi.Entry, amount float6
 	d.EnemyDamage = append(d.EnemyDamage, damage)
 }
 
-func (d damageBufferGroup) ConsumeDamage() {
+func (d *DamageBufferGroup) ConsumeDamage() {
 	for _, elem := range d.PlayerDamage { //Typecheck and warn!
 		hc := component.GetHealth(elem.destination)
+		println("players' health: ", hc.HP, " Origin Health ")
 		hc.HP -= elem.amount
 
-		if hc.HP <= 0 {
-		}
-
 		logrus.Infof("Death for entity %d", elem.destination.Id())
+		// println("We got to this loop!")
 
 	}
+
+	d.PlayerDamage = nil
+
 	for _, elem := range d.EnemyDamage {
 		hc := component.GetHealth(elem.destination)
 		hc.HP -= elem.amount
 
-		if hc.HP <= 0 {
-		}
-
 		logrus.Infof("Death for entity %d", elem.destination.Id())
 	}
 
 }
 
-func (d damageBufferGroup) Update(w donburi.World) {
+func (d DamageBufferGroup) Update(w donburi.World) {
 	d.ConsumeDamage()
 }
 
-func NewDamagebufferGroup() damageBufferGroup {
-	buffergroup := damageBufferGroup{
+func NewDamagebufferGroup() DamageBufferGroup {
+	buffergroup := DamageBufferGroup{
 		PlayerDamage: []damageToken{},
 		EnemyDamage:  []damageToken{},
 	}

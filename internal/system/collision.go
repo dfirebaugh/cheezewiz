@@ -11,12 +11,17 @@ import (
 	"github.com/yohamta/donburi/query"
 )
 
-type Collision struct {
-	playerQuery *query.Query
-	enemyQuery  *query.Query
+type attackMediator interface {
+	AddPlayerDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)
 }
 
-func NewCollision() *Collision {
+type Collision struct {
+	playerQuery    *query.Query
+	enemyQuery     *query.Query
+	attack_handler attackMediator
+}
+
+func NewCollision(attack_handler attackMediator) *Collision {
 	return &Collision{
 		playerQuery: query.NewQuery(filter.Contains(
 			entity.PlayerTag,
@@ -24,13 +29,14 @@ func NewCollision() *Collision {
 		enemyQuery: query.NewQuery(filter.Contains(
 			entity.EnemyTag,
 		)),
+		attack_handler: attack_handler,
 	}
 }
 
 func (c *Collision) Update(w donburi.World) {
-	c.playerQuery.EachEntity(w, func(entry *donburi.Entry) {
-		playerPosition := component.GetPosition(entry)
-		playerHealth := component.GetHealth(entry)
+	c.playerQuery.EachEntity(w, func(pentry *donburi.Entry) {
+		playerPosition := component.GetPosition(pentry)
+		playerHealth := component.GetHealth(pentry)
 		c.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
 			enemyPosition := component.GetPosition(entry)
 			if c.IsCollide(component.RigidBodyData{
@@ -45,7 +51,7 @@ func (c *Collision) Update(w donburi.World) {
 				Y: enemyPosition.Y,
 			}) {
 				if playerHealth.HP > 0 {
-					playerHealth.HP--
+					c.attack_handler.AddPlayerDamage(pentry, 1, nil)
 				}
 			}
 		})

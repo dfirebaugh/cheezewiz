@@ -3,6 +3,7 @@ package scene
 import (
 	"cheezewiz/internal/entity"
 	"cheezewiz/internal/input"
+	"cheezewiz/internal/mediator"
 	"cheezewiz/internal/system"
 	"os"
 
@@ -31,12 +32,18 @@ func Init() *Scene {
 
 	level := loadWorld(level1)
 
+	// Mediators
+	attackMediator := &mediator.Attack{}
+
 	// System
 	renderer := system.NewRender()
-	collision := system.NewCollision()
+	collision := system.NewCollision(attackMediator)
 	timer := system.NewTimer()
 	damageGroup := system.NewDamagebufferGroup()
 	aicontroller := system.NewEnemyControl()
+
+	attackMediator.D = &damageGroup
+	attackMediator.C = collision
 
 	s := &Scene{
 		world: world,
@@ -45,7 +52,7 @@ func Init() *Scene {
 			system.NewPlayerControl(),
 			timer,
 			system.NewRegisterPlayer(),
-			damageGroup,
+			&damageGroup,
 			aicontroller,
 			collision,
 			system.NewScheduler(level.Events, world),
