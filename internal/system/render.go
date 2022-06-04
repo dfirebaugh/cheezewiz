@@ -26,6 +26,7 @@ type Render struct {
 	playerQuery     *query.Query
 	enemyQuery      *query.Query
 	backgroundQuery *query.Query
+	x_scrool        float64
 }
 
 func NewRender() *Render {
@@ -33,6 +34,7 @@ func NewRender() *Render {
 		playerQuery:     query.NewQuery(filter.Contains(entity.PlayerTag)),
 		enemyQuery:      query.NewQuery(filter.Contains(entity.EnemyTag)),
 		backgroundQuery: query.NewQuery(filter.Contains(entity.BackgroundTag)),
+		x_scrool:        100,
 	}
 }
 
@@ -82,7 +84,7 @@ func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 
 		if direction.IsRight {
 			op.SetScale(-1, 1)
-			op.SetPos(position.X+32, position.Y)
+			op.SetPos(position.X+32-r.x_scrool, position.Y)
 		}
 
 		if state.Current == component.WalkingState {
@@ -95,15 +97,15 @@ func (r Render) renderPlayer(w donburi.World, screen *ebiten.Image) {
 
 		state.ResetState()
 
-		ebitenutil.DrawRect(screen, position.X, position.Y+35, health.MAXHP/3, 3, colornames.Grey100)
-		ebitenutil.DrawRect(screen, position.X, position.Y+35, health.HP/3, 3, colornames.Red600)
+		ebitenutil.DrawRect(screen, position.X-r.x_scrool, position.Y+35, health.MAXHP/3, 3, colornames.Grey100)
+		ebitenutil.DrawRect(screen, position.X-r.x_scrool, position.Y+35, health.HP/3, 3, colornames.Red600)
 	})
 }
 func (r Render) renderEnemy(w donburi.World, screen *ebiten.Image) {
 	r.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
-		op := ganim8.DrawOpts(position.X, position.Y)
+		op := ganim8.DrawOpts(position.X-r.x_scrool, position.Y)
 		// op.SetScale(-1, 0)
 		animation.Walk.Animation.Draw(screen, op)
 	})
@@ -119,7 +121,7 @@ func (r Render) renderTileMap(w donburi.World, screen *ebiten.Image) {
 			os.Exit(2)
 		}
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(0, 0)
+		op.GeoM.Translate(-r.x_scrool, 0)
 		if err = renderer.RenderVisibleLayers(); err != nil {
 			fmt.Println(err)
 			return
