@@ -24,23 +24,35 @@ type Scene struct {
 }
 
 func Init() *Scene {
+	// World
+	world := donburi.NewWorld()
+
+	// System
 	renderer := system.NewRender()
 	collision := system.NewCollision()
+	timer := system.NewTimer()
 	s := &Scene{
-		world: donburi.NewWorld(),
+		world: world,
 		systems: []System{
 			renderer,
 			system.NewPlayerControl(),
+			timer,
 		},
 		drawables: []Drawable{
 			collision,
 			renderer,
+			timer,
 		},
 	}
 
-	entity.MakePlayer(s.world, input.Keyboard{})
+	addEntities(world)
 
 	return s
+}
+
+func addEntities(world donburi.World) {
+	entity.MakeTimer(world)
+	entity.MakePlayer(world, input.Keyboard{})
 }
 
 func (s *Scene) Update() {
