@@ -37,6 +37,7 @@ func Init() *Scene {
 			renderer,
 			system.NewPlayerControl(),
 			timer,
+			system.NewRegisterPlayer(),
 		},
 		drawables: []Drawable{
 			collision,
