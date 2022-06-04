@@ -16,7 +16,7 @@ func MakeTimer(w donburi.World) {
 	position := (*component.PositionData)(entry.Component(component.Position))
 
 	*position = component.PositionData{
-		X: float64(constant.ScreenHeight/2) - 20,
+		X: float64(constant.ScreenHeight/4) - 20,
 		Y: 20,
 	}
 
