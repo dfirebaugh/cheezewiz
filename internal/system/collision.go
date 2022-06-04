@@ -23,6 +23,7 @@ type Collision struct {
 	projectileQuery *query.Query
 	attack_handler  attackMediator
 	jellyBeanQuery  *query.Query
+	expBarQuery     *query.Query
 }
 
 func NewCollision(attack_handler attackMediator) *Collision {
@@ -38,10 +39,14 @@ func NewCollision(attack_handler attackMediator) *Collision {
 		)),
 		jellyBeanQuery: query.NewQuery(filter.Contains(entity.JellyBeanTag)),
 		attack_handler: attack_handler,
+		expBarQuery:    query.NewQuery(filter.Contains(entity.ExpBarTag)),
 	}
 }
 
 func (c *Collision) Update(w donburi.World) {
+	expBar, _ := c.expBarQuery.FirstEntity(w)
+	expValue := component.GetExp(expBar)
+
 	c.projectileQuery.EachEntity(w, func(prjentry *donburi.Entry) {
 		projectilePos := component.GetPosition(prjentry)
 		c.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
@@ -103,6 +108,7 @@ func (c *Collision) Update(w donburi.World) {
 			}) {
 				// trigger sopmething about XP
 				logrus.Infof("player gains %d xp", xp.Value)
+				expValue.CurrentExp += float64(xp.Value)
 				w.Remove(entry.Entity())
 			}
 		})

@@ -110,8 +110,14 @@ func init() {
 		priority:  1,
 	}
 
-	JobTypes[SpawnBoss] = Job{
+	JobTypes[Death] = Job{
 		json_name: string(Death),
+		Callback:  outputDeath,
+		priority:  0,
+	}
+
+	JobTypes[SpawnBoss] = Job{
+		json_name: string(SpawnBoss),
 		Callback:  spawnBoss,
 		priority:  0,
 	}

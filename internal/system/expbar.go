@@ -23,9 +23,6 @@ func NewExpbar() *Expbar {
 }
 
 func (ne *Expbar) Update(world donburi.World) {
-	ne.query.EachEntity(world, func(entry *donburi.Entry) {
-
-	})
 }
 
 func (ne *Expbar) Draw(world donburi.World, screen *ebiten.Image) {
