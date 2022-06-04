@@ -28,7 +28,7 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 
 	health := (*component.HealthAspect)(entry.Component(component.Health))
 
-	health.HP = 80
+	health.HP = 100
 	health.MAXHP = 100
 
 	position.X = float64(200)
@@ -45,5 +45,6 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 	animation.Hurt.Sprite = ganim8.NewSprite(ebiten.NewImageFromImage(hurtIMGDecoded), grid.GetFrames("1-3", 1))
 	animation.Hurt.Animation = ganim8.NewAnimation(animation.Hurt.Sprite, 100*time.Millisecond, ganim8.Nop)
 
+	println(entry.Id())
 	return entry
 }
