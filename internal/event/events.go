@@ -15,7 +15,7 @@ import (
 
 type Job struct {
 	json_name string
-	callback  func(w donburi.World, args []string)
+	Callback  func(w donburi.World, args []string)
 	priority  int
 }
 
@@ -88,14 +88,14 @@ var JobTypes = make(map[JobName]Job, 1)
 
 type SceneEvent struct {
 	Time      uint32   `json:"time"`
-	EventName string   `json:"event"`
+	EventName JobName  `json:"event"`
 	EventArgs []string `json:"args"`
 }
 
 func init() {
 	JobTypes[SpawnWave] = Job{
 		json_name: "SpawnWave",
-		callback:  spawnWave,
+		Callback:  spawnWave,
 		priority:  0,
 	}
 }

@@ -29,7 +29,7 @@ func Init() *Scene {
 	// World
 	world := donburi.NewWorld()
 
-	loadWorld(level1)
+	level := loadWorld(level1)
 
 	// System
 	renderer := system.NewRender()
@@ -48,6 +48,7 @@ func Init() *Scene {
 			damageGroup,
 			aicontroller,
 			collision,
+			system.NewScheduler(level.Events, world),
 		},
 		drawables: []Drawable{
 			collision,

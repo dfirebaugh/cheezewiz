@@ -42,7 +42,7 @@ func (t *Timer) Draw(world donburi.World, screen *ebiten.Image) {
 	})
 }
 
-func displayTotalCountdown(countdown int) string {
+func displayTotalCountdown(countdown uint32) string {
 	var remainingSecs = countdown % 60
 
 	displayRemainingSecs := func() string {
