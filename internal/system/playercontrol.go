@@ -51,7 +51,7 @@ func (p PlayerControl) Update(w donburi.World) {
 		}
 
 		if controller.Device.IsPrimaryAtkJustPressed() {
-			state.Current = component.HurtState
+			state.Current = component.WalkingState
 			entity.MakeRocketProjectile(w, position.X, position.Y, 0.1)
 		}
 	})
