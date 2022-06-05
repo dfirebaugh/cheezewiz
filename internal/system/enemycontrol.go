@@ -29,14 +29,15 @@ func NewEnemyControl() *EnemyControl {
 func (e EnemyControl) Update(w donburi.World) {
 	e.query.EachEntity(w, func(entry *donburi.Entry) {
 		health := component.GetHealth(entry)
+		entityPosition := component.GetPosition(entry)
 		if health == nil {
 			return
 		}
 		if health.HP <= 0 {
 			w.Remove(entry.Entity())
+			entity.MakeJellyBean(w, entityPosition.X, entityPosition.Y)
 			return
 		}
-		entityPosition := component.GetPosition(entry)
 
 		var closestEntry *donburi.Entry
 		var closestDistance float64 = 100000000
