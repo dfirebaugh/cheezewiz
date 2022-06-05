@@ -1,10 +1,17 @@
 package component
 
-import "github.com/yohamta/donburi"
+import (
+	"time"
+
+	"github.com/yohamta/donburi"
+)
 
 type TickData struct {
-	Value uint
-	EOL   uint
+	Interval  time.Duration
+	Creation  time.Time
+	EOL       time.Time
+	TickEvent func()
+	EOLEvent  func()
 }
 
 var Tick = donburi.NewComponentType(TickData{})

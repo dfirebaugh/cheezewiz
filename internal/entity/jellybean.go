@@ -22,16 +22,13 @@ const (
 var JellyBeanTag = donburi.NewTag()
 
 func MakeJellyBean(w donburi.World, x float64, y float64) {
-	b := w.Create(JellyBeanTag, component.XP, component.SpriteSheet, component.Position)
+	b := w.Create(JellyBeanTag, component.XP, component.SpriteSheet, component.Position, component.RigidBody)
 	entry := w.Entry(b)
 
 	xp := (*component.XPData)(component.GetXP(entry))
 	xp.Value = 1
 	sprite := (*component.SpriteSheetData)(component.GetSpriteSheet(entry))
 	position := (*component.PositionData)(component.GetPosition(entry))
-
-	position.X = x
-	position.Y = y
 
 	blue, _, _ := image.Decode(bytes.NewReader(assets.JellyBeanBlueRaw))
 	green, _, _ := image.Decode(bytes.NewReader(assets.JellyBeanGreenRaw))
@@ -45,4 +42,9 @@ func MakeJellyBean(w donburi.World, x float64, y float64) {
 	default:
 		sprite.IMG = ebiten.NewImageFromImage(green)
 	}
+
+	position.Set(x, y, float64(sprite.IMG.Bounds().Dx())/2, float64(sprite.IMG.Bounds().Dy())/2)
+
+	rb := (*component.RigidBodyData)(component.GetRigidBody(entry))
+	rb.SetBorder(float64(sprite.IMG.Bounds().Dx()), float64(sprite.IMG.Bounds().Dy()))
 }

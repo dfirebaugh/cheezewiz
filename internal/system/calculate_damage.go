@@ -2,7 +2,6 @@ package system
 
 import (
 	"cheezewiz/internal/component"
-	"fmt"
 
 	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
@@ -42,7 +41,7 @@ func (d *DamageBufferGroup) AddEnemyDamage(reciever *donburi.Entry, amount float
 func (d *DamageBufferGroup) ConsumeDamage() {
 	for _, elem := range d.PlayerDamage { //Typecheck and warn!
 		playerHeath := component.GetHealth(elem.destination)
-		state := component.GetPlayerState(elem.destination)
+		state := component.GetActorState(elem.destination)
 		logrus.Info("players' health: ", playerHeath.HP, " Origin Health ")
 
 		if playerHeath.HP > 0 {
@@ -84,12 +83,10 @@ func applyDamageToEnemy(w donburi.World, enemy *donburi.Entry, amount float64) {
 		return
 	}
 
-	fmt.Printf("%#v", enemy)
-
 	hc := component.GetHealth(enemy)
 	hc.HP -= amount
 
-	logrus.Infof("Damage delt for entity %d with %d dmg", enemy.Id(), amount)
+	// logrus.Infof("Damage delt for entity %#v with %d dmg", enemy.Id(), amount)
 	// remove enemy from damage buffer
 	enemy = nil
 }

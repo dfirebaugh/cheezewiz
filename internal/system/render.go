@@ -5,7 +5,6 @@ import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"fmt"
-	"math"
 	"os"
 	"time"
 
@@ -24,98 +23,79 @@ type Renderable interface {
 }
 
 type Render struct {
-	count              int
-	playerQuery        *query.Query
-	enemyQuery         *query.Query
+	count                int
+	animatableActorQuery *query.Query
+	rigidBodyQuery       *query.Query
+	// playerQuery          *query.Query
+	// enemyQuery           *query.Query
 	backgroundQuery    *query.Query
 	worldViewPortQuery *query.Query
-	projectileQuery    *query.Query
-	playerSlot         *query.Query
-	jellyBeanQuery     *query.Query
-	damageLabelQuery   *query.Query
-	positionQuery      *query.Query
-	tilemap_cache      *ebiten.Image
+	// projectileQuery      *query.Query
+	playerSlot       *query.Query
+	jellyBeanQuery   *query.Query
+	damageLabelQuery *query.Query
+	positionQuery    *query.Query
+	tilemap_cache    *ebiten.Image
 }
 
 func NewRender() *Render {
 	return &Render{
-		playerQuery:        query.NewQuery(filter.Contains(entity.PlayerTag)),
-		enemyQuery:         query.NewQuery(filter.Contains(entity.EnemyTag)),
+		animatableActorQuery: query.NewQuery(filter.Contains(component.Animation, component.ActorState, component.Direction)),
+		rigidBodyQuery:       query.NewQuery(filter.Contains(component.RigidBody)),
+		// playerQuery:          query.NewQuery(filter.Contains(entity.PlayerTag)),
+		// enemyQuery:           query.NewQuery(filter.Contains(entity.EnemyTag)),
 		backgroundQuery:    query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery: query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
-		projectileQuery:    query.NewQuery(filter.Contains(entity.ProjectileTag)),
-		playerSlot:         query.NewQuery(filter.Contains(entity.SlotTag)),
-		jellyBeanQuery:     query.NewQuery(filter.Contains(entity.JellyBeanTag)),
-		damageLabelQuery:   query.NewQuery(filter.Contains(entity.DamageLabelTag)),
-		positionQuery:      query.NewQuery(filter.Contains(component.Position)),
-		tilemap_cache:      nil,
+		// projectileQuery:      query.NewQuery(filter.Contains(entity.ProjectileTag)),
+		playerSlot:       query.NewQuery(filter.Contains(entity.SlotTag)),
+		jellyBeanQuery:   query.NewQuery(filter.Contains(entity.JellyBeanTag)),
+		damageLabelQuery: query.NewQuery(filter.Contains(entity.DamageLabelTag)),
+		positionQuery:    query.NewQuery(filter.Contains(component.Position)),
+		tilemap_cache:    nil,
 	}
 }
 
 func (r *Render) Update(w donburi.World) {
 	r.count++
-	r.updateEnemy(w)
-	r.updatePlayer(w)
-	r.updateProjectile(w)
-	r.updateDamageLabel(w)
+	r.updateAnimatableActor(w)
+	// r.updateDamageLabel(w)
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.tileMap(w, screen)
 	r.debugRigidBodies(w, screen)
 	r.jellyBeans(w, screen)
-	r.enemy(w, screen)
-	r.player(w, screen)
+	r.animatableActor(w, screen)
+	// r.enemy(w, screen)
+	// r.player(w, screen)
 	r.playerSlots(w, screen)
-	r.renderProjectile(w, screen)
-	r.renderDamageLabels(w, screen)
+	// r.renderProjectile(w, screen)
+	// r.renderDamageLabels(w, screen)
 }
 
-func (r *Render) updatePlayer(w donburi.World) {
+func (r *Render) updateAnimatableActor(w donburi.World) {
 	now := time.Now()
 
-	r.playerQuery.EachEntity(w, func(entry *donburi.Entry) {
+	r.animatableActorQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
+		state := component.GetActorState(entry)
 
-		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
-		animation.Hurt.Animation.Update(now.Sub(animation.Hurt.PrevUpdateTime))
-		animation.Idle.Animation.Update(now.Sub(animation.Idle.PrevUpdateTime))
-		animation.Walk.PrevUpdateTime = now
-		animation.Hurt.PrevUpdateTime = now
-		animation.Idle.PrevUpdateTime = now
+		anim := animation.Get(state.Current)
+		anim.Animation.Update(now.Sub(animation.PrevUpdateTime))
+		animation.PrevUpdateTime = now
 	})
 }
 
-func (r Render) updateEnemy(w donburi.World) {
-	now := time.Now()
+// func (r Render) updateDamageLabel(w donburi.World) {
+// 	r.damageLabelQuery.EachEntity(w, func(e *donburi.Entry) {
+// 		t := component.GetTick(e)
 
-	r.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
-		animation := component.GetAnimation(entry)
-		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
-		animation.Walk.PrevUpdateTime = now
-	})
-}
-
-func (r Render) updateDamageLabel(w donburi.World) {
-
-	r.damageLabelQuery.EachEntity(w, func(e *donburi.Entry) {
-		t := component.GetTick(e)
-
-		t.Value += 1
-		if t.Value > t.EOL {
-			w.Remove(e.Entity())
-		}
-	})
-}
-
-func (r Render) updateProjectile(w donburi.World) {
-	now := time.Now()
-	r.projectileQuery.EachEntity(w, func(entry *donburi.Entry) {
-		animation := component.GetAnimation(entry)
-		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
-		animation.Walk.PrevUpdateTime = now
-	})
-}
+// 		t.Value += 1
+// 		if t.Value > t.EOL {
+// 			w.Remove(e.Entity())
+// 		}
+// 	})
+// }
 
 func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
@@ -129,17 +109,20 @@ func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
 	})
 }
 
-func (r Render) renderProjectile(w donburi.World, screen *ebiten.Image) {
+func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
-	r.projectileQuery.EachEntity(w, func(entry *donburi.Entry) {
+	r.animatableActorQuery.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
+		state := component.GetActorState(entry)
 		direction := component.GetDirection(entry)
-		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, direction.Angle+math.Pi)
-		// op.SetScale(-1, 0)
-		animation.Walk.Animation.Draw(screen, op)
+		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, direction.Angle)
+		op.OriginX = position.CX / float64(animation.Get(state.Current).Sprite.Width())
+		op.OriginY = position.CY / float64(animation.Get(state.Current).Sprite.Height())
+
+		animation.Get(state.Current).Animation.Draw(screen, op)
 	})
 }
 
@@ -150,57 +133,10 @@ func (r *Render) debugRigidBodies(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
-	r.positionQuery.EachEntity(w, func(entry *donburi.Entry) {
-		position := component.GetPosition(entry)
-		ebitenutil.DrawRect(screen, position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, 32, 32, colornames.Red100)
-	})
-}
-
-func (r *Render) player(w donburi.World, screen *ebiten.Image) {
-	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
-	worldViewLocationPos := component.GetPosition(worldViewLocation)
-
-	r.playerQuery.EachEntity(w, func(entry *donburi.Entry) {
-		position := component.GetPosition(entry)
-		health := component.GetHealth(entry)
-		animation := component.GetAnimation(entry)
-		direction := component.GetDirection(entry)
-		state := component.GetPlayerState(entry)
-
-		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y)
-
-		if direction.IsRight {
-			op.SetScale(-1, 1)
-			op.SetPos(position.X+32-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y)
-		}
-
-		switch state.Current {
-		case component.WalkingState:
-			animation.Walk.Animation.Draw(screen, op)
-		case component.AttackingState:
-		case component.HurtState:
-			animation.Hurt.Animation.Draw(screen, op)
-		case component.DeathState:
-		default:
-			animation.Idle.Animation.Draw(screen, op)
-		}
-
-		state.ResetState()
-
-		ebitenutil.DrawRect(screen, position.X-worldViewLocationPos.X, position.Y+35-worldViewLocationPos.Y, health.MAXHP/3, 3, colornames.Grey100)
-		ebitenutil.DrawRect(screen, position.X-worldViewLocationPos.X, position.Y+35-worldViewLocationPos.Y, health.HP/3, 3, colornames.Red600)
-	})
-}
-func (r Render) enemy(w donburi.World, screen *ebiten.Image) {
-	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
-	worldViewLocationPos := component.GetPosition(worldViewLocation)
-
-	r.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
-		position := component.GetPosition(entry)
-		animation := component.GetAnimation(entry)
-		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y)
-		// op.SetScale(-1, 0)
-		animation.Walk.Animation.Draw(screen, op)
+	r.rigidBodyQuery.EachEntity(w, func(entry *donburi.Entry) {
+		p := component.GetPosition(entry)
+		rb := component.GetRigidBody(entry)
+		ebitenutil.DrawRect(screen, p.X-rb.L-worldViewLocationPos.X, p.Y-rb.T-worldViewLocationPos.Y, rb.GetWidth(), rb.GetHeight(), colornames.Red100)
 	})
 }
 

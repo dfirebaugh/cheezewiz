@@ -2,12 +2,8 @@ package system
 
 import (
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/constant"
-	"cheezewiz/internal/entity"
-	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -19,99 +15,41 @@ type attackMediator interface {
 }
 
 type Collision struct {
-	playerQuery     *query.Query
-	enemyQuery      *query.Query
-	projectileQuery *query.Query
-	attack_handler  attackMediator
-	jellyBeanQuery  *query.Query
-	expBarQuery     *query.Query
+	query *query.Query
 }
 
 func NewCollision(attack_handler attackMediator) *Collision {
 	return &Collision{
-		playerQuery: query.NewQuery(filter.Contains(
-			entity.PlayerTag,
-		)),
-		enemyQuery: query.NewQuery(filter.Contains(
-			entity.EnemyTag,
-		)),
-		projectileQuery: query.NewQuery(filter.Contains(
-			entity.ProjectileTag,
-		)),
-		jellyBeanQuery: query.NewQuery(filter.Contains(entity.JellyBeanTag)),
-		attack_handler: attack_handler,
-		expBarQuery:    query.NewQuery(filter.Contains(entity.ExpBarTag)),
+		query: query.NewQuery(filter.Contains(component.RigidBody)),
 	}
 }
 
 func (c *Collision) Update(w donburi.World) {
-	expBar, _ := c.expBarQuery.FirstEntity(w)
-	expValue := component.GetExp(expBar)
+	c.query.EachEntity(w, func(entry *donburi.Entry) {
+		id := entry.Id()
+		rb := component.GetRigidBody(entry)
+		p := component.GetPosition(entry)
 
-	c.projectileQuery.EachEntity(w, func(prjentry *donburi.Entry) {
-		projectilePos := component.GetPosition(prjentry)
-		c.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
-			enemyPosition := component.GetPosition(entry)
-			enemyHealth := component.GetHealth(entry)
-			if c.IsCollide(component.RigidBodyData{
-				H: float64(constant.SpriteSize) - 4,
-				W: float64(constant.SpriteSize) - 4,
-				X: projectilePos.X,
-				Y: projectilePos.Y,
-			}, component.RigidBodyData{
-				H: float64(constant.SpriteSize) - 4,
-				W: float64(constant.SpriteSize) - 4,
-				X: enemyPosition.X,
-				Y: enemyPosition.Y,
-			}) {
-				if enemyHealth.HP > 0 {
-					entity.MakeDamageLabel(w, enemyPosition.X, enemyPosition.Y, strconv.Itoa(10))
-					c.attack_handler.AddEnemyDamage(entry, 10, nil)
-				}
+		ax := p.X - rb.L
+		ay := p.Y - rb.T
+		aw := rb.GetWidth()
+		ah := rb.GetHeight()
+		c.query.EachEntity(w, func(e *donburi.Entry) {
+			if id == e.Id() {
+				return
 			}
-		})
-	})
+			p2 := component.GetPosition(e)
+			erb := component.GetRigidBody(e)
+			bx := p2.X - erb.L
+			by := p2.Y - erb.T
+			bw := erb.GetWidth()
+			bh := erb.GetHeight()
 
-	c.playerQuery.EachEntity(w, func(pentry *donburi.Entry) {
-		playerPosition := component.GetPosition(pentry)
-		playerHealth := component.GetHealth(pentry)
-		c.enemyQuery.EachEntity(w, func(entry *donburi.Entry) {
-			enemyPosition := component.GetPosition(entry)
-			if c.IsCollide(component.RigidBodyData{
-				H: float64(constant.SpriteSize) - 4,
-				W: float64(constant.SpriteSize) - 4,
-				X: playerPosition.X,
-				Y: playerPosition.Y,
-			}, component.RigidBodyData{
-				H: float64(constant.SpriteSize) - 4,
-				W: float64(constant.SpriteSize) - 4,
-				X: enemyPosition.X,
-				Y: enemyPosition.Y,
-			}) {
-				if playerHealth.HP > 0 {
-					c.attack_handler.AddPlayerDamage(pentry, 1, nil)
+			if c.IsCollide([]float64{ax, ay, aw, ah}, []float64{bx, by, bw, bh}) {
+				if rb.CollisionHandler == nil {
+					return
 				}
-			}
-		})
-
-		c.jellyBeanQuery.EachEntity(w, func(entry *donburi.Entry) {
-			position := component.GetPosition(entry)
-			xp := component.GetXP(entry)
-			if c.IsCollide(component.RigidBodyData{
-				H: float64(constant.SpriteSize) - 4,
-				W: float64(constant.SpriteSize) - 4,
-				X: playerPosition.X,
-				Y: playerPosition.Y,
-			}, component.RigidBodyData{
-				H: float64(constant.SpriteSize) - 4,
-				W: float64(constant.SpriteSize) - 4,
-				X: position.X,
-				Y: position.Y,
-			}) {
-				// trigger sopmething about XP
-				logrus.Infof("player gains %d xp", xp.Value)
-				expValue.CurrentExp += float64(xp.Value)
-				w.Remove(entry.Entity())
+				rb.CollisionHandler(w, e)
 			}
 		})
 	})
@@ -120,6 +58,19 @@ func (c *Collision) Update(w donburi.World) {
 func (c *Collision) Draw(w donburi.World, screen *ebiten.Image) {
 }
 
-func (c *Collision) IsCollide(a component.RigidBodyData, b component.RigidBodyData) bool {
-	return a.Y < b.Y+b.H && a.Y+a.H > b.Y && a.X < b.X+b.W && a.X+a.W > b.X
+func (c *Collision) IsCollide(a []float64, b []float64) bool {
+	ax := a[0]
+	ay := a[1]
+	aw := a[2]
+	ah := a[3]
+
+	bx := b[0]
+	by := b[1]
+	bw := b[2]
+	bh := b[3]
+
+	return ax < bx+bw &&
+		ax+aw > bx &&
+		ay < by+bh &&
+		ah+ay > by
 }

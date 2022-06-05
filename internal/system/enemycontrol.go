@@ -35,7 +35,7 @@ func (e EnemyControl) Update(w donburi.World) {
 		}
 		if health.HP <= 0 {
 			w.Remove(entry.Entity())
-			entity.MakeJellyBean(w, entityPosition.X, entityPosition.Y)
+			entity.MakeJellyBean(w, entityPosition.X-entityPosition.CX, entityPosition.Y-entityPosition.CY)
 			return
 		}
 
@@ -68,8 +68,7 @@ func (e EnemyControl) Update(w donburi.World) {
 
 			newloc := vector.Add(e, r)
 
-			entityPosition.X = newloc[0]
-			entityPosition.Y = newloc[1]
+			entityPosition.Update(newloc[0], newloc[1])
 
 		}
 

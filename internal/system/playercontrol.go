@@ -26,33 +26,33 @@ func (p PlayerControl) Update(w donburi.World) {
 		position := component.GetPosition(entry)
 		controller := component.GetInputDevice(entry)
 		direction := component.GetDirection(entry)
-		state := component.GetPlayerState(entry)
+		state := component.GetActorState(entry)
+
+		state.Reset()
 
 		if controller.Device.IsUpPressed() {
-			position.Y -= playerSpeed
-			state.Current = component.WalkingState
+			position.Update(position.X, position.Y-playerSpeed)
+			state.Set(component.WalkingState)
 		}
 
 		if controller.Device.IsDownPressed() {
-			position.Y += playerSpeed
-			state.Current = component.WalkingState
+			position.Update(position.X, position.Y+playerSpeed)
+			state.Set(component.WalkingState)
 		}
 
 		if controller.Device.IsRightPressed() {
-			position.X += playerSpeed
+			position.Update(position.X+playerSpeed, position.Y)
 			direction.IsRight = true
-			state.Current = component.WalkingState
+			state.Set(component.WalkingState)
 		}
 
 		if controller.Device.IsLeftPressed() {
-			position.X -= playerSpeed
+			position.Update(position.X-playerSpeed, position.Y)
 			direction.IsRight = false
-			state.Current = component.WalkingState
+			state.Set(component.WalkingState)
 		}
 
 		if controller.Device.IsPrimaryAtkJustPressed() {
-			state.Current = component.WalkingState
-			entity.MakeRocketProjectile(w, position.X, position.Y, 0.1)
 		}
 	})
 }

@@ -33,7 +33,6 @@ func (p ProjectileControl) Update(w donburi.World) {
 		vy *= projectileSpeed
 		vx *= projectileSpeed
 
-		position.X += vx
-		position.Y += vy
+		position.Update(position.X-vx, position.Y-vy)
 	})
 }

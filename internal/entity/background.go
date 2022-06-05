@@ -13,7 +13,6 @@ var BackgroundTag = donburi.NewTag()
 func MakeBackground(w donburi.World) {
 	b := w.Create(BackgroundTag, component.Position, component.TileMap)
 	entry := w.Entry(b)
-	// position := (*component.PositionData)(entry.Component(component.Position))
 	tiles := (*component.TileMapData)(entry.Component(component.TileMap))
 	tm, err := assets.GetKitchenMap()
 	if err != nil {

@@ -1,11 +1,14 @@
 package scene
 
 import (
+	"cheezewiz/internal/attacks"
 	"cheezewiz/internal/entity"
 	"cheezewiz/internal/input"
 	"cheezewiz/internal/mediator"
 	"cheezewiz/internal/system"
+	"cheezewiz/pkg/scheduler"
 	"os"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
@@ -46,6 +49,8 @@ func Init() *Scene {
 	attackMediator.D = &damageGroup
 	attackMediator.C = collision
 
+	scheduler.Add(time.Millisecond*800, attacks.CheeseMissile(world, attackMediator))
+
 	s := &Scene{
 		world: world,
 		systems: []System{
@@ -65,7 +70,7 @@ func Init() *Scene {
 			collision,
 			renderer,
 			timer,
-			exp,
+			// exp,
 		},
 	}
 
@@ -80,7 +85,7 @@ func addEntities(world donburi.World) {
 	entity.MakeBackground(world)
 	entity.MakeTimer(world)
 	entity.MakePlayer(world, input.Keyboard{})
-	entity.MakeEnemy(world, 50, 50)
+	// entity.MakeEnemy(world, 50, 50)
 	entity.MakeSlot(world)
 }
 

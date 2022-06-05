@@ -15,13 +15,12 @@ func MakeDamageLabel(w donburi.World, x float64, y float64, label string) {
 
 	position := (*component.PositionData)(entry.Component(component.Position))
 	l := (*component.LabelData)(entry.Component(component.ScreenLabel))
-	ti := (*component.TickData)(entry.Component(component.Tick))
+	// ti := (*component.TickData)(entry.Component(component.Tick))
 
-	ti.Value = 0
-	ti.EOL = 100
+	// ti.Value = 0
+	// ti.EOL = 100
+
 	l.Label = label
 
-	position.X = x
-	position.Y = y
-
+	position.Set(x, y, 15, 15)
 }
