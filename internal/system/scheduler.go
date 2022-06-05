@@ -10,8 +10,9 @@ import (
 )
 
 type Scheduler struct {
-	query  *query.Query
-	events map[uint32][]func()
+	query      *query.Query
+	events     map[uint32][]func()
+	weaponFire []func()
 }
 
 func NewScheduler(sceneEvents []event.SceneEvent, w donburi.World) *Scheduler {
@@ -35,14 +36,24 @@ func NewScheduler(sceneEvents []event.SceneEvent, w donburi.World) *Scheduler {
 }
 
 func (s Scheduler) Update(w donburi.World) {
+	s.RunWeaponFire()
+
 	s.query.EachEntity(w, func(entry *donburi.Entry) {
 		countdown := component.GetCountdown(entry)
 
-		s.RunEvents(w, countdown.CountDownInSec)
+		s.RunEvents(countdown.CountDownInSec)
 	})
 }
 
-func (s Scheduler) RunEvents(w donburi.World, now uint32) {
+func (s *Scheduler) RunWeaponFire() {
+	for _, event := range s.weaponFire {
+		event()
+	}
+
+	s.weaponFire = nil
+}
+
+func (s Scheduler) RunEvents(now uint32) {
 	if _, ok := s.events[now]; !ok {
 		return
 	}
