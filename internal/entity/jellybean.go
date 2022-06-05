@@ -37,7 +37,7 @@ func MakeJellyBean(w donburi.World, x float64, y float64) {
 	green, _, _ := image.Decode(bytes.NewReader(assets.JellyBeanGreenRaw))
 	rainbow, _, _ := image.Decode(bytes.NewReader(assets.JellyBeanRainbowRaw))
 
-	switch (JellyBeanType)(rand.Intn(2)) {
+	switch (JellyBeanType)(rand.Intn(3)) {
 	case JBBlue:
 		sprite.IMG = ebiten.NewImageFromImage(blue)
 	case JBRainbow:
