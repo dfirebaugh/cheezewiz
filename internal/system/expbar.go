@@ -13,16 +13,31 @@ import (
 )
 
 type Expbar struct {
-	query *query.Query
+	jellyBeanQuery *query.Query
+	query          *query.Query
 }
 
 func NewExpbar() *Expbar {
 	return &Expbar{
-		query: query.NewQuery(filter.Contains(entity.ExpBarTag)),
+		jellyBeanQuery: query.NewQuery(filter.Contains(entity.JellyBeanTag)),
+		query:          query.NewQuery(filter.Contains(entity.ExpBarTag)),
 	}
 }
 
 func (ne *Expbar) Update(world donburi.World) {
+	ne.query.EachEntity(world, func(entry *donburi.Entry) {
+		exp := component.GetExp(entry)
+
+		if exp.CurrentExp >= exp.DesiredExp {
+
+			ne.jellyBeanQuery.EachEntity(world, func(entry *donburi.Entry) {
+				xp := (*component.XPData)(component.GetXP(entry))
+				xp.Value = xp.Value / 2
+			})
+
+			exp.CurrentExp = 0
+		}
+	})
 }
 
 func (ne *Expbar) Draw(world donburi.World, screen *ebiten.Image) {

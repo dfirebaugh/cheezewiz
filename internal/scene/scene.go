@@ -39,6 +39,7 @@ func Init() *Scene {
 	renderer := system.NewRender()
 	collision := system.NewCollision(attackMediator)
 	timer := system.NewTimer()
+	exp := system.NewExpbar()
 	damageGroup := system.NewDamagebufferGroup()
 	aicontroller := system.NewEnemyControl()
 
@@ -58,12 +59,13 @@ func Init() *Scene {
 			system.NewScheduler(level.Events, world),
 			system.NewWorldViewPortLocation(),
 			system.NewProjectileContol(),
+			exp,
 		},
 		drawables: []Drawable{
 			collision,
 			renderer,
 			timer,
-			system.NewExpbar(),
+			exp,
 		},
 	}
 
