@@ -4,3 +4,4 @@ window:
   width: 1024
 tile-size: 32
 scale-factor: 2
+debug: true

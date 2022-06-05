@@ -13,9 +13,10 @@ type Config struct {
 		Height int `yaml:"height"`
 		Width  int `yaml:"width"`
 	} `yaml:"window"`
-	Server      string `yaml:"server"`
-	Port        int    `yaml:"port"`
-	ScaleFactor int    `yaml:"scale-factor"`
+	Server       string `yaml:"server"`
+	Port         int    `yaml:"port"`
+	ScaleFactor  int    `yaml:"scale-factor"`
+	DebugEnabled bool   `yaml:"debug"`
 }
 
 //go:embed config.yml

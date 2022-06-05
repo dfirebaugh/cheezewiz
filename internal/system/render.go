@@ -33,6 +33,7 @@ type Render struct {
 	playerSlot         *query.Query
 	jellyBeanQuery     *query.Query
 	damageLabelQuery   *query.Query
+	positionQuery      *query.Query
 	tilemap_cache      *ebiten.Image
 }
 
@@ -46,6 +47,7 @@ func NewRender() *Render {
 		playerSlot:         query.NewQuery(filter.Contains(entity.SlotTag)),
 		jellyBeanQuery:     query.NewQuery(filter.Contains(entity.JellyBeanTag)),
 		damageLabelQuery:   query.NewQuery(filter.Contains(entity.DamageLabelTag)),
+		positionQuery:      query.NewQuery(filter.Contains(component.Position)),
 		tilemap_cache:      nil,
 	}
 }
@@ -60,6 +62,7 @@ func (r *Render) Update(w donburi.World) {
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.tileMap(w, screen)
+	r.debugRigidBodies(w, screen)
 	r.jellyBeans(w, screen)
 	r.enemy(w, screen)
 	r.player(w, screen)
@@ -140,6 +143,19 @@ func (r Render) renderProjectile(w donburi.World, screen *ebiten.Image) {
 	})
 }
 
+func (r *Render) debugRigidBodies(w donburi.World, screen *ebiten.Image) {
+	if !config.Get().DebugEnabled {
+		return
+	}
+	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
+	worldViewLocationPos := component.GetPosition(worldViewLocation)
+
+	r.positionQuery.EachEntity(w, func(entry *donburi.Entry) {
+		position := component.GetPosition(entry)
+		ebitenutil.DrawRect(screen, position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, 32, 32, colornames.Red100)
+	})
+}
+
 func (r *Render) player(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
@@ -189,7 +205,6 @@ func (r Render) enemy(w donburi.World, screen *ebiten.Image) {
 }
 
 func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
-
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
 
