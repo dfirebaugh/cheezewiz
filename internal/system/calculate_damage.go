@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/internal/component"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
@@ -16,6 +17,7 @@ type damageToken struct {
 type DamageBufferGroup struct {
 	PlayerDamage []damageToken
 	EnemyDamage  []damageToken
+	world        donburi.World
 }
 
 func (d *DamageBufferGroup) AddPlayerDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry) {
@@ -52,18 +54,15 @@ func (d *DamageBufferGroup) ConsumeDamage() {
 		logrus.Infof("Death for entity %d", elem.destination.Id())
 	}
 
-	d.PlayerDamage = nil
+	// clear our the PlayerDamage buffer
+	d.PlayerDamage = []damageToken{}
 
 	for _, elem := range d.EnemyDamage {
-		if elem.destination == nil {
-			continue
-		}
-		hc := component.GetHealth(elem.destination)
-		hc.HP -= elem.amount
-
-		logrus.Infof("Damage delt for entity %d with %d dmg", elem.destination.Id(), elem.amount)
+		applyDamageToEnemy(d.world, elem.destination, elem.amount)
 	}
 
+	// clear our the EnemyDamage buffer
+	d.EnemyDamage = []damageToken{}
 }
 
 func (d *DamageBufferGroup) Update(w donburi.World) {
@@ -77,4 +76,20 @@ func NewDamagebufferGroup() DamageBufferGroup {
 	}
 
 	return buffergroup
+}
+
+func applyDamageToEnemy(w donburi.World, enemy *donburi.Entry, amount float64) {
+	if enemy == nil {
+		println("enemy is not valid")
+		return
+	}
+
+	fmt.Printf("%#v", enemy)
+
+	hc := component.GetHealth(enemy)
+	hc.HP -= amount
+
+	logrus.Infof("Damage delt for entity %d with %d dmg", enemy.Id(), amount)
+	// remove enemy from damage buffer
+	enemy = nil
 }
