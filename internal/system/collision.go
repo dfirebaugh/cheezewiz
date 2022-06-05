@@ -4,6 +4,7 @@ import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/constant"
 	"cheezewiz/internal/entity"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/sirupsen/logrus"
@@ -64,6 +65,7 @@ func (c *Collision) Update(w donburi.World) {
 				Y: enemyPosition.Y,
 			}) {
 				if enemyHealth.HP > 0 {
+					entity.MakeDamageLabel(w, enemyPosition.X, enemyPosition.Y, strconv.Itoa(10))
 					c.attack_handler.AddEnemyDamage(entry, 10, nil)
 				}
 			}

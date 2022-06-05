@@ -32,6 +32,7 @@ type Render struct {
 	projectileQuery    *query.Query
 	playerSlot         *query.Query
 	jellyBeanQuery     *query.Query
+	damageLabelQuery   *query.Query
 	tilemap_cache      *ebiten.Image
 }
 
@@ -44,6 +45,7 @@ func NewRender() *Render {
 		projectileQuery:    query.NewQuery(filter.Contains(entity.ProjectileTag)),
 		playerSlot:         query.NewQuery(filter.Contains(entity.SlotTag)),
 		jellyBeanQuery:     query.NewQuery(filter.Contains(entity.JellyBeanTag)),
+		damageLabelQuery:   query.NewQuery(filter.Contains(entity.DamageLabelTag)),
 		tilemap_cache:      nil,
 	}
 }
@@ -53,6 +55,7 @@ func (r *Render) Update(w donburi.World) {
 	r.updateEnemy(w)
 	r.updatePlayer(w)
 	r.updateProjectile(w)
+	r.updateDamageLabel(w)
 }
 
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
@@ -62,6 +65,7 @@ func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.player(w, screen)
 	r.playerSlots(w, screen)
 	r.renderProjectile(w, screen)
+	r.renderDamageLabels(w, screen)
 }
 
 func (r *Render) updatePlayer(w donburi.World) {
@@ -89,12 +93,36 @@ func (r Render) updateEnemy(w donburi.World) {
 	})
 }
 
+func (r Render) updateDamageLabel(w donburi.World) {
+
+	r.damageLabelQuery.EachEntity(w, func(e *donburi.Entry) {
+		t := component.GetTick(e)
+
+		t.Value += 1
+		if t.Value > t.EOL {
+			w.Remove(e.Entity())
+		}
+	})
+}
+
 func (r Render) updateProjectile(w donburi.World) {
 	now := time.Now()
 	r.projectileQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
 		animation.Walk.Animation.Update(now.Sub(animation.Walk.PrevUpdateTime))
 		animation.Walk.PrevUpdateTime = now
+	})
+}
+
+func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
+	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
+	worldViewLocationPos := component.GetPosition(worldViewLocation)
+
+	r.damageLabelQuery.EachEntity(w, func(e *donburi.Entry) {
+		labelData := component.GetScreenLabel(e)
+		position := component.GetPosition(e)
+		txt := labelData.Label
+		ebitenutil.DebugPrintAt(screen, txt, int(position.X)-int(worldViewLocationPos.X), int(position.Y)-int(worldViewLocationPos.Y))
 	})
 }
 
