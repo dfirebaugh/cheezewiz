@@ -3,6 +3,7 @@ package system
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -27,6 +28,7 @@ func NewExpbar() *Expbar {
 func (ne *Expbar) Update(world donburi.World) {
 	ne.query.EachEntity(world, func(entry *donburi.Entry) {
 		exp := component.GetExp(entry)
+		nextLevel := component.GetNextLevel(entry)
 
 		if exp.CurrentExp >= exp.DesiredExp {
 
@@ -36,6 +38,7 @@ func (ne *Expbar) Update(world donburi.World) {
 			})
 
 			exp.CurrentExp = 0
+			nextLevel.CurrentLevel += 1
 		}
 	})
 }
@@ -44,7 +47,10 @@ func (ne *Expbar) Draw(world donburi.World, screen *ebiten.Image) {
 	ne.query.EachEntity(world, func(entry *donburi.Entry) {
 		exp := component.GetExp(entry)
 		position := component.GetPosition(entry)
-		ebitenutil.DrawRect(screen, position.X, position.Y, exp.DesiredExp*100, 14, colornames.Black)
-		ebitenutil.DrawRect(screen, position.X, position.Y, exp.CurrentExp*100, 14, colornames.Blue700)
+		nextLevel := component.GetNextLevel(entry)
+
+		ebitenutil.DrawRect(screen, position.X, position.Y, exp.DesiredExp*100, 16, colornames.Black)
+		ebitenutil.DrawRect(screen, position.X, position.Y, exp.CurrentExp*100, 16, colornames.Blue700)
+		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Lvl %d", nextLevel.CurrentLevel), (int(position.X)+int(exp.DesiredExp)*100)-50, int(position.Y))
 	})
 }

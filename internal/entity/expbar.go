@@ -9,7 +9,7 @@ import (
 var ExpBarTag = donburi.NewTag()
 
 func MakeExpBar(w donburi.World) {
-	expBar := w.Create(ExpBarTag, component.Exp, component.Position)
+	expBar := w.Create(ExpBarTag, component.Exp, component.Position, component.NextLevel)
 	entry := w.Entry(expBar)
 
 	exp := (*component.ExpData)(entry.Component(component.Exp))
@@ -24,4 +24,8 @@ func MakeExpBar(w donburi.World) {
 		X: 5,
 		Y: 10,
 	}
+
+	nextLevel := (*component.NextLevelData)(entry.Component(component.NextLevel))
+
+	nextLevel.CurrentLevel = 1
 }
