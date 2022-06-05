@@ -26,7 +26,7 @@ func MakeJellyBean(w donburi.World, x float64, y float64) {
 	entry := w.Entry(b)
 
 	xp := (*component.XPData)(component.GetXP(entry))
-	xp.Value = 15
+	xp.Value = 1
 	sprite := (*component.SpriteSheetData)(component.GetSpriteSheet(entry))
 	position := (*component.PositionData)(component.GetPosition(entry))
 

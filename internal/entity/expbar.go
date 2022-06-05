@@ -15,7 +15,7 @@ func MakeExpBar(w donburi.World) {
 	exp := (*component.ExpData)(entry.Component(component.Exp))
 
 	*exp = component.ExpData{
-		CurrentExp: 1,
+		CurrentExp: 0,
 		DesiredExp: 5, // initial
 	}
 

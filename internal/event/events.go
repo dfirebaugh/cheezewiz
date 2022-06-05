@@ -73,8 +73,8 @@ func spawnBoss(w donburi.World, args []string) {
 
 	v = vector.Add(playerVector, v)
 
-	e := entity.MakeEnemy(w, v[0], v[1])
-	component.GetHealth(e).HP = float64(hp)
+	entity.MakeBossEnemy(w, v[0], v[1], float64(hp))
+	//component.GetHealth(e).HP = float64(hp)
 	//args[]
 }
 
@@ -110,10 +110,16 @@ func init() {
 		priority:  1,
 	}
 
-	JobTypes[HurryUp] = Job{
+	JobTypes[Death] = Job{
 		json_name: string(Death),
-		Callback:  outputHurryUp,
-		priority:  1,
+		Callback:  outputDeath,
+		priority:  0,
+	}
+
+	JobTypes[SpawnBoss] = Job{
+		json_name: string(SpawnBoss),
+		Callback:  spawnBoss,
+		priority:  0,
 	}
 
 	JobTypes[SpawnWave] = Job{

@@ -3,7 +3,7 @@ package component
 import "github.com/yohamta/donburi"
 
 type XPData struct {
-	Value uint
+	Value float64
 }
 
 var XP = donburi.NewComponentType(XPData{})
