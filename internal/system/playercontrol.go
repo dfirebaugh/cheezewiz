@@ -25,9 +25,9 @@ func (p PlayerControl) Update(w donburi.World) {
 	p.query.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		controller := component.GetInputDevice(entry)
-		direction := component.GetDirection(entry)
 		state := component.GetActorState(entry)
 		animation := component.GetAnimation(entry)
+		animation.Get(state.Current).Sprite.SetFlipH(controller.Device.IsRightPressed() && !controller.Device.IsLeftPressed())
 
 		state.Reset()
 
@@ -46,20 +46,12 @@ func (p PlayerControl) Update(w donburi.World) {
 		if controller.Device.IsRightPressed() {
 			position.Update(position.X+playerSpeed, position.Y)
 			state.Set(component.WalkingState)
-			if !direction.IsRight {
-				animation.Get(state.Current).Sprite.FlipH()
-				direction.IsRight = true
-			}
 		}
 		if controller.Device.IsLeftJustPressed() {
 		}
 		if controller.Device.IsLeftPressed() {
 			position.Update(position.X-playerSpeed, position.Y)
 			state.Set(component.WalkingState)
-			if direction.IsRight {
-				animation.Get(state.Current).Sprite.FlipH()
-				direction.IsRight = false
-			}
 		}
 
 		if controller.Device.IsPrimaryAtkJustPressed() {
