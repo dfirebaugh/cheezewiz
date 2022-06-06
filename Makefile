@@ -28,8 +28,9 @@ web:
 		&& cp -R assets .dist/ \
 		&& cp -R web/* .dist/ \
 		&& mkdir -p .dist/config/entities \
+		&& mkdir -p .dist/config/levels \
 		&& cp -R config/entities/* .dist/config/entities/ \
-		&& cp level1.json .dist/ \
+		&& cp -R config/levels/* .dist/config/levels/
 
 .PHONY: examples
 examples:
