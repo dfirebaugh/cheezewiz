@@ -27,6 +27,8 @@ web:
 		&& cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js .dist/ \
 		&& cp -R assets .dist/ \
 		&& cp -R web/* .dist/ \
+		&& mkdir -p .dist/config/entities \
+		&& cp -R config/entities/* .dist/config/entities/ \
 		&& cp level1.json .dist/ \
 
 .PHONY: examples

@@ -1,0 +1,21 @@
+{
+    "components": ["JellyBeanTag", "XP", "SpriteSheet", "Position", "RigidBody"],
+    "xp": {
+        "value": 1
+    },
+    "spriteSheet": {
+        "path": "./assets/jellybeangreen.png"
+    },
+    "position": {
+        "x": 0,
+        "y": 0,
+        "cx": 16,
+        "cy": 16
+    },
+    "rigidBody": {
+        "w": 32,
+        "h": 32,
+        "R": 16,
+        "B": 16
+    }
+}

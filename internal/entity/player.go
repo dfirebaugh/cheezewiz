@@ -41,7 +41,7 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 		float64(config.Get().TileSize)/2,
 	)
 	collisionHandler := func(w donburi.World, e *donburi.Entry) {
-		if e.Archetype().Layout().HasComponent(JellyBeanTag) {
+		if e.Archetype().Layout().HasComponent(component.JellyBeanTag) {
 			w.Remove(e.Entity())
 		}
 
@@ -55,7 +55,6 @@ func MakePlayer(w donburi.World, controller input.PlayerInput) *donburi.Entry {
 		R:                config.Get().TileSize / 2,
 		T:                config.Get().TileSize / 2,
 		B:                config.Get().TileSize / 2,
-		Name:             "projectile",
 		CollisionHandler: collisionHandler,
 	}
 

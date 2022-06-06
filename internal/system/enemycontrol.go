@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/dentity"
 	"cheezewiz/internal/entity"
 	"math"
 
@@ -35,7 +36,12 @@ func (e EnemyControl) Update(w donburi.World) {
 		}
 		if health.HP <= 0 {
 			w.Remove(entry.Entity())
-			entity.MakeJellyBean(w, entityPosition.X-entityPosition.CX, entityPosition.Y-entityPosition.CY)
+			dentity.MakeRandDynamicEntity(w, []string{
+				"./config/entities/jellybeangreen.entity.json",
+				"./config/entities/jellybeanpink.entity.json",
+				"./config/entities/jellybeanblue.entity.json",
+				"./config/entities/jellybeanrainbow.entity.json",
+			}, entityPosition.X-entityPosition.CX, entityPosition.Y-entityPosition.CY)
 			return
 		}
 

@@ -5,12 +5,11 @@ import (
 )
 
 type RigidBodyData struct {
-	R                float64
-	L                float64
-	T                float64
-	B                float64
+	R                float64 `json:"r"`
+	L                float64 `json:"l"`
+	T                float64 `json:"t"`
+	B                float64 `json:"b"`
 	CollisionHandler func(w donburi.World, e *donburi.Entry)
-	Name             string
 }
 
 var RigidBody = donburi.NewComponentType(RigidBodyData{})

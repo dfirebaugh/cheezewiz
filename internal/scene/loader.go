@@ -1,8 +1,8 @@
 package scene
 
 import (
+	"cheezewiz/config/levels"
 	"cheezewiz/internal/event"
-	"cheezewiz/level"
 	"encoding/json"
 )
 
@@ -16,7 +16,7 @@ type worldDefinition struct {
 func loadWorld(path string) worldDefinition {
 
 	var l worldDefinition
-	json.Unmarshal(level.Level1Raw, &l)
+	json.Unmarshal(levels.Level1Raw, &l)
 
 	return l
 

@@ -3,12 +3,11 @@ package component
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/ganim8/v2"
 )
 
 type SpriteSheetData struct {
-	IMG    *ebiten.Image
-	Sprite *ganim8.Sprite
+	IMG  *ebiten.Image `json:"img"`
+	Path string        `json:"path"`
 }
 
 var SpriteSheet = donburi.NewComponentType(SpriteSheetData{})

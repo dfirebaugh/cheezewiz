@@ -20,7 +20,7 @@ type Expbar struct {
 
 func NewExpbar() *Expbar {
 	return &Expbar{
-		jellyBeanQuery: query.NewQuery(filter.Contains(entity.JellyBeanTag)),
+		jellyBeanQuery: query.NewQuery(filter.Contains(component.JellyBeanTag)),
 		query:          query.NewQuery(filter.Contains(entity.ExpBarTag)),
 	}
 }

@@ -1,4 +1,4 @@
-package level
+package levels
 
 import _ "embed"
 

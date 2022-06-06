@@ -3,8 +3,8 @@ package component
 import "github.com/yohamta/donburi"
 
 type ExpData struct {
-	DesiredExp float64
-	CurrentExp float64
+	DesiredExp float64 `json:"desiredXp"`
+	CurrentExp float64 `json:"currentXp"`
 }
 
 var Exp = donburi.NewComponentType(ExpData{})

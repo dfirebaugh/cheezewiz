@@ -39,7 +39,7 @@ func NewRender() *Render {
 		backgroundQuery:      query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery:   query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
 		playerSlot:           query.NewQuery(filter.Contains(entity.SlotTag)),
-		jellyBeanQuery:       query.NewQuery(filter.Contains(entity.JellyBeanTag)),
+		jellyBeanQuery:       query.NewQuery(filter.Contains(component.JellyBeanTag)),
 		damageLabelQuery:     query.NewQuery(filter.Contains(entity.DamageLabelTag)),
 		positionQuery:        query.NewQuery(filter.Contains(component.Position)),
 		tilemap_cache:        nil,

@@ -59,7 +59,6 @@ func MakeRocketProjectile(w donburi.World, x float64, y float64, dir float64, at
 
 	rb := (*component.RigidBodyData)(entry.Component(component.RigidBody))
 	rb.SetBorder(config.Get().TileSize/2, config.Get().TileSize/2)
-	rb.Name = "projectile"
 	rb.CollisionHandler = func(w donburi.World, e *donburi.Entry) {
 		if e.Archetype().Layout().HasComponent(EnemyTag) {
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
