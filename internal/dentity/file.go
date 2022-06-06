@@ -4,7 +4,6 @@
 package dentity
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -16,10 +15,4 @@ func pathToBytes(path string) []byte {
 		logrus.Fatal(err)
 	}
 	return f
-}
-
-func parseJSON(path string) DynamicEntity {
-	var d DynamicEntity
-	json.Unmarshal(pathToBytes(path), &d)
-	return d
 }

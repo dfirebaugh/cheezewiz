@@ -3,6 +3,7 @@ package dentity
 import (
 	"bytes"
 	"cheezewiz/internal/component"
+	"encoding/json"
 	"image"
 	"math/rand"
 
@@ -39,6 +40,15 @@ type DynamicEntity struct {
 	Position     *component.PositionData    `json:"position"`
 	RigidBody    *component.RigidBodyData   `json:"rigidBody"`
 	JellyBeanTag *donburi.ComponentType     `json:"jellyBeanTag"`
+}
+
+func (d *DynamicEntity) Unmarshal(raw []byte) {
+}
+
+func parseJSON(path string) DynamicEntity {
+	var d DynamicEntity
+	json.Unmarshal(pathToBytes(path), &d)
+	return d
 }
 
 func MakeRandDynamicEntity(w donburi.World, path []string, x float64, y float64) {

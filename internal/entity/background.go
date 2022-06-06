@@ -16,8 +16,7 @@ func MakeBackground(w donburi.World) {
 	tiles := (*component.TileMapData)(entry.Component(component.TileMap))
 	tm, err := assets.GetKitchenMap()
 	if err != nil {
-		logrus.Error(err)
-		// logrus.Panic(err.Error())
+		logrus.Panic(err)
 	}
 
 	tiles.Map = tm

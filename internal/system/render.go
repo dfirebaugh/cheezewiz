@@ -4,10 +4,12 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/lafriks/go-tiled/render"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -136,19 +138,18 @@ func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
 		op.GeoM.Translate(0-worldViewLocationPos.X, 0-worldViewLocationPos.Y)
 
 		if r.tilemap_cache == nil {
-			// tiles := component.GetTileMap(entry)
+			tiles := component.GetTileMap(entry)
 
-			// fmt.Printf("%#v", tiles.Map)
-			// renderer, err := render.NewRenderer(tiles.Map)
-			// if err != nil {
-			// 	fmt.Printf("map unsupported for rendering: %s", err.Error())
-			// 	// os.Exit(2)
-			// }
-			// if err = renderer.RenderVisibleLayers(); err != nil {
-			// 	fmt.Println(err)
-			// 	return
-			// }
-			// r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
+			renderer, err := render.NewRenderer(tiles.Map)
+			if err != nil {
+				fmt.Printf("map unsupported for rendering: %s", err.Error())
+				return
+			}
+			if err = renderer.RenderVisibleLayers(); err != nil {
+				fmt.Println(err)
+				return
+			}
+			r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
 		}
 
 		if r.tilemap_cache == nil {
