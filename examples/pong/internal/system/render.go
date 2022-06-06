@@ -5,7 +5,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/sedyh/mizu/pkg/engine"
+	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 	"golang.org/x/image/colornames"
 )
 
@@ -15,33 +17,54 @@ type Renderable interface {
 
 // When you need many sets of components
 // in one system, you can use the views
-type Render struct{}
+type Render struct {
+	query     *query.Query
+	ballQuery *query.Query
+}
+
+func NewRender() *Render {
+	// w.AddSystems(&Render{})
+	return &Render{
+		query: query.NewQuery(filter.Contains(
+			component.Position,
+			component.Rect,
+		)),
+		ballQuery: query.NewQuery(filter.Contains(
+			component.Position,
+			component.Radius,
+			component.Velocity,
+		))}
+}
 
 // Render one frame
-func (r *Render) Draw(w engine.World, screen *ebiten.Image) {
+func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	// But choose the right entities yourself
-	ballView := w.View(component.Pos{}, component.Rad{})
-	ballView.Each(func(entity engine.Entity) {
-		var pos *component.Pos
-		var rad *component.Rad
-		entity.Get(&pos, &rad)
+	r.renderBall(w, screen)
+	r.renderBorders(w, screen)
+}
+
+func (r Render) renderBall(w donburi.World, screen *ebiten.Image) {
+	r.ballQuery.EachEntity(w, func(entry *donburi.Entry) {
+		position := component.GetPosition(entry)
+		radius := component.GetRadius(entry)
 
 		ebitenutil.DrawRect(
 			screen,
-			pos.X-rad.Value/2, pos.Y-rad.Value/2,
-			rad.Value, rad.Value,
+			position.X-radius.Value/2, position.Y-radius.Value/2,
+			radius.Value, radius.Value,
 			colornames.Aliceblue,
 		)
 	})
-	borderView := w.View(component.Pos{}, component.Rect{})
-	borderView.Each(func(entity engine.Entity) {
-		var pos *component.Pos
-		var rect *component.Rect
-		entity.Get(&pos, &rect)
+}
+
+func (r Render) renderBorders(w donburi.World, screen *ebiten.Image) {
+	r.query.EachEntity(w, func(entry *donburi.Entry) {
+		position := component.GetPosition(entry)
+		rect := component.GetRect(entry)
 
 		ebitenutil.DrawRect(
 			screen,
-			pos.X-rect.Width/2, pos.Y-rect.Height/2,
+			position.X, position.Y,
 			rect.Width, rect.Height,
 			colornames.Aliceblue,
 		)

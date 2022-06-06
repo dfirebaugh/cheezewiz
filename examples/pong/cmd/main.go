@@ -1,131 +1,81 @@
 package main
 
 import (
-	"cheezewiz/examples/pong/internal/component"
 	"cheezewiz/examples/pong/internal/entity"
 	"cheezewiz/examples/pong/internal/system"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/sedyh/mizu/pkg/engine"
+	"github.com/yohamta/donburi"
 )
 
-type Game struct{}
-
-// Main scene, you can use that for settings or main menu
-func (g *Game) Setup(w engine.World) {
-	w.AddComponents(
-		component.Pos{},
-		component.Vel{},
-		component.Rad{},
-		component.Rect{},
-		component.IsPlayer{},
-		component.IsBat{},
-	)
-	g.AddEntities(w)
-	w.AddSystems(
-		&system.Velocity{},
-		&system.Render{},
-		&system.Collision{},
-		&system.Goal{
-			Player:   0,
-			Computer: 0,
-		},
-		&system.AI{},
-		&system.Player{},
-	)
+type System interface {
+	Update(w donburi.World)
 }
 
-func (g *Game) AddEntities(w engine.World) {
-	screenWidth, screenHeight := ebiten.WindowSize()
-	w.AddEntities(&entity.Ball{
-		Pos: component.Pos{
-			X: float64(screenWidth) / 2,
-			Y: float64(screenHeight) / 2,
-		},
-		Vel: component.Vel{
-			L: 2,
-			M: 2,
-		},
-		Rad: component.Rad{
-			Value: 5,
-		}},
-		&entity.Border{
-			Rect: component.Rect{
-				Height: 5,
-				Width:  float64(screenWidth) * 2,
-			},
-			Pos: component.Pos{
-				X: 0,
-				Y: float64(screenHeight - 75),
-			},
-			IsBat: component.IsBat{
-				Value: false,
-			},
-		},
-		&entity.Border{
-			Rect: component.Rect{
-				Height: 5,
-				Width:  float64(screenWidth) * 2,
-			},
-			Pos: component.Pos{
-				X: 0,
-				Y: float64(75),
-			},
-			IsBat: component.IsBat{
-				Value: false,
-			},
-		},
+type Drawable interface {
+	Draw(w donburi.World, screen *ebiten.Image)
+}
 
-		&entity.Bat{
-			Pos: component.Pos{
-				X: 20,
-				Y: float64(screenHeight) / 2,
-			},
-			Vel: component.Vel{
-				L: 0,
-				M: 0,
-			},
-			Rect: component.Rect{
-				Height: 50,
-				Width:  10,
-			},
-			IsPlayer: component.IsPlayer{
-				Value: true,
-			},
-			IsBat: component.IsBat{
-				Value: true,
-			},
-		},
-		&entity.Bat{
-			Pos: component.Pos{
-				X: float64(screenWidth) - 20,
-				Y: float64(screenHeight) / 2,
-			},
-			Vel: component.Vel{
-				L: 0,
-				M: 0,
-			},
-			Rect: component.Rect{
-				Height: 50,
-				Width:  10,
-			},
-			IsPlayer: component.IsPlayer{
-				Value: false,
-			},
-			IsBat: component.IsBat{
-				Value: true,
-			},
-		},
-	)
+type Game struct {
+	world     donburi.World
+	systems   []System
+	drawables []Drawable
+}
+
+func (g *Game) Setup() {
+	g.world = donburi.NewWorld()
+	score := system.NewScore()
+	g.systems = []System{
+		system.NewVelocity(),
+		system.NewCollision(),
+		system.NewPlayer(),
+		system.NewAI(),
+		score,
+	}
+	g.drawables = []Drawable{
+		system.NewRender(),
+		score,
+	}
+
+	g.AddEntities()
+
+}
+
+func (g *Game) AddEntities() {
+	entity.NewBall(g.world)
+	entity.NewTopBorder(g.world)
+	entity.NewBottomBorder(g.world)
+	entity.NewPlayer(g.world)
+	entity.NewEnemy(g.world)
+}
+
+func (g *Game) Update() error {
+	for _, s := range g.systems {
+		s.Update(g.world)
+	}
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	// screen.Clear()
+	for _, s := range g.drawables {
+		s.Draw(g.world, screen)
+	}
+}
+
+func (g *Game) Layout(width, height int) (int, int) {
+	return width, height
 }
 
 func main() {
-	g := engine.NewGame(&Game{})
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowSizeLimits(300, 200, -1, -1)
 	ebiten.SetFPSMode(ebiten.FPSModeVsyncOn)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+
+	g := &Game{}
+	g.Setup()
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

@@ -39,8 +39,7 @@ examples:
 		&& cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js .dist/examples/choppa/ \
 		&& GOOS=js GOARCH=wasm go build -o .dist/examples/choppa/choppa.wasm ./examples/choppa/cmd \
 		&& mkdir -p .dist/examples/pong \
-		&& cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js .dist/examples/pong/ \
-		&& GOOS=js GOARCH=wasm go build -o .dist/examples/pong/pong.wasm ./examples/pongv2/cmd
+		&& cp $(shell go env GOROOT)/misc/wasm/wasm_exec.js .dist/examples/pong/
 
 web-server: ## for testing - note: requires node
 	npx es-dev-server --root-dir .dist

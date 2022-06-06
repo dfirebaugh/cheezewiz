@@ -3,46 +3,57 @@ package system
 import (
 	"cheezewiz/examples/pong/internal/component"
 
-	"github.com/sedyh/mizu/pkg/engine"
+	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 )
 
-type Collision struct{}
+type Collision struct {
+	query     *query.Query
+	ballQuery *query.Query
+}
 
-func (c *Collision) Update(w engine.World) {
-	ballView := w.View(component.Pos{}, component.Rad{})
-	view := w.View(component.Pos{}, component.Rect{}, component.IsBat{})
-	ballView.Each(func(entity engine.Entity) {
-		var ballPos *component.Pos
-		var vel *component.Vel
-		var rad *component.Rad
-		entity.Get(&ballPos, &vel, &rad)
-		view.Each(func(entity2 engine.Entity) {
-			if entity2.ID() == entity.ID() {
-				return
-			}
-			var pos *component.Pos
-			var rigidBody *component.Rect
-			var isBat *component.IsBat
-			entity2.Get(&pos, &rigidBody, &isBat)
+func NewCollision() *Collision {
+	return &Collision{
+		query: query.NewQuery(filter.Contains(
+			component.Position,
+			component.Rect,
+			component.IsBat,
+		)),
+		ballQuery: query.NewQuery(filter.Contains(
+			component.Position,
+			component.Radius,
+			component.Velocity,
+		))}
+}
 
-			ballRB := component.RigidBody{
-				X: ballPos.X,
-				Y: ballPos.Y,
-				W: rad.Value,
-				H: rad.Value,
-			}
-			rb := component.RigidBody{
-				X: pos.X,
-				Y: pos.Y,
-				H: rigidBody.Height,
-				W: rigidBody.Width,
-			}
+func (c *Collision) Update(w donburi.World) {
+	c.ballQuery.EachEntity(w, func(entry *donburi.Entry) {
+		ballPosition := component.GetPosition(entry)
+		ballRadius := component.GetRadius(entry)
+		velocity := component.GetVelocity(entry)
 
-			if c.IsCollide(ballRB, rb) {
-				vel.M *= -1.01
+		c.query.EachEntity(w, func(entry *donburi.Entry) {
+			position := component.GetPosition(entry)
+			rect := component.GetRect(entry)
+			isBat := component.GetIsBat(entry)
+
+			if c.IsCollide(component.RigidBody{
+				X: ballPosition.X,
+				Y: ballPosition.Y,
+				W: ballRadius.Value,
+				H: ballRadius.Value,
+			}, component.RigidBody{
+				X: position.X,
+				Y: position.Y,
+				W: rect.Width,
+				H: rect.Height,
+			}) {
 				if isBat.Value {
-					vel.L *= -1.01
+					velocity.L *= -1.2
+					return
 				}
+				velocity.M *= -1
 			}
 		})
 	})

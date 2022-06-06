@@ -1,8 +1,8 @@
 package system
 
 import (
-	"cheezewiz/examples/pongv2/internal/component"
-	"cheezewiz/examples/pongv2/internal/entity"
+	"cheezewiz/examples/pong/internal/component"
+	"cheezewiz/examples/pong/internal/entity"
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"

@@ -2,46 +2,47 @@ package system
 
 import (
 	"cheezewiz/examples/pong/internal/component"
+	"cheezewiz/examples/pong/internal/entity"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/sedyh/mizu/pkg/engine"
+	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 )
 
-type AI struct{}
+type AI struct {
+	query     *query.Query
+	ballQuery *query.Query
+}
 
-func (a *AI) Update(w engine.World) {
+func NewAI() *AI {
+	return &AI{
+		query:     query.NewQuery(filter.Contains(entity.EnemyTag)),
+		ballQuery: query.NewQuery(filter.Contains(entity.BallTag)),
+	}
+}
+
+func (a *AI) Update(w donburi.World) {
 	_, screenHeight := ebiten.WindowSize()
+	a.ballQuery.EachEntity(w, func(ball *donburi.Entry) {
+		ballPos := component.GetPosition(ball)
 
-	ballView := w.View(component.Pos{}, component.Rad{})
-	view := w.View(component.Pos{}, component.Rect{}, component.Vel{}, component.IsPlayer{})
+		a.query.EachEntity(w, func(entry *donburi.Entry) {
+			pos := component.GetPosition(entry)
+			rect := component.GetRect(entry)
 
-	ballView.Each(func(entity engine.Entity) {
-		var ballPos *component.Pos
-		entity.Get(&ballPos)
-
-		view.Each(func(entity2 engine.Entity) {
-			var pos *component.Pos
-			var vel *component.Vel
-			var isPlayer *component.IsPlayer
-			entity2.Get(&pos, &vel, &isPlayer)
-
-			if isPlayer.Value {
-				return
-			}
-
-			if int(ballPos.Y) < int(pos.Y) {
+			if int(ballPos.Y) < int(pos.Y+(rect.Height/2)) {
 				if pos.Y <= 0 {
 					return
 				}
-				pos.Y += -2
+				pos.Y += -3
 			}
-			if int(ballPos.Y) > int(pos.Y) {
+			if int(ballPos.Y) > int(pos.Y+(rect.Height/2)) {
 				if int(pos.Y) >= screenHeight {
 					return
 				}
-				pos.Y += 2
+				pos.Y += 3
 			}
-
 		})
 	})
 }

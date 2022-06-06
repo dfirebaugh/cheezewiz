@@ -3,19 +3,29 @@ package system
 import (
 	"cheezewiz/examples/pong/internal/component"
 
-	"github.com/sedyh/mizu/pkg/engine"
+	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 )
 
-// You can go through all entities that have a certain set of
-// components specifying the requirements in the fields of the system
 type Velocity struct {
-	*component.Pos // Current entity position
-	*component.Vel // Current entity velocity
+	ballQuery *query.Query
 }
 
-// Apply velocity for each entity that has Pos and Vel
-func (v *Velocity) Update(w engine.World) {
-	// If they are registered components, they will not be nil
-	v.Pos.X += v.Vel.L
-	v.Pos.Y += v.Vel.M
+func NewVelocity() *Velocity {
+	return &Velocity{
+		ballQuery: query.NewQuery(filter.Contains(
+			component.Position,
+			component.Radius,
+			component.Velocity,
+		))}
+}
+
+func (v Velocity) Update(w donburi.World) {
+	v.ballQuery.EachEntity(w, func(entry *donburi.Entry) {
+		velocity := component.GetVelocity(entry)
+		position := component.GetPosition(entry)
+		position.X += velocity.L
+		position.Y += velocity.M
+	})
 }

@@ -2,34 +2,36 @@ package system
 
 import (
 	"cheezewiz/examples/pong/internal/component"
+	"cheezewiz/examples/pong/internal/entity"
 	"cheezewiz/internal/input"
 
-	"github.com/sedyh/mizu/pkg/engine"
+	"github.com/yohamta/donburi"
+	"github.com/yohamta/donburi/filter"
+	"github.com/yohamta/donburi/query"
 )
 
-type Player struct{}
+type Player struct {
+	query *query.Query
+}
 
-func (p *Player) Update(w engine.World) {
-	view := w.View(component.Pos{}, component.Rect{}, component.Vel{}, component.IsPlayer{})
+func NewPlayer() *Player {
+	return &Player{
+		query: query.NewQuery(filter.Contains(entity.PlayerTag)),
+	}
+}
 
-	view.Each(func(entity engine.Entity) {
-		var pos *component.Pos
-		var vel *component.Vel
-		var isPlayer *component.IsPlayer
-		entity.Get(&pos, &vel, &isPlayer)
-
-		if !isPlayer.Value {
-			return
-		}
+func (p *Player) Update(w donburi.World) {
+	p.query.EachEntity(w, func(entry *donburi.Entry) {
+		position := component.GetPosition(entry)
 
 		k := input.Keyboard{}
 
 		if k.IsUpPressed() {
-			pos.Y -= 4
+			position.Y -= 4
 		}
 
 		if k.IsDownPressed() {
-			pos.Y += 4
+			position.Y += 4
 		}
 	})
 }
