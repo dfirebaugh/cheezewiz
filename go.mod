@@ -3,11 +3,9 @@ module cheezewiz
 go 1.18
 
 require (
-	code.rocketnine.space/tslocum/gohan v0.0.0-20220210202103-249d54733206
 	github.com/atedja/go-vector v0.0.0-20170318030839-a887ff7bead7
 	github.com/hajimehoshi/ebiten/v2 v2.3.0
 	github.com/lafriks/go-tiled v0.7.0
-	github.com/robertkrimen/otto v0.0.0-20211024170158-b87d35c0b86f
 	github.com/sirupsen/logrus v1.8.1
 	github.com/yohamta/donburi v1.0.0
 	github.com/yohamta/ganim8/v2 v2.0.22
@@ -24,5 +22,4 @@ require (
 	golang.org/x/mobile v0.0.0-20220325161704-447654d348e3 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220408201424-a24fb2fb8a0f // indirect
-	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )
