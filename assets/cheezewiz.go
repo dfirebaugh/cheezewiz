@@ -32,10 +32,10 @@ var (
 )
 
 func GetCheezeWizWalking() (*ganim8.Sprite, *ganim8.Animation) {
-	return idleSprite, ganim8.NewAnimation(idleSprite, 100*time.Millisecond, ganim8.Nop)
+	return idleSprite, ganim8.NewAnimation(walkingSprite, 100*time.Millisecond, ganim8.Nop)
 }
 func GetCheezeWizIdle() (*ganim8.Sprite, *ganim8.Animation) {
-	return walkingSprite, ganim8.NewAnimation(walkingSprite, 100*time.Millisecond, ganim8.Nop)
+	return walkingSprite, ganim8.NewAnimation(idleSprite, 100*time.Millisecond, ganim8.Nop)
 }
 func GetCheezeWizHurt() (*ganim8.Sprite, *ganim8.Animation) {
 	return hurtSprite, ganim8.NewAnimation(hurtSprite, 100*time.Millisecond, ganim8.Nop)
