@@ -2,11 +2,8 @@ package scene
 
 import (
 	"cheezewiz/internal/event"
+	"cheezewiz/level"
 	"encoding/json"
-	"fmt"
-	"os"
-
-	"github.com/sirupsen/logrus"
 )
 
 type worldDefinition struct {
@@ -18,16 +15,9 @@ type worldDefinition struct {
 
 func loadWorld(path string) worldDefinition {
 
-	var level worldDefinition
-	var rawData, err = os.ReadFile(path)
+	var l worldDefinition
+	json.Unmarshal(level.Level1Raw, &l)
 
-	if err != nil {
-		logrus.Fatal(err)
-	}
-
-	json.Unmarshal(rawData, &level)
-	fmt.Printf("%#v", level)
-
-	return level
+	return l
 
 }

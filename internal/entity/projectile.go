@@ -6,7 +6,7 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/constant"
-	"cheezewiz/pkg/scheduler"
+	"cheezewiz/pkg/taskrunner"
 	"image"
 	"time"
 
@@ -75,7 +75,7 @@ func MakeRocketProjectile(w donburi.World, x float64, y float64, dir float64, at
 		w.Remove(entry.Entity())
 	}
 
-	scheduler.Add(tick.Interval, func() {
+	taskrunner.Add(tick.Interval, func() {
 		if time.Since(tick.EOL) > 0 {
 			tick.EOLEvent()
 		}

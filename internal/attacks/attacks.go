@@ -3,9 +3,8 @@ package attacks
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
-	"math"
+	"cheezewiz/pkg/gamemath"
 
-	"github.com/atedja/go-vector"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -33,28 +32,19 @@ var CheeseMissile = func(world donburi.World, attackMediator attackGroup) func()
 				if closestEntry == nil && w.Valid(pentry.Entity()) {
 					closestEntry = pentry
 				} else {
-					distance := math.Sqrt(math.Pow(position.X-enemyPosition.X, 2) + math.Pow(position.Y-enemyPosition.Y, 2))
+					distance := gamemath.GetDistance([]float64{position.X, position.Y}, []float64{enemyPosition.X, enemyPosition.Y})
 					if distance < closestDistance && w.Valid(pentry.Entity()) {
 						closestDistance = distance
 						closestEntry = pentry
 					}
 				}
-
 			})
 
 			if closestEntry != nil {
-
-				e := vector.NewWithValues([]float64{component.GetPosition(closestEntry).X, component.GetPosition(closestEntry).Y})
-
-				m := vector.NewWithValues([]float64{position.X, position.Y})
-
-				r := vector.Unit(vector.Subtract(m, e))
-
-				entity.MakeRocketProjectile(w, position.X, position.Y, math.Atan2(r[1], r[0]), am)
-
+				e := gamemath.GetVector(position.X, position.Y)
+				m := gamemath.GetVector(component.GetPosition(closestEntry).X, component.GetPosition(closestEntry).Y)
+				entity.MakeRocketProjectile(w, position.X, position.Y, gamemath.GetHeading(e, m), am)
 			}
-
 		})
-
 	}
 }

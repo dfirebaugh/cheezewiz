@@ -27,6 +27,7 @@ func (p PlayerControl) Update(w donburi.World) {
 		controller := component.GetInputDevice(entry)
 		direction := component.GetDirection(entry)
 		state := component.GetActorState(entry)
+		animation := component.GetAnimation(entry)
 
 		state.Reset()
 
@@ -40,16 +41,25 @@ func (p PlayerControl) Update(w donburi.World) {
 			state.Set(component.WalkingState)
 		}
 
+		if controller.Device.IsRightJustPressed() {
+		}
 		if controller.Device.IsRightPressed() {
 			position.Update(position.X+playerSpeed, position.Y)
-			direction.IsRight = true
 			state.Set(component.WalkingState)
+			if !direction.IsRight {
+				animation.Get(state.Current).Sprite.FlipH()
+				direction.IsRight = true
+			}
 		}
-
+		if controller.Device.IsLeftJustPressed() {
+		}
 		if controller.Device.IsLeftPressed() {
 			position.Update(position.X-playerSpeed, position.Y)
-			direction.IsRight = false
 			state.Set(component.WalkingState)
+			if direction.IsRight {
+				animation.Get(state.Current).Sprite.FlipH()
+				direction.IsRight = false
+			}
 		}
 
 		if controller.Device.IsPrimaryAtkJustPressed() {

@@ -17,10 +17,15 @@ func (gp GamePad) IsDownPressed() bool {
 	return ebiten.IsGamepadButtonPressed(gp.ID, ebiten.GamepadButton12)
 }
 
+func (gp GamePad) IsLeftJustPressed() bool {
+	return inpututil.IsGamepadButtonJustPressed(gp.ID, ebiten.GamepadButton13)
+}
 func (gp GamePad) IsLeftPressed() bool {
 	return ebiten.IsGamepadButtonPressed(gp.ID, ebiten.GamepadButton13)
 }
-
+func (gp GamePad) IsRightJustPressed() bool {
+	return inpututil.IsGamepadButtonJustPressed(gp.ID, ebiten.GamepadButton11)
+}
 func (gp GamePad) IsRightPressed() bool {
 	return ebiten.IsGamepadButtonPressed(gp.ID, ebiten.GamepadButton11)
 }

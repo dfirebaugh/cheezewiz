@@ -4,13 +4,10 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/lafriks/go-tiled/render"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -26,32 +23,26 @@ type Render struct {
 	count                int
 	animatableActorQuery *query.Query
 	rigidBodyQuery       *query.Query
-	// playerQuery          *query.Query
-	// enemyQuery           *query.Query
-	backgroundQuery    *query.Query
-	worldViewPortQuery *query.Query
-	// projectileQuery      *query.Query
-	playerSlot       *query.Query
-	jellyBeanQuery   *query.Query
-	damageLabelQuery *query.Query
-	positionQuery    *query.Query
-	tilemap_cache    *ebiten.Image
+	backgroundQuery      *query.Query
+	worldViewPortQuery   *query.Query
+	playerSlot           *query.Query
+	jellyBeanQuery       *query.Query
+	damageLabelQuery     *query.Query
+	positionQuery        *query.Query
+	tilemap_cache        *ebiten.Image
 }
 
 func NewRender() *Render {
 	return &Render{
 		animatableActorQuery: query.NewQuery(filter.Contains(component.Animation, component.ActorState, component.Direction)),
 		rigidBodyQuery:       query.NewQuery(filter.Contains(component.RigidBody)),
-		// playerQuery:          query.NewQuery(filter.Contains(entity.PlayerTag)),
-		// enemyQuery:           query.NewQuery(filter.Contains(entity.EnemyTag)),
-		backgroundQuery:    query.NewQuery(filter.Contains(entity.BackgroundTag)),
-		worldViewPortQuery: query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
-		// projectileQuery:      query.NewQuery(filter.Contains(entity.ProjectileTag)),
-		playerSlot:       query.NewQuery(filter.Contains(entity.SlotTag)),
-		jellyBeanQuery:   query.NewQuery(filter.Contains(entity.JellyBeanTag)),
-		damageLabelQuery: query.NewQuery(filter.Contains(entity.DamageLabelTag)),
-		positionQuery:    query.NewQuery(filter.Contains(component.Position)),
-		tilemap_cache:    nil,
+		backgroundQuery:      query.NewQuery(filter.Contains(entity.BackgroundTag)),
+		worldViewPortQuery:   query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
+		playerSlot:           query.NewQuery(filter.Contains(entity.SlotTag)),
+		jellyBeanQuery:       query.NewQuery(filter.Contains(entity.JellyBeanTag)),
+		damageLabelQuery:     query.NewQuery(filter.Contains(entity.DamageLabelTag)),
+		positionQuery:        query.NewQuery(filter.Contains(component.Position)),
+		tilemap_cache:        nil,
 	}
 }
 
@@ -66,11 +57,7 @@ func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.debugRigidBodies(w, screen)
 	r.jellyBeans(w, screen)
 	r.animatableActor(w, screen)
-	// r.enemy(w, screen)
-	// r.player(w, screen)
 	r.playerSlots(w, screen)
-	// r.renderProjectile(w, screen)
-	// r.renderDamageLabels(w, screen)
 }
 
 func (r *Render) updateAnimatableActor(w donburi.World) {
@@ -121,7 +108,6 @@ func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
 		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, direction.Angle)
 		op.OriginX = position.CX / float64(animation.Get(state.Current).Sprite.Width())
 		op.OriginY = position.CY / float64(animation.Get(state.Current).Sprite.Height())
-
 		animation.Get(state.Current).Animation.Draw(screen, op)
 	})
 }
@@ -150,18 +136,23 @@ func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
 		op.GeoM.Translate(0-worldViewLocationPos.X, 0-worldViewLocationPos.Y)
 
 		if r.tilemap_cache == nil {
-			println("Creating new tile cache")
-			tiles := component.GetTileMap(entry)
-			renderer, err := render.NewRenderer(tiles.Map)
-			if err != nil {
-				fmt.Printf("map unsupported for rendering: %s", err.Error())
-				os.Exit(2)
-			}
-			if err = renderer.RenderVisibleLayers(); err != nil {
-				fmt.Println(err)
-				return
-			}
-			r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
+			// tiles := component.GetTileMap(entry)
+
+			// fmt.Printf("%#v", tiles.Map)
+			// renderer, err := render.NewRenderer(tiles.Map)
+			// if err != nil {
+			// 	fmt.Printf("map unsupported for rendering: %s", err.Error())
+			// 	// os.Exit(2)
+			// }
+			// if err = renderer.RenderVisibleLayers(); err != nil {
+			// 	fmt.Println(err)
+			// 	return
+			// }
+			// r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
+		}
+
+		if r.tilemap_cache == nil {
+			return
 		}
 
 		screen.DrawImage(r.tilemap_cache, op)

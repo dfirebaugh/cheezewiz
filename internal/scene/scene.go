@@ -6,7 +6,7 @@ import (
 	"cheezewiz/internal/input"
 	"cheezewiz/internal/mediator"
 	"cheezewiz/internal/system"
-	"cheezewiz/pkg/scheduler"
+	"cheezewiz/pkg/taskrunner"
 	"os"
 	"time"
 
@@ -49,7 +49,7 @@ func Init() *Scene {
 	attackMediator.D = &damageGroup
 	attackMediator.C = collision
 
-	scheduler.Add(time.Millisecond*800, attacks.CheeseMissile(world, attackMediator))
+	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(world, attackMediator))
 
 	s := &Scene{
 		world: world,
@@ -85,7 +85,6 @@ func addEntities(world donburi.World) {
 	entity.MakeBackground(world)
 	entity.MakeTimer(world)
 	entity.MakePlayer(world, input.Keyboard{})
-	// entity.MakeEnemy(world, 50, 50)
 	entity.MakeSlot(world)
 }
 

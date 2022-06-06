@@ -3,7 +3,7 @@
  <editorsettings>
   <export format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="./assets/scenes/garden/garden_bounds.tsx"/>
+ <tileset firstgid="1" source="garden_bounds.tsx"/>
  <layer id="1" name="Tile Layer 1" width="30" height="20">
   <data encoding="csv">
 11,11,11,11,11,11,33,34,11,11,31,32,11,7,8,8,8,8,8,8,9,33,34,11,11,11,11,11,11,11,
