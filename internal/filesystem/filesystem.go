@@ -31,7 +31,10 @@ func GetAsset(path string) []byte {
 }
 
 func GetPNG(path string) *ebiten.Image {
-	img, _, _ := image.Decode(bytes.NewReader(GetAsset(path)))
+	img, _, err := image.Decode(bytes.NewReader(GetAsset(path)))
+	if err != nil {
+		logrus.Error(err)
+	}
 	return ebiten.NewImageFromImage(img)
 }
 
