@@ -1,42 +1,35 @@
 package component
 
 import (
-	"cheezewiz/assets"
+	"cheezewiz/pkg/animation"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/ganim8/v2"
 )
 
-type Action struct {
-	Sprite    *ganim8.Sprite
-	Animation *ganim8.Animation
-}
-
 type AnimationData struct {
-	Animations     map[ActorStateType]Action
+	Animations     map[string]*animation.Animation
 	PrevUpdateTime time.Time
 }
 
 var Animation = donburi.NewComponentType(AnimationData{
-	Animations: map[ActorStateType]Action{},
+	Animations: map[string]*animation.Animation{},
 })
 
 func GetAnimation(entry *donburi.Entry) *AnimationData {
 	return (*AnimationData)(entry.Component(Animation))
 }
 
-func (a AnimationData) Get(state ActorStateType) Action {
-	if _, ok := a.Animations[state]; !ok {
-
-		return ToAction(assets.GetRaddishhWalking())
+func (a AnimationData) Get(label string) *animation.Animation {
+	if _, ok := a.Animations[label]; !ok {
+		logrus.Errorf("could not find an animation for this state: %d \n %#v \n", label, a.Animations)
+		return a.Animations[string(DebugState)]
 	}
-	return a.Animations[state]
+	return a.Animations[label]
 }
 
-func ToAction(spr *ganim8.Sprite, a *ganim8.Animation) Action {
-	return Action{
-		Sprite:    spr,
-		Animation: a,
-	}
+func (a AnimationData) GetCurrent(entry *donburi.Entry) *animation.Animation {
+	state := GetActorState(entry)
+	return a.Animations[string(state.GetCurrent())]
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type InputDeviceData struct {
-	Device input.PlayerInput
+	Device input.PlayerInput `json:"device"`
 }
 
 var InputDevice = donburi.NewComponentType(InputDeviceData{})

@@ -2,7 +2,7 @@ package attacks
 
 import (
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/entity"
+	"cheezewiz/internal/dentity"
 	"cheezewiz/pkg/gamemath"
 
 	"github.com/yohamta/donburi"
@@ -14,11 +14,10 @@ type attackGroup interface {
 	AddEnemyDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry)
 }
 
-var CheeseMissile = func(world donburi.World, attackMediator attackGroup) func() {
+var CheeseMissile = func(world donburi.World) func() {
 	w := world
-	am := attackMediator
-	q := query.NewQuery(filter.Contains(entity.PlayerTag))
-	destinationQuery := query.NewQuery(filter.Contains(entity.EnemyTag))
+	q := query.NewQuery(filter.Contains(component.PlayerTag))
+	destinationQuery := query.NewQuery(filter.Contains(component.EnemyTag))
 	return func() {
 		q.EachEntity(w, func(e *donburi.Entry) {
 			position := component.GetPosition(e)
@@ -40,11 +39,17 @@ var CheeseMissile = func(world donburi.World, attackMediator attackGroup) func()
 				}
 			})
 
-			if closestEntry != nil {
-				e := gamemath.GetVector(position.X, position.Y)
-				m := gamemath.GetVector(component.GetPosition(closestEntry).X, component.GetPosition(closestEntry).Y)
-				entity.MakeRocketProjectile(w, position.X, position.Y, gamemath.GetHeading(e, m), am)
+			if closestEntry == nil {
+				return
 			}
+
+			launchProjectile(w, *position, *component.GetPosition(closestEntry))
 		})
 	}
+}
+
+func launchProjectile(w donburi.World, from component.PositionData, to component.PositionData) {
+	e := gamemath.GetVector(from.X, from.Y)
+	m := gamemath.GetVector(to.X, to.Y)
+	dentity.MakeWithDirection(w, "./config/entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))
 }

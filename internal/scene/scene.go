@@ -1,10 +1,10 @@
 package scene
 
 import (
+	"cheezewiz/config"
 	"cheezewiz/internal/attacks"
+	"cheezewiz/internal/dentity"
 	"cheezewiz/internal/entity"
-	"cheezewiz/internal/input"
-	"cheezewiz/internal/mediator"
 	"cheezewiz/internal/system"
 	"cheezewiz/pkg/taskrunner"
 	"os"
@@ -33,23 +33,15 @@ func Init() *Scene {
 	// World
 	world := donburi.NewWorld()
 
-	level := loadWorld(level1)
-
-	// Mediators
-	attackMediator := &mediator.Attack{}
-
 	// System
 	renderer := system.NewRender()
-	collision := system.NewCollision(attackMediator)
+	collision := system.NewCollision()
 	timer := system.NewTimer()
 	exp := system.NewExpbar()
-	damageGroup := system.NewDamagebufferGroup()
 	aicontroller := system.NewEnemyControl()
 
-	attackMediator.D = &damageGroup
-	attackMediator.C = collision
-
-	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(world, attackMediator))
+	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(world))
+	addEntities(world)
 
 	s := &Scene{
 		world: world,
@@ -58,10 +50,10 @@ func Init() *Scene {
 			system.NewPlayerControl(),
 			timer,
 			system.NewRegisterPlayer(),
-			&damageGroup,
+			system.DamageBufferGroup{},
 			aicontroller,
 			collision,
-			system.NewScheduler(level.Events, world),
+			system.NewScheduler(loadWorld(level1).Events, world),
 			system.NewWorldViewPortLocation(),
 			system.NewProjectileContol(),
 			exp,
@@ -74,18 +66,33 @@ func Init() *Scene {
 		},
 	}
 
-	addEntities(world)
-
 	return s
 }
 
 func addEntities(world donburi.World) {
-	entity.MakeExpBar(world)
+	// entity.MakeExpBar(world)
 	entity.MakeWorld(world)
 	entity.MakeBackground(world)
 	entity.MakeTimer(world)
-	entity.MakePlayer(world, input.Keyboard{})
-	entity.MakeSlot(world)
+	// entity.MakePlayer(world, input.Keyboard{})
+	dentity.MakeRandEntity(
+		world,
+		[]string{
+			"./config/entities/jellybeangreen.entity.json",
+			"./config/entities/jellybeanpink.entity.json",
+			"./config/entities/jellybeanblue.entity.json",
+			"./config/entities/jellybeanrainbow.entity.json",
+		},
+		200,
+		200,
+	)
+	dentity.MakeEntity(
+		world,
+		"./config/entities/cheezewiz.entity.json",
+		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
+		float64(config.Get().Window.Height/config.Get().ScaleFactor/2),
+	)
+	// entity.MakeSlot(world)
 }
 
 func (s *Scene) Update() {

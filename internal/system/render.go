@@ -5,15 +5,14 @@ import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"fmt"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/lafriks/go-tiled/render"
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
-	"github.com/yohamta/ganim8/v2"
 	"golang.org/x/exp/shiny/materialdesign/colornames"
 )
 
@@ -36,7 +35,7 @@ type Render struct {
 
 func NewRender() *Render {
 	return &Render{
-		animatableActorQuery: query.NewQuery(filter.Contains(component.Animation, component.ActorState, component.Direction)),
+		animatableActorQuery: query.NewQuery(filter.Contains(component.Animation, component.ActorState)),
 		rigidBodyQuery:       query.NewQuery(filter.Contains(component.RigidBody)),
 		backgroundQuery:      query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery:   query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
@@ -57,21 +56,18 @@ func (r *Render) Update(w donburi.World) {
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.tileMap(w, screen)
 	r.debugRigidBodies(w, screen)
-	r.jellyBeans(w, screen)
 	r.animatableActor(w, screen)
 	r.playerSlots(w, screen)
 }
 
 func (r *Render) updateAnimatableActor(w donburi.World) {
-	now := time.Now()
-
 	r.animatableActorQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
-		state := component.GetActorState(entry)
-
-		anim := animation.Get(state.Current)
-		anim.Animation.Update(now.Sub(animation.PrevUpdateTime))
-		animation.PrevUpdateTime = now
+		anim := animation.GetCurrent(entry)
+		if anim == nil {
+			return
+		}
+		anim.NextFrame()
 	})
 }
 
@@ -106,11 +102,24 @@ func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
 		state := component.GetActorState(entry)
-		direction := component.GetDirection(entry)
-		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, direction.Angle)
-		op.OriginX = position.CX / float64(animation.Get(state.Current).Sprite.Width())
-		op.OriginY = position.CY / float64(animation.Get(state.Current).Sprite.Height())
-		animation.Get(state.Current).Animation.Draw(screen, op)
+
+		anim := animation.GetCurrent(entry)
+		if anim == nil {
+			logrus.Error("unabled to get animation: ", state.GetCurrent())
+			for k, a := range animation.Animations {
+				println(k, a)
+			}
+			return
+		}
+
+		next := anim.GetFrame()
+		if next == nil {
+			logrus.Error("unabled to get frame")
+			return
+		}
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(position.X-position.CX-worldViewLocationPos.X, position.Y-position.CY-worldViewLocationPos.Y)
+		screen.DrawImage(next, op)
 	})
 }
 
@@ -139,6 +148,10 @@ func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
 
 		if r.tilemap_cache == nil {
 			tiles := component.GetTileMap(entry)
+
+			if tiles.Map == nil {
+				return
+			}
 
 			renderer, err := render.NewRenderer(tiles.Map)
 			if err != nil {
@@ -176,20 +189,6 @@ func (r *Render) playerSlots(w donburi.World, screen *ebiten.Image) {
 		screen.DrawImage(sprite.IMG, op)
 		op = &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-480)
-		screen.DrawImage(sprite.IMG, op)
-	})
-}
-
-func (r *Render) jellyBeans(w donburi.World, screen *ebiten.Image) {
-	r.jellyBeanQuery.EachEntity(w, func(entry *donburi.Entry) {
-		worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
-		worldViewLocationPos := component.GetPosition(worldViewLocation)
-		position := component.GetPosition(entry)
-
-		sprite := component.GetSpriteSheet(entry)
-
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y)
 		screen.DrawImage(sprite.IMG, op)
 	})
 }

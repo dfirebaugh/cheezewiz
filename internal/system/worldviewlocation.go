@@ -18,7 +18,7 @@ type WorldViewPortLocation struct {
 func NewWorldViewPortLocation() *WorldViewPortLocation {
 	return &WorldViewPortLocation{
 		playerQuery: query.NewQuery(filter.Contains(
-			entity.PlayerTag,
+			component.PlayerTag,
 		)),
 		query: query.NewQuery(filter.Contains(
 			entity.WorldViewPortTag,

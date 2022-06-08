@@ -1,0 +1,32 @@
+{
+    "playerTag": "",
+    "inputDevice": "keyboard",
+    "actorState": "idle",
+    "animations": {
+        "idle": "cheezewiz.png",
+        "walk": "cheezewiz.png",
+        "hurt": "cheezewiz-damaged.png",
+        "attack": "cheezewiz.png",
+        "death": "cheezewiz.png"
+    },
+    "direction": {
+        "angle": 0
+    },
+    "position": {
+        "x": 0,
+        "y": 0,
+        "cx": 16,
+        "cy": 16
+    },
+    "rigidBody": {
+        "r": 32,
+        "l": 32,
+        "t": 32,
+        "b": 32,
+        "collisionLabel": "player"
+    },
+    "health": {
+        "hp": 100,
+        "max": 100
+    }
+}

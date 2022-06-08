@@ -2,15 +2,7 @@ package system
 
 import (
 	"testing"
-
-	"github.com/yohamta/donburi"
 )
-
-type am struct {
-}
-
-func (am) AddPlayerDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry) {}
-func (am) AddEnemyDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)  {}
 
 type test struct {
 	a        []float64
@@ -20,7 +12,7 @@ type test struct {
 }
 
 func TestIsCollide(t *testing.T) {
-	c := NewCollision(am{})
+	c := NewCollision()
 	tests := []test{
 		{
 			a:        []float64{1, 1, 1, 1},

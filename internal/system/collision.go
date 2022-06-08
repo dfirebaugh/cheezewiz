@@ -18,7 +18,7 @@ type Collision struct {
 	query *query.Query
 }
 
-func NewCollision(attack_handler attackMediator) *Collision {
+func NewCollision() *Collision {
 	return &Collision{
 		query: query.NewQuery(filter.Contains(component.RigidBody)),
 	}

@@ -1,0 +1,28 @@
+{
+    "enemyTag": "",
+    "animations": {
+        "idle": "radishblue.png",
+        "walk": "radishblue.png",
+        "hurt": "radishblue.png",
+        "attack": "radishblue.png",
+        "death": "radishblue.png"
+    },
+    "actorState": "idle",
+    "position": {
+        "x": 0,
+        "y": 0,
+        "cx": 16,
+        "cy": 16
+    },
+    "rigidBody": {
+        "r": 32,
+        "l": 32,
+        "t": 32,
+        "b": 32,
+        "collisionLabel": "enemy"
+    },
+    "health": {
+        "hp": 100,
+        "max": 100
+    }
+}

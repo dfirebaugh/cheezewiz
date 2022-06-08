@@ -3,7 +3,6 @@ package system
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/dentity"
-	"cheezewiz/internal/entity"
 	"math"
 
 	"github.com/yohamta/donburi"
@@ -22,8 +21,8 @@ const enemySpeed = 0.5
 
 func NewEnemyControl() *EnemyControl {
 	return &EnemyControl{
-		query:            query.NewQuery(filter.Contains(entity.EnemyTag)),
-		destinationQuery: query.NewQuery(filter.Contains(entity.PlayerTag)),
+		query:            query.NewQuery(filter.Contains(component.EnemyTag)),
+		destinationQuery: query.NewQuery(filter.Contains(component.PlayerTag)),
 	}
 }
 
@@ -36,7 +35,7 @@ func (e EnemyControl) Update(w donburi.World) {
 		}
 		if health.HP <= 0 {
 			w.Remove(entry.Entity())
-			dentity.MakeRandDynamicEntity(w, []string{
+			dentity.MakeRandEntity(w, []string{
 				"./config/entities/jellybeangreen.entity.json",
 				"./config/entities/jellybeanpink.entity.json",
 				"./config/entities/jellybeanblue.entity.json",

@@ -1,9 +1,6 @@
 package system
 
 import (
-	"cheezewiz/internal/entity"
-	"cheezewiz/internal/input"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/yohamta/donburi"
@@ -25,10 +22,10 @@ func (rp *RegisterPlayer) Update(world donburi.World) {
 
 	// Log the gamepad connection events.
 	rp.gamepadIDsBuf = inpututil.AppendJustConnectedGamepadIDs(rp.gamepadIDsBuf[:0])
-	for _, id := range rp.gamepadIDsBuf {
-		entry := entity.MakePlayer(world, input.GamePad{ID: id})
-		rp.gamepadIDs[id] = entry
-	}
+	// for _, id := range rp.gamepadIDsBuf {
+	// entry := entity.MakePlayer(world, input.GamePad{ID: id})
+	// rp.gamepadIDs[id] = entry
+	// }
 
 	for id, entry := range rp.gamepadIDs {
 		if inpututil.IsGamepadJustDisconnected(id) {
