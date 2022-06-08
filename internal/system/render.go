@@ -106,9 +106,6 @@ func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
 		anim := animation.GetCurrent(entry)
 		if anim == nil {
 			logrus.Error("unabled to get animation: ", state.GetCurrent())
-			for k, a := range animation.Animations {
-				println(k, a)
-			}
 			return
 		}
 
@@ -159,7 +156,7 @@ func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
 				return
 			}
 			if err = renderer.RenderVisibleLayers(); err != nil {
-				fmt.Println(err)
+				logrus.Error(err)
 				return
 			}
 			r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)

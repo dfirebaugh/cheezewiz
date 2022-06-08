@@ -8,7 +8,6 @@ require (
 	github.com/lafriks/go-tiled v0.7.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/yohamta/donburi v1.0.0
-	github.com/yohamta/ganim8/v2 v2.0.22
 	golang.org/x/exp v0.0.0-20220104160115-025e73f80486
 	golang.org/x/image v0.0.0-20220321031419-a8550c1d254a
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

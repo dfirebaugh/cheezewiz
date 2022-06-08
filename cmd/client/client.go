@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.ErrorLevel)
 
 	c := config.Get()
 	game := &ebitenwrapper.Game{

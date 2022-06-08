@@ -3,6 +3,7 @@ package attackgroup
 import (
 	"fmt"
 
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 )
 
@@ -43,7 +44,7 @@ func AddEnemyDamage(reciever *donburi.Entry, amount float64, Origin *donburi.Ent
 
 func ApplyDamageToEnemy(w donburi.World, enemy *donburi.Entry, amount float64) {
 	if enemy == nil {
-		println("enemy is not valid")
+		logrus.Warn("enemy is not valid")
 		return
 	}
 

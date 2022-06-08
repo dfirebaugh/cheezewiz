@@ -9,8 +9,6 @@
     },
     "actorState": "idle",
     "position": {
-        "x": 0,
-        "y": 0,
         "cx": 16,
         "cy": 16
     },

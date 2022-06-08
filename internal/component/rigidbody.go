@@ -57,7 +57,7 @@ func (r *RigidBodyData) SetCollisionHandler(label interface{}) {
 	var l CollisionHandlerLabel
 	var ok bool
 
-	println(string(label.(CollisionHandlerLabel)))
+	logrus.Info(string(label.(CollisionHandlerLabel)))
 	if l, ok = label.(CollisionHandlerLabel); !ok || l == "" {
 		logrus.Error("not a defined collision handler")
 		return
@@ -76,6 +76,9 @@ func (r *RigidBodyData) SetCollisionHandler(label interface{}) {
 func (r RigidBodyData) GetCollisionHandler(label CollisionHandlerLabel) (func(w donburi.World, e *donburi.Entry), error) {
 	c := map[CollisionHandlerLabel]func(w donburi.World, e *donburi.Entry){
 		EnemyCollisionLabel: func(w donburi.World, e *donburi.Entry) {
+			if !w.Valid(e.Entity()) {
+				return
+			}
 			if e.Archetype().Layout().HasComponent(PlayerTag) {
 				state := GetActorState(e)
 				state.Set(HurtState)
@@ -84,34 +87,44 @@ func (r RigidBodyData) GetCollisionHandler(label CollisionHandlerLabel) (func(w 
 				// r.am.AddPlayerDamage(e, 10, nil)
 			}
 			if e.Archetype().Layout().HasComponent(ProjectileTag) {
-				println("enemy collided with projectile")
-				w.Remove(e.Entity())
+				logrus.Info("enemy collided with projectile")
+				// w.Remove(e.Entity())
 			}
 		},
 		RocketCollisionLabel: func(w donburi.World, e *donburi.Entry) {
+			if !w.Valid(e.Entity()) {
+				return
+			}
+
 			if e.Archetype().Layout().HasComponent(EnemyTag) {
-				println("missile collided with enemy")
-				w.Remove(e.Entity())
+				logrus.Info("missile collided with enemy")
+				// w.Remove(e.Entity())
 				// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
 				// r.am.AddEnemyDamage(e, 10, nil)
 			}
 		},
 		BossCollisionLabel: func(w donburi.World, e *donburi.Entry) {
+			if !w.Valid(e.Entity()) {
+				return
+			}
 			if e.Archetype().Layout().HasComponent(PlayerTag) {
-				println("collision with boss")
+				logrus.Info("collision with boss")
 				// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
 				// r.am.AddEnemyDamage(e, 10, nil)
 			}
 
 		},
 		PlayerCollisionLabel: func(w donburi.World, e *donburi.Entry) {
+			if !w.Valid(e.Entity()) {
+				return
+			}
 			if e.Archetype().Layout().HasComponent(EnemyTag) {
-				println("player collided with enemy")
+				logrus.Info("player collided with enemy")
 				// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
 				// r.am.AddEnemyDamage(e, 10, nil)
 			}
 			if e.Archetype().Layout().HasComponent(JellyBeanTag) {
-				println("player collided with enemy")
+				logrus.Info("player collided with enemy")
 				w.Remove(e.Entity())
 			}
 		},

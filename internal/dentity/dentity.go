@@ -148,7 +148,6 @@ func (d *DynamicEntity) setRigidBody(entry *donburi.Entry) {
 	}
 	rb := component.GetRigidBody(entry)
 	rb.SetBorder(d.config.RigidBody.R, d.config.RigidBody.B)
-	println(d.config.RigidBody.CollisionHandlerLabel)
 	ch := component.CollisionHandlerLabel(d.config.RigidBody.CollisionHandlerLabel)
 	rb.SetCollisionHandler(ch)
 }

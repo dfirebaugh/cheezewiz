@@ -3,12 +3,12 @@ package event
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/dentity"
-	"fmt"
 	"math"
 	"math/rand"
 	"strconv"
 
 	"github.com/atedja/go-vector"
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -80,11 +80,11 @@ func spawnBoss(w donburi.World, args []string) {
 }
 
 func outputHurryUp(w donburi.World, args []string) {
-	fmt.Println("HURRY UP")
+	logrus.Info("HURRY UP")
 }
 
 func outputDeath(w donburi.World, args []string) {
-	fmt.Println("Death")
+	logrus.Info("Death")
 }
 
 type JobName string
