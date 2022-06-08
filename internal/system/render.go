@@ -4,16 +4,16 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"cheezewiz/internal/tag"
 	"fmt"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/lafriks/go-tiled/render"
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
-	"github.com/yohamta/ganim8/v2"
 	"golang.org/x/exp/shiny/materialdesign/colornames"
 )
 
@@ -36,12 +36,12 @@ type Render struct {
 
 func NewRender() *Render {
 	return &Render{
-		animatableActorQuery: query.NewQuery(filter.Contains(component.Animation, component.ActorState, component.Direction)),
+		animatableActorQuery: query.NewQuery(filter.Contains(component.Animation, component.ActorState)),
 		rigidBodyQuery:       query.NewQuery(filter.Contains(component.RigidBody)),
 		backgroundQuery:      query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery:   query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
 		playerSlot:           query.NewQuery(filter.Contains(entity.SlotTag)),
-		jellyBeanQuery:       query.NewQuery(filter.Contains(component.JellyBeanTag)),
+		jellyBeanQuery:       query.NewQuery(filter.Contains(tag.JellyBean)),
 		damageLabelQuery:     query.NewQuery(filter.Contains(entity.DamageLabelTag)),
 		positionQuery:        query.NewQuery(filter.Contains(component.Position)),
 		tilemap_cache:        nil,
@@ -57,21 +57,18 @@ func (r *Render) Update(w donburi.World) {
 func (r *Render) Draw(w donburi.World, screen *ebiten.Image) {
 	r.tileMap(w, screen)
 	r.debugRigidBodies(w, screen)
-	r.jellyBeans(w, screen)
 	r.animatableActor(w, screen)
 	r.playerSlots(w, screen)
 }
 
 func (r *Render) updateAnimatableActor(w donburi.World) {
-	now := time.Now()
-
 	r.animatableActorQuery.EachEntity(w, func(entry *donburi.Entry) {
 		animation := component.GetAnimation(entry)
-		state := component.GetActorState(entry)
-
-		anim := animation.Get(state.Current)
-		anim.Animation.Update(now.Sub(animation.PrevUpdateTime))
-		animation.PrevUpdateTime = now
+		anim := animation.GetCurrent(entry)
+		if anim == nil {
+			return
+		}
+		anim.NextFrame()
 	})
 }
 
@@ -86,6 +83,12 @@ func (r *Render) updateAnimatableActor(w donburi.World) {
 // 	})
 // }
 
+func (r *Render) getWorldCoord(w donburi.World, position *component.PositionData) (float64, float64) {
+	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
+	worldViewLocationPos := component.GetPosition(worldViewLocation)
+	return position.X - position.CX - worldViewLocationPos.X, position.Y - position.CY - worldViewLocationPos.Y
+}
+
 func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
@@ -99,19 +102,41 @@ func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
 }
 
 func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
-	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
-	worldViewLocationPos := component.GetPosition(worldViewLocation)
-
 	r.animatableActorQuery.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
 		state := component.GetActorState(entry)
-		direction := component.GetDirection(entry)
-		op := ganim8.DrawOpts(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y, direction.Angle)
-		op.OriginX = position.CX / float64(animation.Get(state.Current).Sprite.Width())
-		op.OriginY = position.CY / float64(animation.Get(state.Current).Sprite.Height())
-		animation.Get(state.Current).Animation.Draw(screen, op)
+
+		anim := animation.GetCurrent(entry)
+		if anim == nil {
+			logrus.Error("unabled to get animation: ", state.GetCurrent())
+			return
+		}
+
+		next := anim.GetFrame()
+		if next == nil {
+			logrus.Error("unabled to get frame")
+			return
+		}
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(r.getWorldCoord(w, position))
+		screen.DrawImage(next, op)
+
+		r.healthBar(w, entry, screen)
 	})
+}
+
+func (r *Render) healthBar(w donburi.World, entry *donburi.Entry, screen *ebiten.Image) {
+	if entry.Archetype().Layout().HasComponent(tag.Player) {
+		position := component.GetPosition(entry)
+		health := component.GetHealth(entry)
+		x, y := r.getWorldCoord(w, position)
+
+		var marginBottom float64 = 35
+
+		ebitenutil.DrawRect(screen, x, marginBottom+y, health.MAXHP/3, 3, colornames.Grey100)
+		ebitenutil.DrawRect(screen, x, marginBottom+y, health.HP/3, 3, colornames.Red600)
+	}
 }
 
 func (r *Render) debugRigidBodies(w donburi.World, screen *ebiten.Image) {
@@ -140,13 +165,17 @@ func (r *Render) tileMap(w donburi.World, screen *ebiten.Image) {
 		if r.tilemap_cache == nil {
 			tiles := component.GetTileMap(entry)
 
+			if tiles.Map == nil {
+				return
+			}
+
 			renderer, err := render.NewRenderer(tiles.Map)
 			if err != nil {
 				fmt.Printf("map unsupported for rendering: %s", err.Error())
 				return
 			}
 			if err = renderer.RenderVisibleLayers(); err != nil {
-				fmt.Println(err)
+				logrus.Error(err)
 				return
 			}
 			r.tilemap_cache = ebiten.NewImageFromImage(renderer.Result)
@@ -176,20 +205,6 @@ func (r *Render) playerSlots(w donburi.World, screen *ebiten.Image) {
 		screen.DrawImage(sprite.IMG, op)
 		op = &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(config.Get().Window.Height/config.Get().ScaleFactor)-142, float64(config.Get().Window.Width/config.Get().ScaleFactor)-480)
-		screen.DrawImage(sprite.IMG, op)
-	})
-}
-
-func (r *Render) jellyBeans(w donburi.World, screen *ebiten.Image) {
-	r.jellyBeanQuery.EachEntity(w, func(entry *donburi.Entry) {
-		worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
-		worldViewLocationPos := component.GetPosition(worldViewLocation)
-		position := component.GetPosition(entry)
-
-		sprite := component.GetSpriteSheet(entry)
-
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(position.X-worldViewLocationPos.X, position.Y-worldViewLocationPos.Y)
 		screen.DrawImage(sprite.IMG, op)
 	})
 }

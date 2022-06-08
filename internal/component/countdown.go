@@ -5,7 +5,7 @@ import (
 )
 
 type CountdownData struct {
-	CountDownInSec uint32
+	CountDownInSec uint32 `json:"countDown"`
 }
 
 var Countdown = donburi.NewComponentType(CountdownData{})

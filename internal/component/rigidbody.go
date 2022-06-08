@@ -1,15 +1,19 @@
 package component
 
 import (
+	"cheezewiz/internal/collision"
+
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 )
 
 type RigidBodyData struct {
-	R                float64 `json:"r"`
-	L                float64 `json:"l"`
-	T                float64 `json:"t"`
-	B                float64 `json:"b"`
-	CollisionHandler func(w donburi.World, e *donburi.Entry)
+	R                     float64 `json:"r"`
+	L                     float64 `json:"l"`
+	T                     float64 `json:"t"`
+	B                     float64 `json:"b"`
+	CollisionHandler      func(w donburi.World, e *donburi.Entry)
+	CollisionHandlerLabel string `json:"collisionLabel"`
 }
 
 var RigidBody = donburi.NewComponentType(RigidBodyData{})
@@ -30,4 +34,24 @@ func (r *RigidBodyData) SetBorder(wx float64, wy float64) {
 	r.L = wx / 2
 	r.T = wy / 2
 	r.B = wy / 2
+}
+
+func (r *RigidBodyData) SetCollisionHandler(label interface{}) {
+	var l collision.HandlerLabel
+	var ok bool
+
+	logrus.Info(string(label.(collision.HandlerLabel)))
+	if l, ok = label.(collision.HandlerLabel); !ok || l == "" {
+		logrus.Errorf("not a defined collision handler %s", label)
+		return
+	}
+
+	handler, err := collision.GetCollisionHandler(l)
+	if err != nil {
+		logrus.Warnf("not able to set collision handler %s -- %s", label, err)
+		r.CollisionHandler = nil
+		return
+	}
+
+	r.CollisionHandler = handler
 }

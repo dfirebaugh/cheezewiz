@@ -2,13 +2,14 @@ package event
 
 import (
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/entity"
-	"fmt"
+	"cheezewiz/internal/dentity"
+	"cheezewiz/internal/tag"
 	"math"
 	"math/rand"
 	"strconv"
 
 	"github.com/atedja/go-vector"
+	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
@@ -21,7 +22,7 @@ type Job struct {
 }
 
 func spawnWave(w donburi.World, args []string) {
-	playerQuery := query.NewQuery(filter.Contains(entity.PlayerTag))
+	playerQuery := query.NewQuery(filter.Contains(tag.Player))
 
 	firstplayer, _ := playerQuery.FirstEntity(w)
 
@@ -42,7 +43,11 @@ func spawnWave(w donburi.World, args []string) {
 			spawnloc := vector.NewWithValues([]float64{x, y})
 			spawnloc.Scale(float64(distance))
 			spawnloc = vector.Add(spawnloc, playerVector)
-			e := entity.MakeEnemy(w, spawnloc[0], spawnloc[1])
+			e := dentity.MakeRandEntity(w, []string{
+				"entities/radishred.entity.json",
+				"entities/radishblue.entity.json",
+				"entities/radishyellow.entity.json",
+			}, spawnloc[0], spawnloc[1])
 			component.GetHealth(e).HP = float64(hp)
 		}
 
@@ -52,8 +57,7 @@ func spawnWave(w donburi.World, args []string) {
 }
 
 func spawnBoss(w donburi.World, args []string) {
-
-	hp, _ := strconv.Atoi(args[1])
+	// hp, _ := strconv.Atoi(args[1])
 	distance, _ := strconv.Atoi(args[2])
 	loc_radian := rand.Float64() * (math.Pi * 2)
 
@@ -64,7 +68,7 @@ func spawnBoss(w donburi.World, args []string) {
 
 	v.Scale(float64(distance))
 
-	playerQuery := query.NewQuery(filter.Contains(entity.PlayerTag))
+	playerQuery := query.NewQuery(filter.Contains(tag.Player))
 
 	firstplayer, _ := playerQuery.FirstEntity(w)
 
@@ -73,17 +77,15 @@ func spawnBoss(w donburi.World, args []string) {
 
 	v = vector.Add(playerVector, v)
 
-	entity.MakeBossEnemy(w, v[0], v[1], float64(hp))
-	//component.GetHealth(e).HP = float64(hp)
-	//args[]
+	dentity.MakeEntity(w, "entities/cheezboss.entity.json", v[0], v[1])
 }
 
 func outputHurryUp(w donburi.World, args []string) {
-	fmt.Println("HURRY UP")
+	logrus.Info("HURRY UP")
 }
 
 func outputDeath(w donburi.World, args []string) {
-	fmt.Println("Death")
+	logrus.Info("Death")
 }
 
 type JobName string

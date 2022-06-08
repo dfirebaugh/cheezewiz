@@ -1,6 +1,7 @@
 package config
 
 import (
+	"embed"
 	_ "embed"
 
 	"gopkg.in/yaml.v3"
@@ -18,6 +19,12 @@ type Config struct {
 	ScaleFactor  int    `yaml:"scale-factor"`
 	DebugEnabled bool   `yaml:"debug"`
 }
+
+//go:embed levels/*
+var LevelFS embed.FS
+
+//go:embed *
+var EntityFS embed.FS
 
 //go:embed config.yml
 var ConfigRaw []byte

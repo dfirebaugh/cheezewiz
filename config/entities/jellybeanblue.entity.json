@@ -1,21 +1,22 @@
 {
-    "components": ["JellyBeanTag", "XP", "SpriteSheet", "Position", "RigidBody"],
-    "xp": {
-        "value": 1
+    "jellyBeanTag": "",
+    "xp": 1,
+    "animations": {
+        "idle": "jellybeanblue.png",
+        "walk": "jellybeanblue.png",
+        "hurt": "jellybeanblue.png",
+        "attack": "jellybeanblue.png",
+        "death": "jellybeanblue.png"
     },
-    "spriteSheet": {
-        "path": "./assets/jellybeanblue.png"
-    },
+    "actorState": "idle",
     "position": {
-        "x": 0,
-        "y": 0,
         "cx": 16,
         "cy": 16
     },
     "rigidBody": {
-        "w": 32,
-        "h": 32,
-        "R": 16,
-        "B": 16
+        "l": 16,
+        "r": 16,
+        "t": 16,
+        "b": 16
     }
 }
