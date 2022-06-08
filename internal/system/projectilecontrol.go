@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/tag"
 	"math"
 
 	"github.com/yohamta/donburi"
@@ -17,7 +18,7 @@ const projectileSpeed = 1.5
 
 func NewProjectileContol() *ProjectileControl {
 	return &ProjectileControl{
-		query: query.NewQuery(filter.Contains(component.ProjectileTag)),
+		query: query.NewQuery(filter.Contains(tag.Projectile)),
 	}
 }
 

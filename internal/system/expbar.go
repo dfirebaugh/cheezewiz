@@ -3,6 +3,7 @@ package system
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"cheezewiz/internal/tag"
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -20,7 +21,7 @@ type Expbar struct {
 
 func NewExpbar() *Expbar {
 	return &Expbar{
-		jellyBeanQuery: query.NewQuery(filter.Contains(component.JellyBeanTag)),
+		jellyBeanQuery: query.NewQuery(filter.Contains(tag.JellyBean)),
 		query:          query.NewQuery(filter.Contains(entity.ExpBarTag)),
 	}
 }

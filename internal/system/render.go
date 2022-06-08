@@ -4,6 +4,7 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"cheezewiz/internal/tag"
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -40,7 +41,7 @@ func NewRender() *Render {
 		backgroundQuery:      query.NewQuery(filter.Contains(entity.BackgroundTag)),
 		worldViewPortQuery:   query.NewQuery(filter.Contains(entity.WorldViewPortTag)),
 		playerSlot:           query.NewQuery(filter.Contains(entity.SlotTag)),
-		jellyBeanQuery:       query.NewQuery(filter.Contains(component.JellyBeanTag)),
+		jellyBeanQuery:       query.NewQuery(filter.Contains(tag.JellyBean)),
 		damageLabelQuery:     query.NewQuery(filter.Contains(entity.DamageLabelTag)),
 		positionQuery:        query.NewQuery(filter.Contains(component.Position)),
 		tilemap_cache:        nil,

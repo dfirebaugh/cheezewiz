@@ -4,6 +4,7 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
+	"cheezewiz/internal/tag"
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
@@ -18,7 +19,7 @@ type WorldViewPortLocation struct {
 func NewWorldViewPortLocation() *WorldViewPortLocation {
 	return &WorldViewPortLocation{
 		playerQuery: query.NewQuery(filter.Contains(
-			component.PlayerTag,
+			tag.Player,
 		)),
 		query: query.NewQuery(filter.Contains(
 			entity.WorldViewPortTag,

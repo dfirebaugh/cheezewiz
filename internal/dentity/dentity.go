@@ -1,8 +1,10 @@
 package dentity
 
 import (
+	"cheezewiz/internal/collision"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/input"
+	"cheezewiz/internal/tag"
 	"cheezewiz/pkg/animation"
 	"math/rand"
 
@@ -30,10 +32,10 @@ const (
 )
 
 var componentTable = map[componentLabel]*donburi.ComponentType{
-	PlayerTag:     component.PlayerTag,
-	EnemyTag:      component.EnemyTag,
-	ProjectileTag: component.ProjectileTag,
-	JellyBeanTag:  component.JellyBeanTag,
+	PlayerTag:     tag.Player,
+	EnemyTag:      tag.Enemy,
+	ProjectileTag: tag.Projectile,
+	JellyBeanTag:  tag.JellyBean,
 	XP:            component.XP,
 	SpriteSheet:   component.SpriteSheet,
 	Position:      component.Position,
@@ -148,7 +150,7 @@ func (d *DynamicEntity) setRigidBody(entry *donburi.Entry) {
 	}
 	rb := component.GetRigidBody(entry)
 	rb.SetBorder(d.config.RigidBody.R, d.config.RigidBody.B)
-	ch := component.CollisionHandlerLabel(d.config.RigidBody.CollisionHandlerLabel)
+	ch := collision.HandlerLabel(d.config.RigidBody.CollisionHandlerLabel)
 	rb.SetCollisionHandler(ch)
 }
 

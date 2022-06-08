@@ -3,6 +3,7 @@ package system
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/dentity"
+	"cheezewiz/internal/tag"
 	"math"
 
 	"github.com/yohamta/donburi"
@@ -21,8 +22,8 @@ const enemySpeed = 0.5
 
 func NewEnemyControl() *EnemyControl {
 	return &EnemyControl{
-		query:            query.NewQuery(filter.Contains(component.EnemyTag)),
-		destinationQuery: query.NewQuery(filter.Contains(component.PlayerTag)),
+		query:            query.NewQuery(filter.Contains(tag.Enemy)),
+		destinationQuery: query.NewQuery(filter.Contains(tag.Player)),
 	}
 }
 

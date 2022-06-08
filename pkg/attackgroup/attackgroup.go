@@ -1,8 +1,6 @@
 package attackgroup
 
 import (
-	"fmt"
-
 	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 )
@@ -48,8 +46,7 @@ func ApplyDamageToEnemy(w donburi.World, enemy *donburi.Entry, amount float64) {
 		return
 	}
 
-	fmt.Printf("apply %f dmg to enemy", amount)
-
+	// logrus.Infof("apply %f dmg to enemy", amount)
 	// hc := component.GetHealth(enemy)
 	// hc.HP -= amount
 

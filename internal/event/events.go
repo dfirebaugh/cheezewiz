@@ -3,6 +3,7 @@ package event
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/dentity"
+	"cheezewiz/internal/tag"
 	"math"
 	"math/rand"
 	"strconv"
@@ -21,7 +22,7 @@ type Job struct {
 }
 
 func spawnWave(w donburi.World, args []string) {
-	playerQuery := query.NewQuery(filter.Contains(component.PlayerTag))
+	playerQuery := query.NewQuery(filter.Contains(tag.Player))
 
 	firstplayer, _ := playerQuery.FirstEntity(w)
 
@@ -67,7 +68,7 @@ func spawnBoss(w donburi.World, args []string) {
 
 	v.Scale(float64(distance))
 
-	playerQuery := query.NewQuery(filter.Contains(component.PlayerTag))
+	playerQuery := query.NewQuery(filter.Contains(tag.Player))
 
 	firstplayer, _ := playerQuery.FirstEntity(w)
 

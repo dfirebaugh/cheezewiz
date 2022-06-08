@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/tag"
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
@@ -16,7 +17,7 @@ const playerSpeed = 1
 
 func NewPlayerControl() *PlayerControl {
 	return &PlayerControl{
-		query: query.NewQuery(filter.Contains(component.PlayerTag)),
+		query: query.NewQuery(filter.Contains(tag.Player)),
 	}
 }
 

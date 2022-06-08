@@ -3,6 +3,7 @@ package attacks
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/dentity"
+	"cheezewiz/internal/tag"
 	"cheezewiz/pkg/gamemath"
 
 	"github.com/yohamta/donburi"
@@ -16,8 +17,8 @@ type attackGroup interface {
 
 var CheeseMissile = func(world donburi.World) func() {
 	w := world
-	q := query.NewQuery(filter.Contains(component.PlayerTag))
-	destinationQuery := query.NewQuery(filter.Contains(component.EnemyTag))
+	q := query.NewQuery(filter.Contains(tag.Player))
+	destinationQuery := query.NewQuery(filter.Contains(tag.Enemy))
 	return func() {
 		q.EachEntity(w, func(e *donburi.Entry) {
 			position := component.GetPosition(e)
