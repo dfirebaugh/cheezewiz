@@ -78,17 +78,17 @@ func addEntities(world donburi.World) {
 	dentity.MakeRandEntity(
 		world,
 		[]string{
-			"./config/entities/jellybeangreen.entity.json",
-			"./config/entities/jellybeanpink.entity.json",
-			"./config/entities/jellybeanblue.entity.json",
-			"./config/entities/jellybeanrainbow.entity.json",
+			"entities/jellybeangreen.entity.json",
+			"entities/jellybeanpink.entity.json",
+			"entities/jellybeanblue.entity.json",
+			"entities/jellybeanrainbow.entity.json",
 		},
 		200,
 		200,
 	)
 	dentity.MakeEntity(
 		world,
-		"./config/entities/cheezewiz.entity.json",
+		"entities/cheezewiz.entity.json",
 		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
 		float64(config.Get().Window.Height/config.Get().ScaleFactor/2),
 	)

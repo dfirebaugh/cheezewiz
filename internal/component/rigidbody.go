@@ -42,14 +42,14 @@ func (r *RigidBodyData) SetCollisionHandler(label interface{}) {
 
 	logrus.Info(string(label.(collision.HandlerLabel)))
 	if l, ok = label.(collision.HandlerLabel); !ok || l == "" {
-		logrus.Error("not a defined collision handler")
+		logrus.Errorf("not a defined collision handler %s", label)
 		return
 	}
 
 	handler, err := collision.GetCollisionHandler(l)
 	if err != nil {
-		logrus.Errorf("not able to set collision handler %s -- %s", label, err)
-		r.CollisionHandler = func(w donburi.World, e *donburi.Entry) {}
+		logrus.Warnf("not able to set collision handler %s -- %s", label, err)
+		r.CollisionHandler = nil
 		return
 	}
 

@@ -22,6 +22,16 @@ var sceneFS embed.FS = assets.SceneFS
 // this will contain metadata about a level e.g. what spawns trigger at what time
 var levelFS embed.FS = config.LevelFS
 
+var entityFS embed.FS = config.EntityFS
+
+func GetEntity(path string) []byte {
+	f, err := entityFS.ReadFile(path)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	return f
+}
+
 func GetAsset(path string) []byte {
 	f, err := assetFS.ReadFile(path)
 	if err != nil {

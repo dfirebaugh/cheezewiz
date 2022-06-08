@@ -83,6 +83,12 @@ func (r *Render) updateAnimatableActor(w donburi.World) {
 // 	})
 // }
 
+func (r *Render) getWorldCoord(w donburi.World, position *component.PositionData) (float64, float64) {
+	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
+	worldViewLocationPos := component.GetPosition(worldViewLocation)
+	return position.X - position.CX - worldViewLocationPos.X, position.Y - position.CY - worldViewLocationPos.Y
+}
+
 func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
 	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
 	worldViewLocationPos := component.GetPosition(worldViewLocation)
@@ -96,9 +102,6 @@ func (r Render) renderDamageLabels(w donburi.World, screen *ebiten.Image) {
 }
 
 func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
-	worldViewLocation, _ := r.worldViewPortQuery.FirstEntity(w)
-	worldViewLocationPos := component.GetPosition(worldViewLocation)
-
 	r.animatableActorQuery.EachEntity(w, func(entry *donburi.Entry) {
 		position := component.GetPosition(entry)
 		animation := component.GetAnimation(entry)
@@ -116,9 +119,24 @@ func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
 			return
 		}
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(position.X-position.CX-worldViewLocationPos.X, position.Y-position.CY-worldViewLocationPos.Y)
+		op.GeoM.Translate(r.getWorldCoord(w, position))
 		screen.DrawImage(next, op)
+
+		r.healthBar(w, entry, screen)
 	})
+}
+
+func (r *Render) healthBar(w donburi.World, entry *donburi.Entry, screen *ebiten.Image) {
+	if entry.Archetype().Layout().HasComponent(tag.Player) {
+		position := component.GetPosition(entry)
+		health := component.GetHealth(entry)
+		x, y := r.getWorldCoord(w, position)
+
+		var marginBottom float64 = 35
+
+		ebitenutil.DrawRect(screen, x, marginBottom+y, health.MAXHP/3, 3, colornames.Grey100)
+		ebitenutil.DrawRect(screen, x, marginBottom+y, health.HP/3, 3, colornames.Red600)
+	}
 }
 
 func (r *Render) debugRigidBodies(w donburi.World, screen *ebiten.Image) {

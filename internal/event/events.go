@@ -44,9 +44,9 @@ func spawnWave(w donburi.World, args []string) {
 			spawnloc.Scale(float64(distance))
 			spawnloc = vector.Add(spawnloc, playerVector)
 			e := dentity.MakeRandEntity(w, []string{
-				"./config/entities/radishred.entity.json",
-				"./config/entities/radishblue.entity.json",
-				"./config/entities/radishyellow.entity.json",
+				"entities/radishred.entity.json",
+				"entities/radishblue.entity.json",
+				"entities/radishyellow.entity.json",
 			}, spawnloc[0], spawnloc[1])
 			component.GetHealth(e).HP = float64(hp)
 		}
@@ -77,7 +77,7 @@ func spawnBoss(w donburi.World, args []string) {
 
 	v = vector.Add(playerVector, v)
 
-	dentity.MakeEntity(w, "./config/entities/cheezboss.entity.json", v[0], v[1])
+	dentity.MakeEntity(w, "entities/cheezboss.entity.json", v[0], v[1])
 }
 
 func outputHurryUp(w donburi.World, args []string) {

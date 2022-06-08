@@ -3,6 +3,7 @@ package dentity
 import (
 	"cheezewiz/internal/collision"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/filesystem"
 	"cheezewiz/internal/input"
 	"cheezewiz/internal/tag"
 	"cheezewiz/pkg/animation"
@@ -77,7 +78,7 @@ func MakeRandEntity(w donburi.World, path []string, x float64, y float64) *donbu
 	var e EntityConfig
 	var d DynamicEntity
 
-	e.Unmarshal(pathToBytes(path[rand.Intn(len(path))]))
+	e.Unmarshal(filesystem.GetEntity(path[rand.Intn(len(path))]))
 	d.config = e
 
 	entry := w.Entry(w.Create(getComponents(e)...))
@@ -93,7 +94,7 @@ func MakeEntity(w donburi.World, path string, x float64, y float64) *donburi.Ent
 	var e EntityConfig
 	var d DynamicEntity
 
-	e.Unmarshal(pathToBytes(path))
+	e.Unmarshal(filesystem.GetEntity(path))
 
 	d.config = e
 
@@ -122,6 +123,7 @@ func getComponents(e EntityConfig) []*donburi.ComponentType {
 func (d *DynamicEntity) initializeValues(entry *donburi.Entry, x, y float64) error {
 	d.setPosition(entry, x, y)
 	d.setXP(entry)
+	d.setHealth(entry)
 	d.setRigidBody(entry)
 	d.setAnimations(entry)
 	d.setActorState(entry)
@@ -136,6 +138,15 @@ func (d *DynamicEntity) setXP(entry *donburi.Entry) {
 	}
 	xp := component.GetXP(entry)
 	xp.Value = d.config.XP
+}
+
+func (d *DynamicEntity) setHealth(entry *donburi.Entry) {
+	if !d.HasComponent(Health) {
+		return
+	}
+	health := component.GetHealth(entry)
+	health.HP = d.config.Health.HP
+	health.MAXHP = d.config.Health.MAXHP
 }
 func (d *DynamicEntity) setPosition(entry *donburi.Entry, x, y float64) {
 	if !d.HasComponent(Position) {

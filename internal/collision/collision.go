@@ -25,11 +25,7 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 			return
 		}
 		if e.Archetype().Layout().HasComponent(tag.Player) {
-			// state := GetActorState(e)
-			// state.Set(HurtState)
-
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
-			// r.am.AddPlayerDamage(e, 10, nil)
 			attackgroup.AddPlayerDamage(e, 10, nil)
 		}
 		if e.Archetype().Layout().HasComponent(tag.Projectile) {
@@ -56,7 +52,6 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 		if e.Archetype().Layout().HasComponent(tag.Player) {
 			logrus.Info("collision with boss")
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
-			// r.am.AddEnemyDamage(e, 10, nil)
 			attackgroup.AddPlayerDamage(e, 10, nil)
 		}
 
@@ -68,8 +63,7 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 		if e.Archetype().Layout().HasComponent(tag.Enemy) {
 			logrus.Info("player collided with enemy")
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
-			// r.am.AddEnemyDamage(e, 10, nil)
-			attackgroup.AddEnemyDamage(e, 10, nil)
+			// attackgroup.AddEnemyDamage(e, 10, nil)
 		}
 		if e.Archetype().Layout().HasComponent(tag.JellyBean) {
 			logrus.Info("player collided with enemy")

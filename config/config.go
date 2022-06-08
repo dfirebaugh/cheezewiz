@@ -23,6 +23,9 @@ type Config struct {
 //go:embed levels/*
 var LevelFS embed.FS
 
+//go:embed *
+var EntityFS embed.FS
+
 //go:embed config.yml
 var ConfigRaw []byte
 

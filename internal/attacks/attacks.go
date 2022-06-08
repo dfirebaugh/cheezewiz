@@ -52,5 +52,5 @@ var CheeseMissile = func(world donburi.World) func() {
 func launchProjectile(w donburi.World, from component.PositionData, to component.PositionData) {
 	e := gamemath.GetVector(from.X, from.Y)
 	m := gamemath.GetVector(to.X, to.Y)
-	dentity.MakeWithDirection(w, "./config/entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))
+	dentity.MakeWithDirection(w, "entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))
 }

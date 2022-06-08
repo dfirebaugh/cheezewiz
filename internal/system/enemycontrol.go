@@ -37,10 +37,10 @@ func (e EnemyControl) Update(w donburi.World) {
 		if health.HP <= 0 {
 			w.Remove(entry.Entity())
 			dentity.MakeRandEntity(w, []string{
-				"./config/entities/jellybeangreen.entity.json",
-				"./config/entities/jellybeanpink.entity.json",
-				"./config/entities/jellybeanblue.entity.json",
-				"./config/entities/jellybeanrainbow.entity.json",
+				"entities/jellybeangreen.entity.json",
+				"entities/jellybeanpink.entity.json",
+				"entities/jellybeanblue.entity.json",
+				"entities/jellybeanrainbow.entity.json",
 			}, entityPosition.X-entityPosition.CX, entityPosition.Y-entityPosition.CY)
 			return
 		}
