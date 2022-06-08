@@ -199,15 +199,7 @@ func (d *DynamicEntity) setActorState(entry *donburi.Entry) {
 		return
 	}
 	s := component.GetActorState(entry)
-
-	s.Available = map[string]string{}
-	for label := range d.config.Animations {
-		s.Available[label] = label
-	}
-
-	if d.config.ActorState == "" {
-		s.Set(component.IdleState)
-	}
+	s.SetAvailable(d.config.Animations)
 	s.Set(component.ActorStateType(d.config.ActorState))
 }
 func (d *DynamicEntity) setInputDevice(entry *donburi.Entry) {

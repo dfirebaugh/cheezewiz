@@ -1,6 +1,8 @@
 package component
 
 import (
+	"sync"
+
 	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 )
@@ -19,6 +21,7 @@ const (
 type ActorStateData struct {
 	current   ActorStateType
 	Available map[string]string
+	stateMut  sync.RWMutex
 }
 
 var ActorState = donburi.NewComponentType(ActorStateData{current: IdleState})
@@ -30,17 +33,32 @@ func GetActorState(entry *donburi.Entry) *ActorStateData {
 func (p *ActorStateData) Reset() {
 	p.current = IdleState
 }
+func (as *ActorStateData) SetAvailable(animations map[string]string) {
+	as.stateMut.Lock()
+	defer as.stateMut.Unlock()
 
-func (p *ActorStateData) Set(newState interface{}) {
+	as.Available = map[string]string{}
+	for label := range animations {
+		as.Available[label] = label
+	}
+}
+func (as *ActorStateData) Set(newState interface{}) {
+	as.stateMut.Lock()
+	defer as.stateMut.Unlock()
+
 	var ok bool
-	p.current, ok = newState.(ActorStateType)
+	as.current, ok = newState.(ActorStateType)
 
 	if !ok {
 		logrus.Warn("this state is not defined: ", newState)
+		as.Set(DebugState)
 	}
 }
 
 func (as *ActorStateData) GetCurrent() ActorStateType {
+	as.stateMut.Lock()
+	defer as.stateMut.Unlock()
+
 	var current string
 	var ok bool
 
