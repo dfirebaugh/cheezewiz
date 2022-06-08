@@ -70,5 +70,10 @@ func (p PlayerControl) Update(w donburi.World) {
 			updatePlayerMovement(position.X, position.Y+playerSpeed)
 			state.Set(component.IdleState)
 		}
+
+		health := component.GetHealth(entry)
+		if health.HP <= 0 {
+			state.Set(component.DeathState)
+		}
 	})
 }

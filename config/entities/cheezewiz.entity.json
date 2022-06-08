@@ -7,7 +7,7 @@
         "walk": "cheezewiz.png",
         "hurt": "cheezewiz-damaged.png",
         "attack": "cheezewiz.png",
-        "death": "cheezewiz.png"
+        "death": "cheezewiz-death.png"
     },
     "direction": {
         "angle": 0

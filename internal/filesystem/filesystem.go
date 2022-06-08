@@ -40,12 +40,26 @@ func GetAsset(path string) []byte {
 	return f
 }
 
+var pngCache = map[string]*ebiten.Image{}
+
 func GetPNG(path string) *ebiten.Image {
+	// check if we have the image in the cache
+	if cachedIMG, ok := pngCache[path]; ok {
+		return cachedIMG
+	}
+
 	img, _, err := image.Decode(bytes.NewReader(GetAsset(path)))
 	if err != nil {
 		logrus.Error(err)
+		return nil
 	}
-	return ebiten.NewImageFromImage(img)
+
+	ei := ebiten.NewImageFromImage(img)
+
+	// save to cache
+	pngCache[path] = ei
+
+	return ei
 }
 
 func GetLevel(path string) []byte {

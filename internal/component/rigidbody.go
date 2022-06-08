@@ -43,6 +43,7 @@ func (r *RigidBodyData) SetCollisionHandler(label interface{}) {
 	logrus.Info(string(label.(collision.HandlerLabel)))
 	if l, ok = label.(collision.HandlerLabel); !ok || l == "" {
 		logrus.Errorf("not a defined collision handler %s", label)
+		r.CollisionHandler = nil
 		return
 	}
 

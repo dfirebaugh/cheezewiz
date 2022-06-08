@@ -22,8 +22,8 @@ func (DamageBufferGroup) Apply(w donburi.World, entry *donburi.Entry, amount flo
 
 	if health.HP > 0 {
 		health.HP -= amount
+		state.Set(component.HurtState)
 	}
 
-	state.Set(component.HurtState)
 	logrus.Infof("Death for entity %d", entry.Id())
 }
