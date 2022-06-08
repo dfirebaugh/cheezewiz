@@ -21,9 +21,6 @@ const (
 
 var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 	EnemyCollisionLabel: func(w donburi.World, e *donburi.Entry) {
-		if !w.Valid(e.Entity()) {
-			return
-		}
 		if e.Archetype().Layout().HasComponent(tag.Player) {
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
 			attackgroup.AddPlayerDamage(e, 10, nil)
@@ -34,10 +31,6 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 		}
 	},
 	RocketCollisionLabel: func(w donburi.World, e *donburi.Entry) {
-		if !w.Valid(e.Entity()) {
-			return
-		}
-
 		if e.Archetype().Layout().HasComponent(tag.Enemy) {
 			logrus.Info("missile collided with enemy")
 			// w.Remove(e.Entity())
@@ -46,9 +39,6 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 		}
 	},
 	BossCollisionLabel: func(w donburi.World, e *donburi.Entry) {
-		if !w.Valid(e.Entity()) {
-			return
-		}
 		if e.Archetype().Layout().HasComponent(tag.Player) {
 			logrus.Info("collision with boss")
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
@@ -57,9 +47,6 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 
 	},
 	PlayerCollisionLabel: func(w donburi.World, e *donburi.Entry) {
-		if !w.Valid(e.Entity()) {
-			return
-		}
 		if e.Archetype().Layout().HasComponent(tag.Enemy) {
 			logrus.Info("player collided with enemy")
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))

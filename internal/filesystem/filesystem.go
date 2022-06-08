@@ -6,6 +6,7 @@ import (
 	"cheezewiz/config"
 	"embed"
 	"image"
+	"sync"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/sirupsen/logrus"
@@ -41,8 +42,11 @@ func GetAsset(path string) []byte {
 }
 
 var pngCache = map[string]*ebiten.Image{}
+var pngCacheMut = sync.RWMutex{}
 
 func GetPNG(path string) *ebiten.Image {
+	pngCacheMut.Lock()
+	defer pngCacheMut.Unlock()
 	// check if we have the image in the cache
 	if cachedIMG, ok := pngCache[path]; ok {
 		return cachedIMG
