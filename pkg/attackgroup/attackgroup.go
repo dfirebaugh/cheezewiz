@@ -1,9 +1,12 @@
 package attackgroup
 
 import (
-	"github.com/sirupsen/logrus"
 	"github.com/yohamta/donburi"
 )
+
+type DamageApplier interface {
+	Apply(w donburi.World, entry *donburi.Entry, amount float64)
+}
 
 type DamageToken struct {
 	Origin      *donburi.Entry
@@ -40,16 +43,18 @@ func AddEnemyDamage(reciever *donburi.Entry, amount float64, Origin *donburi.Ent
 	Buffergroup.EnemyDamage = append(Buffergroup.EnemyDamage, damage)
 }
 
-func ApplyDamageToEnemy(w donburi.World, enemy *donburi.Entry, amount float64) {
-	if enemy == nil {
-		logrus.Warn("enemy is not valid")
-		return
+func ApplyPlayerDamage(dmg DamageApplier) {
+	for _, elem := range Buffergroup.PlayerDamage {
+		dmg.Apply(Buffergroup.World, elem.Destination, elem.Amount)
 	}
+	// clear our the PlayerDamage buffer
+	Buffergroup.PlayerDamage = []DamageToken{}
+}
 
-	// logrus.Infof("apply %f dmg to enemy", amount)
-	// hc := component.GetHealth(enemy)
-	// hc.HP -= amount
-
-	// remove enemy from damage buffer
-	enemy = nil
+func ApplyEnemyDamage(dmg DamageApplier) {
+	for _, elem := range Buffergroup.EnemyDamage {
+		dmg.Apply(Buffergroup.World, elem.Destination, elem.Amount)
+	}
+	// clear our the EnemyDamage buffer
+	Buffergroup.EnemyDamage = []DamageToken{}
 }

@@ -11,27 +11,19 @@ import (
 type DamageBufferGroup struct{}
 
 func (d DamageBufferGroup) Update(w donburi.World) {
-	for _, elem := range attackgroup.Buffergroup.PlayerDamage { //Typecheck and warn!
-		playerHeath := component.GetHealth(elem.Destination)
-		state := component.GetActorState(elem.Destination)
-		logrus.Info("players' health: ", playerHeath.HP, " Origin Health ")
+	attackgroup.ApplyPlayerDamage(d)
+	attackgroup.ApplyEnemyDamage(d)
+}
 
-		if playerHeath.HP > 0 {
-			playerHeath.HP -= elem.Amount
-		}
+func (DamageBufferGroup) Apply(w donburi.World, entry *donburi.Entry, amount float64) {
+	health := component.GetHealth(entry)
+	state := component.GetActorState(entry)
+	logrus.Info("health: ", health.HP, " Origin Health ")
 
-		state.Set(component.HurtState)
-
-		logrus.Infof("Death for entity %d", elem.Destination.Id())
+	if health.HP > 0 {
+		health.HP -= amount
 	}
 
-	// clear our the PlayerDamage buffer
-	attackgroup.Buffergroup.PlayerDamage = []attackgroup.DamageToken{}
-
-	for _, elem := range attackgroup.Buffergroup.EnemyDamage {
-		attackgroup.ApplyDamageToEnemy(attackgroup.Buffergroup.World, elem.Destination, elem.Amount)
-	}
-
-	// clear our the EnemyDamage buffer
-	attackgroup.Buffergroup.EnemyDamage = []attackgroup.DamageToken{}
+	state.Set(component.HurtState)
+	logrus.Infof("Death for entity %d", entry.Id())
 }

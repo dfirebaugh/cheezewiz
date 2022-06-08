@@ -31,7 +31,6 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 			// MakeDamageLabel(w, position.X, position.Y, strconv.Itoa(10))
 			// r.am.AddPlayerDamage(e, 10, nil)
 			attackgroup.AddPlayerDamage(e, 10, nil)
-
 		}
 		if e.Archetype().Layout().HasComponent(tag.Projectile) {
 			logrus.Info("enemy collided with projectile")
