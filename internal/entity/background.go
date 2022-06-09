@@ -1,23 +1,15 @@
 package entity
 
-import (
-	"cheezewiz/assets"
-	"cheezewiz/internal/component"
+import "cheezewiz/pkg/ecs"
 
-	"github.com/sirupsen/logrus"
-	"github.com/yohamta/donburi"
-)
+func MakeBackground(w ecs.World) {
+	// b := w.Create(BackgroundTag, component.Position, component.TileMap)
+	// entry := w.Entry(b)
+	// tiles := (*component.TileMapData)(entry.Component(component.TileMap))
+	// tm, err := assets.GetKitchenMap()
+	// if err != nil {
+	// 	logrus.Panic(err)
+	// }
 
-var BackgroundTag = donburi.NewTag()
-
-func MakeBackground(w donburi.World) {
-	b := w.Create(BackgroundTag, component.Position, component.TileMap)
-	entry := w.Entry(b)
-	tiles := (*component.TileMapData)(entry.Component(component.TileMap))
-	tm, err := assets.GetKitchenMap()
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	tiles.Map = tm
+	// tiles.Map = tm
 }

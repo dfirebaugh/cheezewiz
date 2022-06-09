@@ -18,13 +18,9 @@ type Job struct {
 }
 
 func spawnWave(w ecs.World, args []string) {
-	playerFilter := w.MakeFilter(archetype.PlayerFilter)
-	println("spawn some monsters")
-
-	firstplayer, ok := w.FirstEntity(playerFilter).(archetype.Player)
-	if !ok {
-		println("unable to find first player")
-		println(len(w.EntityMap))
+	firstplayer, err := ecs.FirstEntity[archetype.Player](w)
+	if err != nil {
+		logrus.Errorf("unable to find player: %s", err)
 		return
 	}
 	pPos := firstplayer.GetPosition()
@@ -49,7 +45,13 @@ func spawnWave(w ecs.World, args []string) {
 				"entities/radishblue.entity.json",
 				"entities/radishyellow.entity.json",
 			}, spawnloc[0], spawnloc[1])
-			e.(archetype.Actor).GetHealth().HP = float64(hp)
+			radish, ok := e.(archetype.Actor)
+			if !ok {
+				logrus.Error("some error with building radish entity")
+				return
+			}
+
+			radish.GetHealth().HP = float64(hp)
 		}
 	default:
 		return

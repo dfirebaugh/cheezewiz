@@ -6,9 +6,8 @@ import (
 )
 
 type Scheduler struct {
-	events     map[uint32][]func()
-	weaponFire []func()
-	countdown  struct {
+	events    map[uint32][]func()
+	countdown struct {
 		seconds uint32
 	}
 }
@@ -37,32 +36,18 @@ func NewScheduler(sceneEvents []event.SceneEvent, w ecs.World) *Scheduler {
 	return scheduler
 }
 
+var tpsCount = 0
+
 func (s *Scheduler) Update() {
 	if s.countdown.seconds == 0 {
 		return
 	}
-	// s.world.FilterBy()
-	// s.RunWeaponFire()
 	s.RunEvents()
-	println("second:", s.countdown.seconds)
 
 	tpsCount++
 	if tpsCount%60 == 0 && s.countdown.seconds > 0 {
 		s.countdown.seconds--
 	}
-	// s.query.EachEntity(s.world, func(entry *donburi.Entry) {
-	// 	countdown := component.GetCountdown(entry)
-
-	// 	s.RunEvents(countdown.CountDownInSec)
-	// })
-}
-
-func (s *Scheduler) RunWeaponFire() {
-	for _, event := range s.weaponFire {
-		event()
-	}
-
-	s.weaponFire = nil
 }
 
 func (s *Scheduler) RunEvents() {

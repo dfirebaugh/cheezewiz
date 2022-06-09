@@ -2,12 +2,19 @@ package system
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/input"
 	"cheezewiz/internal/tag"
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
 )
+
+type Player interface {
+	GetHealth() *component.HealthAspect
+	GetPosition() *component.PositionData
+	GetInputDevice() input.PlayerInput
+}
 
 type PlayerControl struct {
 	query *query.Query

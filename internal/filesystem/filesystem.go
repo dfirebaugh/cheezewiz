@@ -6,6 +6,7 @@ import (
 	"cheezewiz/config"
 	"embed"
 	"image"
+	_ "image/png"
 	"sync"
 
 	"github.com/hajimehoshi/ebiten/v2"

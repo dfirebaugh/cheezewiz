@@ -1,5 +1,5 @@
 {
-    "enemyTag": "",
+    "archetype": "enemy",
     "animations": {
         "idle": "radishyellow.png",
         "walk": "radishyellow.png",

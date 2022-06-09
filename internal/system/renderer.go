@@ -17,82 +17,66 @@ type Animatable interface {
 	IterFrame()
 	GetHealth() *component.HealthAspect
 }
+type ViewPort interface {
+	ViewPort() archetype.ViewPortTag
+	GetPosition() *component.PositionData
+}
 
 type Renderer struct {
-	World            ecs.World
-	animatableFilter ecs.FilterID
+	World ecs.World
 }
 
 func NewRenderer(w ecs.World) Renderer {
-	af := func(entity ecs.Entity) bool {
-		if _, ok := entity.(Animatable); ok {
-			return true
-		}
-		return false
-	}
 	return Renderer{
-		World:            w,
-		animatableFilter: w.MakeFilter(af),
+		World: w,
 	}
 }
 
 func (r Renderer) Update() {
-	for _, entity := range r.World.FilterBy(r.animatableFilter) {
+	for _, entity := range ecs.FilterBy[Animatable](r.World) {
 		r.updateAnimatable(entity)
 	}
 }
 
-func (r Renderer) updateAnimatable(entity ecs.Entity) {
-	var e Animatable
-	var ok bool
-
-	if e, ok = entity.(Animatable); !ok {
-		println("entity doens't match update contract")
-		return
-	}
-
-	e.IterFrame()
+func (r Renderer) updateAnimatable(entity Animatable) {
+	entity.IterFrame()
 }
 
 func (r Renderer) Draw(screen *ebiten.Image) {
-	for _, entity := range r.World.FilterBy(r.animatableFilter) {
+	for _, entity := range ecs.FilterBy[Animatable](r.World) {
 		r.animatable(screen, entity)
 	}
 }
 
-func (r Renderer) animatable(screen *ebiten.Image, entity ecs.Entity) {
-	var e Animatable
-	var ok bool
-
-	if e, ok = entity.(Animatable); !ok {
-		println("entity doens't match draw contract")
-		return
-	}
-
-	position := e.GetPosition()
+func (r Renderer) animatable(screen *ebiten.Image, entity Animatable) {
+	position := entity.GetPosition()
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(position.X, position.Y)
-	screen.DrawImage(e.GetFrame(), op)
+	op.GeoM.Translate(r.getWorldCoord(position))
+	screen.DrawImage(entity.GetFrame(), op)
 
 	r.healthBar(screen, entity)
 }
 
-func (r Renderer) healthBar(screen *ebiten.Image, entity ecs.Entity) {
-	var e archetype.Actor
-	var ok bool
-
-	if e, ok = entity.(archetype.Actor); !ok {
-		logrus.Info("doesn't match contract")
+func (r Renderer) healthBar(screen *ebiten.Image, entity Animatable) {
+	if !ecs.IsType[Player](entity) {
 		return
 	}
-
-	position := e.GetPosition()
-	health := e.GetHealth()
-	// x, y := r.getWorldCoord(w, position)
-	x, y := position.X, position.Y
+	position := entity.GetPosition()
+	health := entity.GetHealth()
+	x, y := r.getWorldCoord(position)
 
 	var marginBottom float64 = 35
 
 	ebitenutil.DrawRect(screen, x, marginBottom+y, health.MAXHP/3, 3, colornames.Grey100)
 	ebitenutil.DrawRect(screen, x, marginBottom+y, health.HP/3, 3, colornames.Red600)
+}
+
+func (r Renderer) getWorldCoord(position *component.PositionData) (float64, float64) {
+	viewPort, err := ecs.FirstEntity[ViewPort](r.World)
+	if err != nil {
+		logrus.Errorf("viewport: %s", err)
+		return position.X, position.Y
+	}
+	worldViewLocationPos := viewPort.GetPosition()
+	return position.X - position.CX - worldViewLocationPos.X, position.Y - position.CY - worldViewLocationPos.Y
 }

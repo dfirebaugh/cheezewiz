@@ -16,20 +16,12 @@ type Controller struct {
 }
 
 func (c Controller) Update() {
-	for _, entity := range c.World.EntityMap {
-		c.controllable(entity)
+	for _, player := range ecs.FilterBy[Controllable](c.World) {
+		c.controllable(player)
 	}
 }
 
-func (c Controller) controllable(entity interface{}) {
-	var e Controllable
-	var ok bool
-
-	if e, ok = entity.(Controllable); !ok {
-		println("entity doens't match contract")
-		return
-	}
-
+func (c Controller) controllable(e Controllable) {
 	controller := e.GetInputDevice()
 	position := e.GetPosition()
 	// state := e.GetState()

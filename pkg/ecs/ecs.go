@@ -1,28 +1,29 @@
 package ecs
 
-type Entity interface{}
-type FilterID int
+import (
+	"errors"
+	"sort"
+)
 
-type filterFn func(entity Entity) bool
+type Entity interface{}
+type Tag interface{}
 
 type World struct {
 	EntityMap map[int]Entity
-	// might not need the slice of handlers
-	Entities []int
-
-	filterCache map[FilterID]filterFn
 }
 
 func NewWorld() World {
 	return World{
-		EntityMap:   map[int]Entity{},
-		filterCache: map[FilterID]filterFn{},
+		EntityMap: map[int]Entity{},
 	}
+}
+
+func NewTag() Tag {
+	return struct{}{}
 }
 
 func (w *World) Add(entity Entity) (int, Entity) {
 	uuid := len(w.EntityMap)
-	w.Entities = append(w.Entities, uuid)
 	w.EntityMap[uuid] = entity
 	return uuid, entity
 }
@@ -31,17 +32,22 @@ func (w World) GetEntities() map[int]Entity {
 	return w.EntityMap
 }
 
-func (w *World) MakeFilter(filter filterFn) FilterID {
-	var fID FilterID = FilterID(len(w.filterCache))
-	w.filterCache[fID] = filter
-	return fID
+// getSortedEntityHandles returns the entities in order.
+//   Otherwise, they would render in a seemingly random order.
+func (w World) getSortedEntityHandles() []int {
+	handles := make([]int, 0)
+	for handle := range w.EntityMap {
+		handles = append(handles, handle)
+	}
+	sort.Ints(handles)
+	return handles
 }
 
-func (w World) FilterBy(fID FilterID) []Entity {
-	var result []Entity
-	for _, ent := range w.EntityMap {
-		if w.filterCache[fID](ent) {
-			result = append(result, ent)
+func FilterBy[T any](w World) []T {
+	var result []T
+	for _, h := range w.getSortedEntityHandles() {
+		if e, ok := w.EntityMap[h].(T); ok {
+			result = append(result, e)
 		}
 	}
 
@@ -49,9 +55,17 @@ func (w World) FilterBy(fID FilterID) []Entity {
 }
 
 // returns an entity that matches the filter or nil
-func (w World) FirstEntity(fID FilterID) Entity {
-	for _, e := range w.FilterBy(fID) {
-		return e
+func FirstEntity[T any](w World) (T, error) {
+	filtered := FilterBy[T](w)
+	l := len(filtered)
+	var first T
+	if l == 0 {
+		return first, errors.New("unable to find an entity of that type")
 	}
-	return nil
+	return filtered[0], nil
+}
+
+func IsType[T any](entity Entity) bool {
+	_, ok := entity.(T)
+	return ok
 }

@@ -7,28 +7,33 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Actor struct {
+type Actor interface {
+	GetPosition() *component.PositionData
+	GetHealth() *component.HealthAspect
+}
+
+type ActorArchetype struct {
 	*component.AnimationData
 	*component.ActorStateData
 	*component.PositionData
 	*component.HealthAspect
 }
 
-func (a Actor) GetFrame() *ebiten.Image {
+func (a ActorArchetype) GetFrame() *ebiten.Image {
 	return a.AnimationData.Animations[string(a.ActorStateData.GetCurrent())].GetFrame()
 }
-func (a Actor) GetPosition() *component.PositionData {
+func (a ActorArchetype) GetPosition() *component.PositionData {
 	return a.PositionData
 }
-func (a Actor) GetState() component.ActorStateType {
+func (a ActorArchetype) GetState() component.ActorStateType {
 	return a.ActorStateData.GetCurrent()
 }
-func (a Actor) GetCurrent() *animation.Animation {
+func (a ActorArchetype) GetCurrent() *animation.Animation {
 	return a.Animations[string(a.GetState())]
 }
-func (a Actor) IterFrame() {
+func (a ActorArchetype) IterFrame() {
 	a.GetCurrent().IterFrame()
 }
-func (a Actor) GetHealth() *component.HealthAspect {
+func (a ActorArchetype) GetHealth() *component.HealthAspect {
 	return a.HealthAspect
 }

@@ -4,19 +4,17 @@ import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/input"
 	"cheezewiz/pkg/animation"
-	"cheezewiz/pkg/ecs"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var PlayerFilter = func(entity ecs.Entity) bool {
-	if _, ok := entity.(Player); ok {
-		return true
-	}
-	return false
+type Player interface {
+	GetPosition() *component.PositionData
+	GetHealth() *component.HealthAspect
+	GetInputDevice() input.PlayerInput
 }
 
-type Player struct {
+type PlayerArchetype struct {
 	*component.AnimationData
 	*component.ActorStateData
 	*component.InputDeviceData
@@ -24,24 +22,24 @@ type Player struct {
 	*component.HealthAspect
 }
 
-func (p Player) GetInputDevice() input.PlayerInput {
+func (p PlayerArchetype) GetInputDevice() input.PlayerInput {
 	return p.InputDeviceData.Device
 }
-func (p Player) GetFrame() *ebiten.Image {
+func (p PlayerArchetype) GetFrame() *ebiten.Image {
 	return p.AnimationData.Animations[string(p.ActorStateData.GetCurrent())].GetFrame()
 }
-func (p Player) GetPosition() *component.PositionData {
+func (p PlayerArchetype) GetPosition() *component.PositionData {
 	return p.PositionData
 }
-func (p Player) GetState() component.ActorStateType {
+func (p PlayerArchetype) GetState() component.ActorStateType {
 	return p.ActorStateData.GetCurrent()
 }
-func (p Player) GetCurrent() *animation.Animation {
+func (p PlayerArchetype) GetCurrent() *animation.Animation {
 	return p.Animations[string(p.GetState())]
 }
-func (p Player) IterFrame() {
+func (p PlayerArchetype) IterFrame() {
 	p.GetCurrent().IterFrame()
 }
-func (p Player) GetHealth() *component.HealthAspect {
+func (p PlayerArchetype) GetHealth() *component.HealthAspect {
 	return p.HealthAspect
 }

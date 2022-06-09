@@ -2,39 +2,35 @@ package system
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/component"
-	"cheezewiz/internal/entity"
-	"cheezewiz/internal/tag"
+	"cheezewiz/pkg/ecs"
 
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
+	"github.com/sirupsen/logrus"
 )
 
 type WorldViewPortLocation struct {
-	playerQuery *query.Query
-	query       *query.Query
+	world ecs.World
 }
 
-func NewWorldViewPortLocation() *WorldViewPortLocation {
+func NewWorldViewPortLocation(w ecs.World) *WorldViewPortLocation {
 	return &WorldViewPortLocation{
-		playerQuery: query.NewQuery(filter.Contains(
-			tag.Player,
-		)),
-		query: query.NewQuery(filter.Contains(
-			entity.WorldViewPortTag,
-		)),
+		world: w,
 	}
 }
 
-func (worldViewPortLocation *WorldViewPortLocation) Update(w donburi.World) {
-	initialPlayer, _ := worldViewPortLocation.playerQuery.FirstEntity(w)
+func (w *WorldViewPortLocation) Update() {
+	initialPlayer, err := ecs.FirstEntity[Player](w.world)
+	if err != nil {
+		logrus.Errorf("unable to find player: %s", err)
+		return
+	}
+	playerPosition := initialPlayer.GetPosition()
 
-	playerPosition := component.GetPosition(initialPlayer)
-
-	worldViewPort, _ := worldViewPortLocation.query.FirstEntity(w)
-
-	worldViewPortPos := component.GetPosition(worldViewPort)
+	worldViewPort, err := ecs.FirstEntity[ViewPort](w.world)
+	if err != nil {
+		logrus.Errorf("viewport update: %s", err)
+		return
+	}
+	worldViewPortPos := worldViewPort.GetPosition()
 
 	worldViewPortPos.X = getWorldViewCenterLocation(playerPosition.X, config.Get().Window.Height) + 20
 	worldViewPortPos.Y = 0
