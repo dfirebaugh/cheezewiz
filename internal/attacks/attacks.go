@@ -1,7 +1,6 @@
 package attacks
 
 import (
-	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"cheezewiz/pkg/ecs"
@@ -10,8 +9,16 @@ import (
 	"github.com/atedja/go-vector"
 )
 
+type Actor interface {
+	GetPosition() *component.Position
+}
+type Player interface {
+	GetPosition() *component.Position
+	GetActorState() *component.ActorState
+}
+
 type attackGroup interface {
-	AddEnemyDamage(reciever archetype.Actor, amount float64, origin archetype.Actor)
+	AddEnemyDamage(reciever Actor, amount float64, origin Actor)
 }
 
 type Directionable interface {
@@ -21,19 +28,19 @@ type Directionable interface {
 var CheeseMissile = func(world ecs.World) func() {
 	w := world
 	return func() {
-		for handle, player := range ecs.FilterBy[archetype.Player](w) {
+		for handle, player := range ecs.FilterBy[Player](w) {
 			findHeading(w, player, handle)
 		}
 	}
 }
 
-func findHeading(w ecs.World, player archetype.Player, playerHandle int) {
+func findHeading(w ecs.World, player Player, playerHandle int) {
 	position := player.GetPosition()
 	state := player.GetActorState()
 
 	enemies := map[int]vector.Vector{}
 
-	for handle, actor := range ecs.FilterBy[archetype.Actor](w) {
+	for handle, actor := range ecs.FilterBy[Actor](w) {
 		if handle == playerHandle {
 			continue
 		}
@@ -45,7 +52,7 @@ func findHeading(w ecs.World, player archetype.Player, playerHandle int) {
 	if closestHandle == playerHandle {
 		return
 	}
-	// closestEnemy, ok := w.EntityMap[closestHandle].(archetype.Actor)
+	// closestEnemy, ok := w.EntityMap[closestHandle].(Actor)
 	// if !ok {
 	// 	return
 	// }

@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/filesystem"
 	"cheezewiz/internal/input"
@@ -53,8 +52,8 @@ func buildArchetype(e EntityConfig, x float64, y float64) ecs.Entity {
 	switch e.Archetype {
 	case "player":
 		return buildPlayer(e, x, y)
-	case "actor":
-		return buildActor(e, x, y)
+	// case "actor":
+	// 	return buildActor(e, x, y)
 	case "enemy":
 		return buildEnemy(e, x, y)
 	default:
@@ -64,8 +63,8 @@ func buildArchetype(e EntityConfig, x float64, y float64) ecs.Entity {
 	return nil
 }
 
-func buildPlayer(e EntityConfig, x float64, y float64) *archetype.PlayerArchetype {
-	p := archetype.PlayerArchetype{
+func buildPlayer(e EntityConfig, x float64, y float64) *Player {
+	p := Player{
 		Position: e.buildPosition(x, y),
 		Health:   &e.Health,
 		Animation: &component.Animation{
@@ -78,8 +77,9 @@ func buildPlayer(e EntityConfig, x float64, y float64) *archetype.PlayerArchetyp
 	}
 	return &p
 }
-func buildActor(e EntityConfig, x float64, y float64) *archetype.ActorArchetype {
-	p := archetype.ActorArchetype{
+
+func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {
+	p := Enemy{
 		Position: e.buildPosition(x, y),
 		Health:   &e.Health,
 		Animation: &component.Animation{
@@ -89,17 +89,18 @@ func buildActor(e EntityConfig, x float64, y float64) *archetype.ActorArchetype 
 	}
 	return &p
 }
-func buildEnemy(e EntityConfig, x float64, y float64) *archetype.EnemyArchetype {
-	p := archetype.EnemyArchetype{
-		Position: e.buildPosition(x, y),
-		Health:   &e.Health,
-		Animation: &component.Animation{
-			Animation: e.getAnimations(),
-		},
-		ActorState: e.getState(),
-	}
-	return &p
-}
+
+// func buildActor(e EntityConfig, x float64, y float64) *Actor {
+// 	p := Actor{
+// 		Position: e.buildPosition(x, y),
+// 		Health:   &e.Health,
+// 		Animation: &component.Animation{
+// 			Animation: e.getAnimations(),
+// 		},
+// 		ActorState: e.getState(),
+// 	}
+// 	return &p
+// }
 
 func lookupInputDevice(key string) input.PlayerInput {
 	if key == "keyboard" {

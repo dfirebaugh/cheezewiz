@@ -2,7 +2,6 @@ package scene
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/attacks"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
@@ -61,7 +60,7 @@ func Init(level string) *Scene {
 
 func addEntities(world ecs.World) {
 	// 	// entity.MakeExpBar(world)
-	world.Add(&archetype.ViewPortArchetype{
+	world.Add(&entity.ViewPort{
 		Position: &component.Position{},
 	})
 	entity.MakeEntity(world, "entities/cheezewiz.entity.json",

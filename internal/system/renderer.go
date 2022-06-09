@@ -1,7 +1,6 @@
 package system
 
 import (
-	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
 
@@ -18,7 +17,7 @@ type Animatable interface {
 	GetHealth() *component.Health
 }
 type ViewPort interface {
-	ViewPort() archetype.ViewPortTag
+	ViewPort() ecs.Tag
 	GetPosition() *component.Position
 }
 

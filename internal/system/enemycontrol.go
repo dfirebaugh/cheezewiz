@@ -1,7 +1,6 @@
 package system
 
 import (
-	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"cheezewiz/pkg/ecs"
@@ -13,7 +12,7 @@ import (
 type Enemy interface {
 	GetPosition() *component.Position
 	GetHealth() *component.Health
-	GetEnemyTag() archetype.EnemyTag
+	GetEnemyTag() ecs.Tag
 }
 
 type EnemyControl struct {

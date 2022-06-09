@@ -12,14 +12,12 @@ type Projectile interface {
 	GetProjectileTag() ProjectileTag
 }
 
-type PlayerTag struct{}
 type Player interface {
-	GetPlayerTag() PlayerTag
+	GetPlayerTag() ecs.Tag
 }
 
-type EnemyTag struct{}
 type Enemy interface {
-	GetEnemyTag() EnemyTag
+	GetEnemyTag() ecs.Tag
 }
 
 const (

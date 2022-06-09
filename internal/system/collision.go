@@ -1,11 +1,16 @@
 package system
 
 import (
-	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
 
 	"github.com/yohamta/donburi"
 )
+
+type Actor interface {
+	GetRigidBody() *component.RigidBody
+	GetPosition() *component.Position
+}
 
 type attackMediator interface {
 	AddPlayerDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)
@@ -23,7 +28,7 @@ func NewCollision(world ecs.World) *Collision {
 }
 
 func (c *Collision) Update() {
-	for id, actor := range ecs.FilterBy[archetype.Actor](c.world) {
+	for id, actor := range ecs.FilterBy[Actor](c.world) {
 		rb := actor.GetRigidBody()
 		p := actor.GetPosition()
 
@@ -32,7 +37,7 @@ func (c *Collision) Update() {
 		aw := rb.GetWidth()
 		ah := rb.GetHeight()
 
-		for idB, actorB := range ecs.FilterBy[archetype.Actor](c.world) {
+		for idB, actorB := range ecs.FilterBy[Actor](c.world) {
 			if id == idB {
 				continue
 			}

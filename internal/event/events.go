@@ -1,7 +1,7 @@
 package event
 
 import (
-	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"cheezewiz/pkg/ecs"
 	"math"
@@ -11,6 +11,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type Player interface {
+	GetPosition() *component.Position
+	GetPlayerTag() ecs.Tag
+}
+
+type Enemy interface {
+	GetPosition() *component.Position
+	GetHealth() *component.Health
+	GetEnemyTag() ecs.Tag
+}
+
 type Job struct {
 	json_name string
 	Callback  func(w ecs.World, args []string)
@@ -18,7 +29,7 @@ type Job struct {
 }
 
 func spawnWave(w ecs.World, args []string) {
-	firstplayer, err := ecs.FirstEntity[archetype.Player](w)
+	firstplayer, err := ecs.FirstEntity[Player](w)
 	if err != nil {
 		logrus.Errorf("unable to find player: %s", err)
 		return
@@ -45,7 +56,7 @@ func spawnWave(w ecs.World, args []string) {
 				"entities/radishblue.entity.json",
 				"entities/radishyellow.entity.json",
 			}, spawnloc[0], spawnloc[1])
-			radish, ok := e.(archetype.Enemy)
+			radish, ok := e.(Enemy)
 			if !ok {
 				logrus.Error("some error with building radish entity")
 				return
