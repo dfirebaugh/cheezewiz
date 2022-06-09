@@ -1,27 +1,45 @@
 package system
 
 import (
+	"cheezewiz/internal/component"
 	"cheezewiz/pkg/attackgroup"
+	"cheezewiz/pkg/ecs"
 
-	"github.com/yohamta/donburi"
+	"github.com/sirupsen/logrus"
 )
 
-type DamageBufferGroup struct{}
+type Actor interface {
+	GetHealth() *component.Health
+	GetActorState() *component.ActorState
+}
+type DamageBufferGroup struct {
+	World ecs.World
+}
 
-func (d DamageBufferGroup) Update(w donburi.World) {
+func (d DamageBufferGroup) Update() {
 	attackgroup.ApplyPlayerDamage(d)
 	attackgroup.ApplyEnemyDamage(d)
 }
 
-func (DamageBufferGroup) Apply(w donburi.World, entry *donburi.Entry, amount float64) {
-	// health := component.GetHealth(entry)
-	// state := component.GetActorState(entry)
-	// logrus.Info("health: ", health.HP, " Origin Health ")
+func (DamageBufferGroup) Apply(actor interface{}, amount float64) {
+	var a Actor
+	var ok bool
+	if a, ok = actor.(Actor); !ok {
+		return
+	}
 
-	// if health.HP > 0 {
-	// 	health.HP -= amount
-	// 	state.Set(component.HurtState)
-	// }
+	health := a.GetHealth()
+	state := a.GetActorState()
+	logrus.Info("health: ", health.Current, " Origin Health ")
+
+	if health.Current == 0 {
+		state.Set(component.DeathState)
+		return
+	}
+	if health.Current > 0 {
+		health.Current -= amount
+		state.Set(component.HurtState)
+	}
 
 	// logrus.Infof("Death for entity %d", entry.Id())
 }

@@ -7,6 +7,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type HandlerLabel string
+
 type RigidBody struct {
 	R                     float64 `json:"r"`
 	L                     float64 `json:"l"`

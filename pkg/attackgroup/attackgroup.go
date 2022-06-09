@@ -1,23 +1,21 @@
 package attackgroup
 
-import (
-	"github.com/yohamta/donburi"
-)
+type Actor interface {
+}
 
 type DamageApplier interface {
-	Apply(w donburi.World, entry *donburi.Entry, amount float64)
+	Apply(actor interface{}, amount float64)
 }
 
 type DamageToken struct {
-	Origin      *donburi.Entry
+	Origin      Actor
 	Amount      float64
-	Destination *donburi.Entry
+	Destination Actor
 }
 
 type DamageBuffergroup struct {
 	PlayerDamage []DamageToken
 	EnemyDamage  []DamageToken
-	World        donburi.World
 }
 
 var Buffergroup = DamageBuffergroup{
@@ -25,7 +23,7 @@ var Buffergroup = DamageBuffergroup{
 	EnemyDamage:  []DamageToken{},
 }
 
-func AddPlayerDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry) {
+func AddPlayerDamage(reciever Actor, amount float64, origin Actor) {
 	damage := DamageToken{
 		Origin:      origin,
 		Amount:      amount,
@@ -34,7 +32,7 @@ func AddPlayerDamage(reciever *donburi.Entry, amount float64, origin *donburi.En
 	Buffergroup.PlayerDamage = append(Buffergroup.PlayerDamage, damage)
 }
 
-func AddEnemyDamage(reciever *donburi.Entry, amount float64, Origin *donburi.Entry) {
+func AddEnemyDamage(reciever Actor, amount float64, Origin Actor) {
 	damage := DamageToken{
 		Origin:      Origin,
 		Amount:      amount,
@@ -45,7 +43,7 @@ func AddEnemyDamage(reciever *donburi.Entry, amount float64, Origin *donburi.Ent
 
 func ApplyPlayerDamage(dmg DamageApplier) {
 	for _, elem := range Buffergroup.PlayerDamage {
-		dmg.Apply(Buffergroup.World, elem.Destination, elem.Amount)
+		dmg.Apply(elem.Destination, elem.Amount)
 	}
 	// clear our the PlayerDamage buffer
 	Buffergroup.PlayerDamage = []DamageToken{}
@@ -53,7 +51,7 @@ func ApplyPlayerDamage(dmg DamageApplier) {
 
 func ApplyEnemyDamage(dmg DamageApplier) {
 	for _, elem := range Buffergroup.EnemyDamage {
-		dmg.Apply(Buffergroup.World, elem.Destination, elem.Amount)
+		dmg.Apply(elem.Destination, elem.Amount)
 	}
 	// clear our the EnemyDamage buffer
 	Buffergroup.EnemyDamage = []DamageToken{}

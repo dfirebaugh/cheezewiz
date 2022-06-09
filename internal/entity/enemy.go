@@ -41,3 +41,6 @@ func (e Enemy) IterFrame() {
 func (e Enemy) GetHealth() *component.Health {
 	return e.Health
 }
+func (e Enemy) GetActorState() *component.ActorState {
+	return e.ActorState
+}

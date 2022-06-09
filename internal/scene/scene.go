@@ -47,8 +47,8 @@ func Init(level string) *Scene {
 			system.NewEnemyControl(w),
 			system.NewScheduler(loadWorld(level).Events, w),
 			system.NewWorldViewPortLocation(w),
-			// 	system.DamageBufferGroup{},
-			// 	system.NewProjectileContol(),
+			system.DamageBufferGroup{World: w},
+			system.NewProjectileContol(w),
 		},
 		drawables: []Drawable{
 			renderer,

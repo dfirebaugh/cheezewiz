@@ -14,6 +14,7 @@ type Player interface {
 	GetHealth() *component.Health
 	GetPosition() *component.Position
 	GetInputDevice() input.PlayerInput
+	GetActorState() *component.ActorState
 }
 
 type PlayerControl struct {

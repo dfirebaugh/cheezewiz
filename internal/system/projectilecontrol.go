@@ -1,36 +1,39 @@
 package system
 
 import (
-	"cheezewiz/internal/tag"
-
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
+	"cheezewiz/internal/component"
+	"cheezewiz/pkg/ecs"
+	"math"
 )
 
+type Projectile interface {
+	GetDirection() *component.Direction
+	GetPosition() *component.Position
+	GetProjectileTag() ecs.Tag
+}
 type ProjectileControl struct {
-	query *query.Query
+	world ecs.World
 }
 
 const projectileSpeed = 1.5
 
-func NewProjectileContol() *ProjectileControl {
+func NewProjectileContol(w ecs.World) *ProjectileControl {
 	return &ProjectileControl{
-		query: query.NewQuery(filter.Contains(tag.Projectile)),
+		world: w,
 	}
 }
 
-func (p ProjectileControl) Update(w donburi.World) {
-	// 	p.query.EachEntity(w, func(e *donburi.Entry) {
-	// 		position := component.GetPosition(e)
-	// 		direction := component.GetDirection(e)
+func (p ProjectileControl) Update() {
+	for _, e := range ecs.FilterBy[Projectile](p.world) {
+		position := e.GetPosition()
+		direction := e.GetDirection()
 
-	// 		vy := math.Sin(direction.Angle)
-	// 		vx := math.Cos(direction.Angle)
+		vy := math.Sin(direction.Angle)
+		vx := math.Cos(direction.Angle)
 
-	// 		vy *= projectileSpeed
-	// 		vx *= projectileSpeed
+		vy *= projectileSpeed
+		vx *= projectileSpeed
 
-	// 		position.Update(position.X-vx, position.Y-vy)
-	// 	})
+		position.Update(position.X-vx, position.Y-vy)
+	}
 }
