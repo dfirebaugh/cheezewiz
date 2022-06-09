@@ -1,0 +1,41 @@
+{
+    "levelName": "garden",
+    "events": [
+        {
+            "time": 30,
+            "event": "SpawnWave",
+            "args": ["radish","10","5"]
+        },
+        {
+            "time": 118,
+            "event": "SpawnWave",
+            "args": ["radish","2","5"]
+        },
+        {
+            "time": 116,
+            "event": "SpawnWave",
+            "args": ["radish","3","5"]
+        },
+        {
+            "time": 111,
+            "event": "SpawnWave",
+            "args": ["radish","23","5"]
+        },
+        {
+            "time": 30,
+            "event": "HurryUp",
+            "args": []
+        },
+        {
+            "time": 100,
+            "event": "SpawnBoss",
+            "args": ["cheezboss","1000","900"]
+        },
+        {
+            "time": 0,
+            "event": "Death",
+            "args": []
+        }
+    ]
+}
+
