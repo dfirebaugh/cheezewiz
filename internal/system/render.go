@@ -68,7 +68,7 @@ func (r *Render) updateAnimatableActor(w donburi.World) {
 		if anim == nil {
 			return
 		}
-		anim.NextFrame()
+		anim.IterFrame()
 	})
 }
 
@@ -127,7 +127,7 @@ func (r Render) animatableActor(w donburi.World, screen *ebiten.Image) {
 }
 
 func (r *Render) healthBar(w donburi.World, entry *donburi.Entry, screen *ebiten.Image) {
-	if entry.Archetype().Layout().HasComponent(tag.Player) {
+	if entry.Archetype().Layout().HasComponent(component.Health) {
 		position := component.GetPosition(entry)
 		health := component.GetHealth(entry)
 		x, y := r.getWorldCoord(w, position)

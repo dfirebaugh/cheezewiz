@@ -1,5 +1,6 @@
 {
     "playerTag": "",
+    "archetype": "player",
     "inputDevice": "keyboard",
     "actorState": "idle",
     "animations": {

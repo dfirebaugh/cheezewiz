@@ -27,7 +27,7 @@ var c = map[HandlerLabel]func(w donburi.World, e *donburi.Entry){
 		}
 		if e.Archetype().Layout().HasComponent(tag.Projectile) {
 			logrus.Info("enemy collided with projectile")
-			// w.Remove(e.Entity())
+			w.Remove(e.Entity())
 		}
 	},
 	RocketCollisionLabel: func(w donburi.World, e *donburi.Entry) {

@@ -1,32 +1,33 @@
 package event
 
 import (
-	"cheezewiz/internal/component"
-	"cheezewiz/internal/dentity"
-	"cheezewiz/internal/tag"
+	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/entity"
+	"cheezewiz/pkg/ecs"
 	"math"
-	"math/rand"
 	"strconv"
 
 	"github.com/atedja/go-vector"
 	"github.com/sirupsen/logrus"
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Job struct {
 	json_name string
-	Callback  func(w donburi.World, args []string)
+	Callback  func(w ecs.World, args []string)
 	priority  int
 }
 
-func spawnWave(w donburi.World, args []string) {
-	playerQuery := query.NewQuery(filter.Contains(tag.Player))
+func spawnWave(w ecs.World, args []string) {
+	playerFilter := w.MakeFilter(archetype.PlayerFilter)
+	println("spawn some monsters")
 
-	firstplayer, _ := playerQuery.FirstEntity(w)
-
-	pPos := component.GetPosition(firstplayer)
+	firstplayer, ok := w.FirstEntity(playerFilter).(archetype.Player)
+	if !ok {
+		println("unable to find first player")
+		println(len(w.EntityMap))
+		return
+	}
+	pPos := firstplayer.GetPosition()
 	playerVector := vector.NewWithValues([]float64{pPos.X, pPos.Y})
 
 	amount, _ := strconv.Atoi(args[1])
@@ -35,56 +36,55 @@ func spawnWave(w donburi.World, args []string) {
 
 	radians_spread := (2.0 * math.Pi) / float64(amount)
 
-	switch {
-	case "radish" == args[0]:
+	switch args[0] {
+	case "radish":
 		for i := 0; i < amount; i++ {
 			x := math.Cos(radians_spread * float64(i))
 			y := math.Sin(radians_spread * float64(i))
 			spawnloc := vector.NewWithValues([]float64{x, y})
 			spawnloc.Scale(float64(distance))
 			spawnloc = vector.Add(spawnloc, playerVector)
-			e := dentity.MakeRandEntity(w, []string{
+			_, e := entity.MakeRandEntity(w, []string{
 				"entities/radishred.entity.json",
 				"entities/radishblue.entity.json",
 				"entities/radishyellow.entity.json",
 			}, spawnloc[0], spawnloc[1])
-			component.GetHealth(e).HP = float64(hp)
+			e.(archetype.Actor).GetHealth().HP = float64(hp)
 		}
-
 	default:
 		return
 	}
 }
 
-func spawnBoss(w donburi.World, args []string) {
-	// hp, _ := strconv.Atoi(args[1])
-	distance, _ := strconv.Atoi(args[2])
-	loc_radian := rand.Float64() * (math.Pi * 2)
+func spawnBoss(w ecs.World, args []string) {
+	// // hp, _ := strconv.Atoi(args[1])
+	// distance, _ := strconv.Atoi(args[2])
+	// loc_radian := rand.Float64() * (math.Pi * 2)
 
-	x := math.Cos(loc_radian)
-	y := math.Sin(loc_radian)
+	// x := math.Cos(loc_radian)
+	// y := math.Sin(loc_radian)
 
-	v := vector.NewWithValues([]float64{x, y})
+	// v := vector.NewWithValues([]float64{x, y})
 
-	v.Scale(float64(distance))
+	// v.Scale(float64(distance))
 
-	playerQuery := query.NewQuery(filter.Contains(tag.Player))
+	// playerQuery := query.NewQuery(filter.Contains(tag.Player))
 
-	firstplayer, _ := playerQuery.FirstEntity(w)
+	// firstplayer, _ := playerQuery.FirstEntity(w)
 
-	pPos := component.GetPosition(firstplayer)
-	playerVector := vector.NewWithValues([]float64{pPos.X, pPos.Y})
+	// pPos := component.GetPosition(firstplayer)
+	// playerVector := vector.NewWithValues([]float64{pPos.X, pPos.Y})
 
-	v = vector.Add(playerVector, v)
+	// v = vector.Add(playerVector, v)
 
-	dentity.MakeEntity(w, "entities/cheezboss.entity.json", v[0], v[1])
+	// entity.MakeEntity(w, "entities/cheezboss.entity.json", v[0], v[1])
 }
 
-func outputHurryUp(w donburi.World, args []string) {
+func outputHurryUp(w ecs.World, args []string) {
 	logrus.Info("HURRY UP")
 }
 
-func outputDeath(w donburi.World, args []string) {
+func outputDeath(w ecs.World, args []string) {
 	logrus.Info("Death")
 }
 

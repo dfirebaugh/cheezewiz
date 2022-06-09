@@ -14,8 +14,8 @@ type Animation struct {
 	Image       *ebiten.Image
 	FrameWidth  int
 	FrameHeight int
-	FrameNum    int
-	count       int
+	FrameCount  int
+	iter        int
 	OX          int
 	OY          int
 }
@@ -25,9 +25,6 @@ func MakeAnimation(path string, height int, width int) *Animation {
 		Path:        path,
 		FrameWidth:  height,
 		FrameHeight: width,
-		OX:          0,
-		OY:          0,
-		count:       0,
 	}
 
 	if len(a.Path) > 0 {
@@ -53,12 +50,22 @@ func MakeDebugAnimation() *Animation {
 }
 
 func (a *Animation) GetFrame() *ebiten.Image {
-	a.FrameNum = a.Image.Bounds().Max.X / a.FrameWidth
-	i := (a.count / 5) % a.FrameNum
-	sx, sy := a.OX+i*a.FrameWidth, a.OY
+	if a.Image == nil {
+		logrus.Errorf("error getting Image")
+		return nil
+	}
+	sx, sy := a.OX+a.getFrameIndex()*a.FrameWidth, a.OY
 	return a.Image.SubImage(image.Rect(sx, sy, sx+a.FrameWidth, sy+a.FrameHeight)).(*ebiten.Image)
 }
 
-func (a *Animation) NextFrame() {
-	a.count++
+func (a *Animation) getFrameIndex() int {
+	return (a.iter / 5) % a.getFrameCount()
+}
+
+func (a *Animation) getFrameCount() int {
+	return a.Image.Bounds().Max.X / a.FrameWidth
+}
+
+func (a *Animation) IterFrame() {
+	a.iter++
 }

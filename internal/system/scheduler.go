@@ -1,24 +1,26 @@
 package system
 
 import (
-	"cheezewiz/internal/component"
 	"cheezewiz/internal/event"
-
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
+	"cheezewiz/pkg/ecs"
 )
 
 type Scheduler struct {
-	query      *query.Query
 	events     map[uint32][]func()
 	weaponFire []func()
+	countdown  struct {
+		seconds uint32
+	}
 }
 
-func NewScheduler(sceneEvents []event.SceneEvent, w donburi.World) *Scheduler {
+func NewScheduler(sceneEvents []event.SceneEvent, w ecs.World) *Scheduler {
 	scheduler := &Scheduler{
-		query:  query.NewQuery(filter.Contains(component.Countdown)),
 		events: map[uint32][]func(){},
+		countdown: struct {
+			seconds uint32
+		}{
+			seconds: 120,
+		},
 	}
 
 	for _, se := range sceneEvents {
@@ -35,14 +37,24 @@ func NewScheduler(sceneEvents []event.SceneEvent, w donburi.World) *Scheduler {
 	return scheduler
 }
 
-func (s Scheduler) Update(w donburi.World) {
-	s.RunWeaponFire()
+func (s *Scheduler) Update() {
+	if s.countdown.seconds == 0 {
+		return
+	}
+	// s.world.FilterBy()
+	// s.RunWeaponFire()
+	s.RunEvents()
+	println("second:", s.countdown.seconds)
 
-	s.query.EachEntity(w, func(entry *donburi.Entry) {
-		countdown := component.GetCountdown(entry)
+	tpsCount++
+	if tpsCount%60 == 0 && s.countdown.seconds > 0 {
+		s.countdown.seconds--
+	}
+	// s.query.EachEntity(s.world, func(entry *donburi.Entry) {
+	// 	countdown := component.GetCountdown(entry)
 
-		s.RunEvents(countdown.CountDownInSec)
-	})
+	// 	s.RunEvents(countdown.CountDownInSec)
+	// })
 }
 
 func (s *Scheduler) RunWeaponFire() {
@@ -53,7 +65,8 @@ func (s *Scheduler) RunWeaponFire() {
 	s.weaponFire = nil
 }
 
-func (s Scheduler) RunEvents(now uint32) {
+func (s *Scheduler) RunEvents() {
+	now := s.countdown.seconds
 	if _, ok := s.events[now]; !ok {
 		return
 	}

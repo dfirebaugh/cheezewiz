@@ -1,103 +1,106 @@
 package scene
 
 import (
-	"cheezewiz/config"
-	"cheezewiz/internal/attacks"
-	"cheezewiz/internal/dentity"
 	"cheezewiz/internal/entity"
 	"cheezewiz/internal/system"
-	"cheezewiz/pkg/taskrunner"
+	"cheezewiz/pkg/ecs"
 	"os"
-	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/yohamta/donburi"
 )
 
 type System interface {
-	Update(w donburi.World)
+	// Update(w donburi.World)
+	Update()
 }
 
 type Drawable interface {
-	Draw(w donburi.World, screen *ebiten.Image)
+	// Draw(w donburi.World, screen *ebiten.Image)
+	Draw(screen *ebiten.Image)
 }
 type Scene struct {
-	world     donburi.World
+	// world     donburi.World
+	world     ecs.World
 	systems   []System
 	drawables []Drawable
 }
 
-const level1 string = "level1.json"
+// const level1 string = "level1.json"
 
-func Init() *Scene {
+func Init(level string) *Scene {
 	// World
-	world := donburi.NewWorld()
+	// world := donburi.NewWorld()
+	w := ecs.NewWorld()
 
 	// System
-	renderer := system.NewRender()
-	collision := system.NewCollision()
-	timer := system.NewTimer()
-	exp := system.NewExpbar()
-	aicontroller := system.NewEnemyControl()
+	// renderer := system.NewRender()
+	// collision := system.NewCollision()
+	// timer := system.NewTimer()
+	// exp := system.NewExpbar()
+	// aicontroller := system.NewEnemyControl()
 
-	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(world))
-	addEntities(world)
-
+	// taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(world))
+	// addEntities(world)
+	// entity.MakePlayer(w)
+	entity.MakeEntity(w, "entities/cheezewiz.entity.json", 0, 0)
+	// entity.MakeEntity(w, "entities/radishred.entity.json", 0, 0)
+	renderer := system.NewRenderer(w)
 	s := &Scene{
-		world: world,
+		world: w,
 		systems: []System{
 			renderer,
-			system.NewPlayerControl(),
-			timer,
-			system.NewRegisterPlayer(),
-			system.DamageBufferGroup{},
-			aicontroller,
-			collision,
-			system.NewScheduler(loadWorld(level1).Events, world),
-			system.NewWorldViewPortLocation(),
-			system.NewProjectileContol(),
-			exp,
+			system.Controller{World: w},
+			// 	system.NewPlayerControl(),
+			// 	timer,
+			// 	system.NewRegisterPlayer(),
+			// 	system.DamageBufferGroup{},
+			// 	aicontroller,
+			// 	collision,
+			system.NewScheduler(loadWorld(level).Events, w),
+			// 	system.NewWorldViewPortLocation(),
+			// 	system.NewProjectileContol(),
+			// 	exp,
 		},
 		drawables: []Drawable{
-			collision,
+			// 	collision,
 			renderer,
-			timer,
-			// exp,
+			// 	timer,
+			// 	// exp,
 		},
 	}
 
 	return s
 }
 
-func addEntities(world donburi.World) {
-	// entity.MakeExpBar(world)
-	entity.MakeWorld(world)
-	entity.MakeBackground(world)
-	entity.MakeTimer(world)
-	// entity.MakePlayer(world, input.Keyboard{})
-	dentity.MakeRandEntity(
-		world,
-		[]string{
-			"entities/jellybeangreen.entity.json",
-			"entities/jellybeanpink.entity.json",
-			"entities/jellybeanblue.entity.json",
-			"entities/jellybeanrainbow.entity.json",
-		},
-		200,
-		200,
-	)
-	dentity.MakeEntity(
-		world,
-		"entities/cheezewiz.entity.json",
-		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
-		float64(config.Get().Window.Height/config.Get().ScaleFactor/2),
-	)
-	// entity.MakeSlot(world)
-}
+// func addEntities(world donburi.World) {
+// 	// entity.MakeExpBar(world)
+// 	entity.MakeWorld(world)
+// 	entity.MakeBackground(world)
+// 	entity.MakeTimer(world)
+// 	// entity.MakePlayer(world, input.Keyboard{})
+// 	dentity.MakeRandEntity(
+// 		world,
+// 		[]string{
+// 			"entities/jellybeangreen.entity.json",
+// 			"entities/jellybeanpink.entity.json",
+// 			"entities/jellybeanblue.entity.json",
+// 			"entities/jellybeanrainbow.entity.json",
+// 		},
+// 		200,
+// 		200,
+// 	)
+// 	dentity.MakeEntity(
+// 		world,
+// 		"entities/cheezewiz.entity.json",
+// 		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
+// 		float64(config.Get().Window.Height/config.Get().ScaleFactor/2),
+// 	)
+// 	// entity.MakeSlot(world)
+// }
 
 func (s *Scene) Update() {
 	for _, sys := range s.systems {
-		sys.Update(s.world)
+		sys.Update()
 	}
 	if ebiten.IsWindowBeingClosed() {
 		s.Exit()
@@ -105,7 +108,7 @@ func (s *Scene) Update() {
 }
 func (s *Scene) Draw(screen *ebiten.Image) {
 	for _, sys := range s.drawables {
-		sys.Draw(s.world, screen)
+		sys.Draw(screen)
 	}
 }
 
