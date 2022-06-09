@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"cheezewiz/internal/collision"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/filesystem"
 	"cheezewiz/internal/input"
@@ -74,6 +75,7 @@ func buildPlayer(e EntityConfig, x float64, y float64) *Player {
 			Device: lookupInputDevice(e.InputDevice),
 		},
 		ActorState: e.getState(),
+		RigidBody:  e.buildRigidBody(),
 	}
 	return &p
 }
@@ -86,6 +88,7 @@ func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {
 			Animation: e.getAnimations(),
 		},
 		ActorState: e.getState(),
+		RigidBody:  e.buildRigidBody(),
 	}
 	return &p
 }
@@ -158,4 +161,14 @@ func (e EntityConfig) buildPosition(x float64, y float64) *component.Position {
 		position.Y = e.Position.Y
 	}
 	return position
+}
+func (e EntityConfig) buildRigidBody() *component.RigidBody {
+	rb := component.RigidBody{}
+	rb.SetBorder(e.RigidBody.R, e.RigidBody.B)
+	ch := collision.HandlerLabel(e.RigidBody.CollisionHandlerLabel)
+	if ch == "" {
+		return &rb
+	}
+	rb.SetCollisionHandler(ch)
+	return &rb
 }

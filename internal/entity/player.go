@@ -15,11 +15,15 @@ type Player struct {
 	*component.InputDevice
 	*component.Position
 	*component.Health
+	*component.RigidBody
 	PlayerTag ecs.Tag
 }
 
 func (p Player) GetPlayerTag() ecs.Tag {
 	return p.PlayerTag
+}
+func (p Player) GetRigidBody() *component.RigidBody {
+	return p.RigidBody
 }
 func (p Player) GetInputDevice() input.PlayerInput {
 	return p.InputDevice.Device

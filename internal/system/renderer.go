@@ -1,6 +1,7 @@
 package system
 
 import (
+	"cheezewiz/config"
 	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
 
@@ -42,6 +43,7 @@ func (r Renderer) updateAnimatable(entity Animatable) {
 }
 
 func (r Renderer) Draw(screen *ebiten.Image) {
+	r.collidable(screen)
 	for _, entity := range ecs.FilterBy[Animatable](r.World) {
 		r.animatable(screen, entity)
 	}
@@ -78,4 +80,17 @@ func (r Renderer) getWorldCoord(position *component.Position) (float64, float64)
 	}
 	worldViewLocationPos := viewPort.GetPosition()
 	return position.X - position.CX - worldViewLocationPos.X, position.Y - position.CY - worldViewLocationPos.Y
+}
+
+func (r Renderer) collidable(screen *ebiten.Image) {
+	if !config.Get().DebugEnabled {
+		return
+	}
+
+	for _, c := range ecs.FilterBy[Collidable](r.World) {
+		p := c.GetPosition()
+		rb := c.GetRigidBody()
+		x, y := r.getWorldCoord(p)
+		ebitenutil.DrawRect(screen, x, y, rb.GetWidth(), rb.GetHeight(), colornames.Red100)
+	}
 }

@@ -13,11 +13,15 @@ type Enemy struct {
 	*component.ActorState
 	*component.Position
 	*component.Health
+	*component.RigidBody
 	EnemyTag ecs.Tag
 }
 
 func (e Enemy) GetEnemyTag() ecs.Tag {
 	return e.EnemyTag
+}
+func (e Enemy) GetRigidBody() *component.RigidBody {
+	return e.RigidBody
 }
 func (e Enemy) GetFrame() *ebiten.Image {
 	return e.Animation.Animation[string(e.ActorState.GetCurrent())].GetFrame()

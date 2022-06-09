@@ -6,10 +6,8 @@ import (
 )
 
 type HandlerLabel string
-
-type ProjectileTag struct{}
 type Projectile interface {
-	GetProjectileTag() ProjectileTag
+	GetProjectileTag() ecs.Tag
 }
 
 type Player interface {
