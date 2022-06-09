@@ -45,13 +45,13 @@ func spawnWave(w ecs.World, args []string) {
 				"entities/radishblue.entity.json",
 				"entities/radishyellow.entity.json",
 			}, spawnloc[0], spawnloc[1])
-			radish, ok := e.(archetype.Actor)
+			radish, ok := e.(archetype.Enemy)
 			if !ok {
 				logrus.Error("some error with building radish entity")
 				return
 			}
 
-			radish.GetHealth().HP = float64(hp)
+			radish.GetHealth().Current = float64(hp)
 		}
 	default:
 		return

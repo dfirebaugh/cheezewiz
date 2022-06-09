@@ -11,8 +11,8 @@ import (
 )
 
 type Enemy interface {
-	GetPosition() *component.PositionData
-	GetHealth() *component.HealthAspect
+	GetPosition() *component.Position
+	GetHealth() *component.Health
 	GetEnemyTag() archetype.EnemyTag
 }
 
@@ -43,7 +43,7 @@ func (e EnemyControl) Update() {
 func (e EnemyControl) updateHealth(enemy Enemy) bool {
 	health := enemy.GetHealth()
 	position := enemy.GetPosition()
-	if health.HP <= 0 {
+	if health.Current <= 0 {
 		// w.Remove(entry.Entity())
 		entity.MakeRandEntity(e.world, []string{
 			"entities/jellybeangreen.entity.json",

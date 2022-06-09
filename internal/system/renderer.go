@@ -13,13 +13,13 @@ import (
 
 type Animatable interface {
 	GetFrame() *ebiten.Image
-	GetPosition() *component.PositionData
+	GetPosition() *component.Position
 	IterFrame()
-	GetHealth() *component.HealthAspect
+	GetHealth() *component.Health
 }
 type ViewPort interface {
 	ViewPort() archetype.ViewPortTag
-	GetPosition() *component.PositionData
+	GetPosition() *component.Position
 }
 
 type Renderer struct {
@@ -67,11 +67,11 @@ func (r Renderer) healthBar(screen *ebiten.Image, entity Animatable) {
 
 	var marginBottom float64 = 35
 
-	ebitenutil.DrawRect(screen, x, marginBottom+y, health.MAXHP/3, 3, colornames.Grey100)
-	ebitenutil.DrawRect(screen, x, marginBottom+y, health.HP/3, 3, colornames.Red600)
+	ebitenutil.DrawRect(screen, x, marginBottom+y, health.Max/3, 3, colornames.Grey100)
+	ebitenutil.DrawRect(screen, x, marginBottom+y, health.Current/3, 3, colornames.Red600)
 }
 
-func (r Renderer) getWorldCoord(position *component.PositionData) (float64, float64) {
+func (r Renderer) getWorldCoord(position *component.Position) (float64, float64) {
 	viewPort, err := ecs.FirstEntity[ViewPort](r.World)
 	if err != nil {
 		logrus.Errorf("viewport: %s", err)

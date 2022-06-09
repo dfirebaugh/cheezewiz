@@ -3,11 +3,14 @@ package scene
 import (
 	"cheezewiz/config"
 	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/attacks"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"cheezewiz/internal/system"
 	"cheezewiz/pkg/ecs"
+	"cheezewiz/pkg/taskrunner"
 	"os"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -30,35 +33,26 @@ type Scene struct {
 func Init(level string) *Scene {
 	// World
 	w := ecs.NewWorld()
-	// taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(world))
+	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(w))
 	addEntities(w)
 
 	// System
 	renderer := system.NewRenderer(w)
-	// collision := system.NewCollision()
-	// timer := system.NewTimer()
-	// exp := system.NewExpbar()
 
 	s := &Scene{
 		world: w,
 		systems: []System{
 			renderer,
+			system.NewCollision(w),
 			system.Controller{World: w},
 			system.NewEnemyControl(w),
 			system.NewScheduler(loadWorld(level).Events, w),
 			system.NewWorldViewPortLocation(w),
-			// 	timer,
-			// 	system.NewRegisterPlayer(),
 			// 	system.DamageBufferGroup{},
-			// 	collision,
 			// 	system.NewProjectileContol(),
-			// 	exp,
 		},
 		drawables: []Drawable{
-			// 	collision,
 			renderer,
-			// 	timer,
-			// 	// exp,
 		},
 	}
 
@@ -68,7 +62,7 @@ func Init(level string) *Scene {
 func addEntities(world ecs.World) {
 	// 	// entity.MakeExpBar(world)
 	world.Add(&archetype.ViewPortArchetype{
-		PositionData: &component.PositionData{},
+		Position: &component.Position{},
 	})
 	entity.MakeEntity(world, "entities/cheezewiz.entity.json",
 		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),

@@ -1,12 +1,10 @@
 package system
 
 import (
-	"cheezewiz/internal/component"
+	"cheezewiz/internal/archetype"
+	"cheezewiz/pkg/ecs"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type attackMediator interface {
@@ -15,47 +13,44 @@ type attackMediator interface {
 }
 
 type Collision struct {
-	query *query.Query
+	world ecs.World
 }
 
-func NewCollision() *Collision {
+func NewCollision(world ecs.World) *Collision {
 	return &Collision{
-		query: query.NewQuery(filter.Contains(component.RigidBody)),
+		world: world,
 	}
 }
 
-func (c *Collision) Update(w donburi.World) {
-	c.query.EachEntity(w, func(entry *donburi.Entry) {
-		id := entry.Id()
-		rb := component.GetRigidBody(entry)
-		p := component.GetPosition(entry)
+func (c *Collision) Update() {
+	for id, actor := range ecs.FilterBy[archetype.Actor](c.world) {
+		rb := actor.GetRigidBody()
+		p := actor.GetPosition()
 
 		ax := p.X - rb.L
 		ay := p.Y - rb.T
 		aw := rb.GetWidth()
 		ah := rb.GetHeight()
-		c.query.EachEntity(w, func(e *donburi.Entry) {
-			if id == e.Id() {
-				return
+
+		for idB, actorB := range ecs.FilterBy[archetype.Actor](c.world) {
+			if id == idB {
+				continue
 			}
-			p2 := component.GetPosition(e)
-			erb := component.GetRigidBody(e)
+			p2 := actorB.GetPosition()
+			erb := actorB.GetRigidBody()
 			bx := p2.X - erb.L
 			by := p2.Y - erb.T
 			bw := erb.GetWidth()
 			bh := erb.GetHeight()
-
 			if c.IsCollide([]float64{ax, ay, aw, ah}, []float64{bx, by, bw, bh}) {
 				if rb.CollisionHandler == nil {
 					return
 				}
-				rb.CollisionHandler(w, e)
+				rb.CollisionHandler(c.world, actorB)
 			}
-		})
-	})
-}
 
-func (c *Collision) Draw(w donburi.World, screen *ebiten.Image) {
+		}
+	}
 }
 
 func (c *Collision) IsCollide(a []float64, b []float64) bool {

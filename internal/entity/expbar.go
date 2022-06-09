@@ -1,28 +1,26 @@
 package entity
 
 import (
-	"cheezewiz/internal/component"
-
 	"github.com/yohamta/donburi"
 )
 
 var ExpBarTag = donburi.NewTag()
 
 func MakeExpBar(w donburi.World) {
-	expBar := w.Create(ExpBarTag, component.Exp, component.NextLevel)
-	entry := w.Entry(expBar)
+	// expBar := w.Create(ExpBarTag, component.Exp, component.NextLevel)
+	// entry := w.Entry(expBar)
 
-	exp := (*component.ExpData)(entry.Component(component.Exp))
+	// exp := (*component.ExpData)(entry.Component(component.Exp))
 
-	*exp = component.ExpData{
-		CurrentExp: 0,
-		DesiredExp: 5, // initial
-	}
+	// *exp = component.ExpData{
+	// 	CurrentExp: 0,
+	// 	DesiredExp: 5, // initial
+	// }
 
-	// position := (*component.PositionData)(entry.Component(component.Position))
-	// position.Set(5, 10)
+	// // position := (*component.PositionData)(entry.Component(component.Position))
+	// // position.Set(5, 10)
 
-	nextLevel := (*component.NextLevelData)(entry.Component(component.NextLevel))
+	// nextLevel := (*component.NextLevelData)(entry.Component(component.NextLevel))
 
-	nextLevel.CurrentLevel = 1
+	// nextLevel.CurrentLevel = 1
 }

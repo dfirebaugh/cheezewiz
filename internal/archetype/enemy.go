@@ -9,16 +9,16 @@ import (
 
 type EnemyTag struct{}
 type Enemy interface {
-	GetPosition() *component.PositionData
-	GetHealth() *component.HealthAspect
+	GetPosition() *component.Position
+	GetHealth() *component.Health
 	GetEnemyTag() EnemyTag
 }
 
 type EnemyArchetype struct {
-	*component.AnimationData
-	*component.ActorStateData
-	*component.PositionData
-	*component.HealthAspect
+	*component.Animation
+	*component.ActorState
+	*component.Position
+	*component.Health
 	EnemyTag
 }
 
@@ -26,20 +26,20 @@ func (e EnemyArchetype) GetEnemyTag() EnemyTag {
 	return e.EnemyTag
 }
 func (e EnemyArchetype) GetFrame() *ebiten.Image {
-	return e.AnimationData.Animations[string(e.ActorStateData.GetCurrent())].GetFrame()
+	return e.Animation.Animation[string(e.ActorState.GetCurrent())].GetFrame()
 }
-func (e EnemyArchetype) GetPosition() *component.PositionData {
-	return e.PositionData
+func (e EnemyArchetype) GetPosition() *component.Position {
+	return e.Position
 }
 func (e EnemyArchetype) GetState() component.ActorStateType {
-	return e.ActorStateData.GetCurrent()
+	return e.ActorState.GetCurrent()
 }
 func (e EnemyArchetype) GetCurrent() *animation.Animation {
-	return e.Animations[string(e.GetState())]
+	return e.Animation.Animation[string(e.GetState())]
 }
 func (e EnemyArchetype) IterFrame() {
 	e.GetCurrent().IterFrame()
 }
-func (e EnemyArchetype) GetHealth() *component.HealthAspect {
-	return e.HealthAspect
+func (e EnemyArchetype) GetHealth() *component.Health {
+	return e.Health
 }

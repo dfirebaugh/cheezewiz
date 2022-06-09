@@ -8,32 +8,41 @@ import (
 )
 
 type Actor interface {
-	GetPosition() *component.PositionData
-	GetHealth() *component.HealthAspect
+	GetPosition() *component.Position
+	GetHealth() *component.Health
+	GetRigidBody() *component.RigidBody
 }
 
 type ActorArchetype struct {
-	*component.AnimationData
-	*component.ActorStateData
-	*component.PositionData
-	*component.HealthAspect
+	*component.Animation
+	*component.ActorState
+	*component.Position
+	*component.Health
+	*component.Direction
+	*component.RigidBody
 }
 
 func (a ActorArchetype) GetFrame() *ebiten.Image {
-	return a.AnimationData.Animations[string(a.ActorStateData.GetCurrent())].GetFrame()
+	return a.Animation.Animation[string(a.ActorState.GetCurrent())].GetFrame()
 }
-func (a ActorArchetype) GetPosition() *component.PositionData {
-	return a.PositionData
+func (a ActorArchetype) GetPosition() *component.Position {
+	return a.Position
 }
 func (a ActorArchetype) GetState() component.ActorStateType {
-	return a.ActorStateData.GetCurrent()
+	return a.ActorState.GetCurrent()
 }
 func (a ActorArchetype) GetCurrent() *animation.Animation {
-	return a.Animations[string(a.GetState())]
+	return a.Animation.Animation[string(a.GetState())]
 }
 func (a ActorArchetype) IterFrame() {
 	a.GetCurrent().IterFrame()
 }
-func (a ActorArchetype) GetHealth() *component.HealthAspect {
-	return a.HealthAspect
+func (a ActorArchetype) GetHealth() *component.Health {
+	return a.Health
+}
+func (a ActorArchetype) GetDirection() *component.Direction {
+	return a.Direction
+}
+func (a ActorArchetype) GetRigidBody() *component.RigidBody {
+	return a.RigidBody
 }

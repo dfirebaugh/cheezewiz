@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/sirupsen/logrus"
-	"github.com/yohamta/donburi"
 )
 
 type ActorStateType string
@@ -18,22 +17,16 @@ const (
 	DeathState     ActorStateType = "death"
 )
 
-type ActorStateData struct {
+type ActorState struct {
 	current   ActorStateType
 	Available map[string]string
 	stateMut  sync.RWMutex
 }
 
-var ActorState = donburi.NewComponentType(ActorStateData{current: IdleState})
-
-func GetActorState(entry *donburi.Entry) *ActorStateData {
-	return (*ActorStateData)(entry.Component(ActorState))
-}
-
-func (p *ActorStateData) Reset() {
+func (p *ActorState) Reset() {
 	p.current = IdleState
 }
-func (as *ActorStateData) SetAvailable(animations map[string]string) {
+func (as *ActorState) SetAvailable(animations map[string]string) {
 	as.stateMut.Lock()
 	defer as.stateMut.Unlock()
 
@@ -42,7 +35,7 @@ func (as *ActorStateData) SetAvailable(animations map[string]string) {
 		as.Available[label] = label
 	}
 }
-func (as *ActorStateData) Set(newState interface{}) {
+func (as *ActorState) Set(newState interface{}) {
 	as.stateMut.Lock()
 	defer as.stateMut.Unlock()
 
@@ -55,7 +48,7 @@ func (as *ActorStateData) Set(newState interface{}) {
 	}
 }
 
-func (as *ActorStateData) GetCurrent() ActorStateType {
+func (as *ActorState) GetCurrent() ActorStateType {
 	as.stateMut.Lock()
 	defer as.stateMut.Unlock()
 

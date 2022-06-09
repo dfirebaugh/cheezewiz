@@ -12,6 +12,27 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type Directionable interface {
+	GetDirection() *component.Direction
+}
+
+func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float64) (int, ecs.Entity) {
+	handle, entity := MakeEntity(w, path, x, y)
+
+	e, ok := entity.(Directionable)
+	if !ok {
+		logrus.Error("not able to get a direction for entity")
+	}
+	direction := e.GetDirection()
+	if direction == nil {
+		logrus.Error("not a valid direction")
+		return -1, nil
+	}
+
+	direction.Angle = dir
+	return handle, e
+}
+
 func MakeEntity(w ecs.World, path string, x float64, y float64) (int, ecs.Entity) {
 	var e EntityConfig
 
@@ -45,37 +66,37 @@ func buildArchetype(e EntityConfig, x float64, y float64) ecs.Entity {
 
 func buildPlayer(e EntityConfig, x float64, y float64) *archetype.PlayerArchetype {
 	p := archetype.PlayerArchetype{
-		PositionData: e.buildPosition(x, y),
-		HealthAspect: &e.Health,
-		AnimationData: &component.AnimationData{
-			Animations: e.getAnimations(),
+		Position: e.buildPosition(x, y),
+		Health:   &e.Health,
+		Animation: &component.Animation{
+			Animation: e.getAnimations(),
 		},
-		InputDeviceData: &component.InputDeviceData{
+		InputDevice: &component.InputDevice{
 			Device: lookupInputDevice(e.InputDevice),
 		},
-		ActorStateData: e.getState(),
+		ActorState: e.getState(),
 	}
 	return &p
 }
 func buildActor(e EntityConfig, x float64, y float64) *archetype.ActorArchetype {
 	p := archetype.ActorArchetype{
-		PositionData: e.buildPosition(x, y),
-		HealthAspect: &e.Health,
-		AnimationData: &component.AnimationData{
-			Animations: e.getAnimations(),
+		Position: e.buildPosition(x, y),
+		Health:   &e.Health,
+		Animation: &component.Animation{
+			Animation: e.getAnimations(),
 		},
-		ActorStateData: e.getState(),
+		ActorState: e.getState(),
 	}
 	return &p
 }
 func buildEnemy(e EntityConfig, x float64, y float64) *archetype.EnemyArchetype {
 	p := archetype.EnemyArchetype{
-		PositionData: e.buildPosition(x, y),
-		HealthAspect: &e.Health,
-		AnimationData: &component.AnimationData{
-			Animations: e.getAnimations(),
+		Position: e.buildPosition(x, y),
+		Health:   &e.Health,
+		Animation: &component.Animation{
+			Animation: e.getAnimations(),
 		},
-		ActorStateData: e.getState(),
+		ActorState: e.getState(),
 	}
 	return &p
 }
@@ -99,30 +120,30 @@ func (e EntityConfig) getAnimations() map[string]*animation.Animation {
 	return anim
 }
 
-func (e EntityConfig) getState() *component.ActorStateData {
-	s := &component.ActorStateData{}
+func (e EntityConfig) getState() *component.ActorState {
+	s := &component.ActorState{}
 	s.SetAvailable(e.Animations)
 	s.Set(component.ActorStateType(e.ActorState))
 	return s
 }
 
-func (e EntityConfig) HasComponent(label componentLabel) bool {
-	if len(e.Components) == 0 {
-		return false
-	}
-	for _, value := range e.Components {
-		if value != label {
-			continue
-		}
+// func (e EntityConfig) HasComponent(label componentLabel) bool {
+// 	if len(e.Components) == 0 {
+// 		return false
+// 	}
+// 	for _, value := range e.Components {
+// 		if value != label {
+// 			continue
+// 		}
 
-		return true
-	}
+// 		return true
+// 	}
 
-	return false
-}
+// 	return false
+// }
 
-func (e EntityConfig) buildPosition(x float64, y float64) *component.PositionData {
-	position := &component.PositionData{
+func (e EntityConfig) buildPosition(x float64, y float64) *component.Position {
+	position := &component.Position{
 		X:  x,
 		Y:  y,
 		CX: e.Position.CX,

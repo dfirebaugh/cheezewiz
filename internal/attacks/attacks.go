@@ -1,56 +1,60 @@
 package attacks
 
 import (
+	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/dentity"
-	"cheezewiz/internal/tag"
+	"cheezewiz/internal/entity"
+	"cheezewiz/pkg/ecs"
 	"cheezewiz/pkg/gamemath"
 
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
+	"github.com/atedja/go-vector"
 )
 
 type attackGroup interface {
-	AddEnemyDamage(reciever *donburi.Entry, amount float64, origin *donburi.Entry)
+	AddEnemyDamage(reciever archetype.Actor, amount float64, origin archetype.Actor)
 }
 
-var CheeseMissile = func(world donburi.World) func() {
+type Directionable interface {
+	GetDirection() *component.Direction
+}
+
+var CheeseMissile = func(world ecs.World) func() {
 	w := world
-	q := query.NewQuery(filter.Contains(tag.Player))
-	destinationQuery := query.NewQuery(filter.Contains(tag.Enemy))
 	return func() {
-		q.EachEntity(w, func(e *donburi.Entry) {
-			position := component.GetPosition(e)
-			state := component.GetActorState(e)
-			state.Set(component.AttackingState)
-			var closestEntry *donburi.Entry
-			var closestDistance float64 = 100000000
-
-			destinationQuery.EachEntity(w, func(pentry *donburi.Entry) {
-				enemyPosition := component.GetPosition(pentry)
-				if closestEntry == nil && w.Valid(pentry.Entity()) {
-					closestEntry = pentry
-				} else {
-					distance := gamemath.GetDistance([]float64{position.X, position.Y}, []float64{enemyPosition.X, enemyPosition.Y})
-					if distance < closestDistance && w.Valid(pentry.Entity()) {
-						closestDistance = distance
-						closestEntry = pentry
-					}
-				}
-			})
-
-			if closestEntry == nil {
-				return
-			}
-
-			launchProjectile(w, *position, *component.GetPosition(closestEntry))
-		})
+		for handle, player := range ecs.FilterBy[archetype.Player](w) {
+			findHeading(w, player, handle)
+		}
 	}
 }
 
-func launchProjectile(w donburi.World, from component.PositionData, to component.PositionData) {
+func findHeading(w ecs.World, player archetype.Player, playerHandle int) {
+	position := player.GetPosition()
+	state := player.GetActorState()
+
+	enemies := map[int]vector.Vector{}
+
+	for handle, actor := range ecs.FilterBy[archetype.Actor](w) {
+		if handle == playerHandle {
+			continue
+		}
+		p := actor.GetPosition()
+		enemies[handle] = vector.NewWithValues([]float64{p.X, p.Y})
+	}
+
+	closestHandle := gamemath.GetClosest(vector.NewWithValues([]float64{position.X, position.Y}), enemies)
+	if closestHandle == playerHandle {
+		return
+	}
+	// closestEnemy, ok := w.EntityMap[closestHandle].(archetype.Actor)
+	// if !ok {
+	// 	return
+	// }
+	// launchProjectile(w, *position, *closestEnemy.GetPosition())
+	state.Set(component.AttackingState)
+}
+
+func launchProjectile(w ecs.World, from component.Position, to component.Position) {
 	e := gamemath.GetVector(from.X, from.Y)
 	m := gamemath.GetVector(to.X, to.Y)
-	dentity.MakeWithDirection(w, "entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))
+	entity.MakeWithDirection(w, "entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))
 }

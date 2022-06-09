@@ -9,37 +9,41 @@ import (
 )
 
 type Player interface {
-	GetPosition() *component.PositionData
-	GetHealth() *component.HealthAspect
+	GetPosition() *component.Position
+	GetHealth() *component.Health
 	GetInputDevice() input.PlayerInput
+	GetActorState() *component.ActorState
 }
 
 type PlayerArchetype struct {
-	*component.AnimationData
-	*component.ActorStateData
-	*component.InputDeviceData
-	*component.PositionData
-	*component.HealthAspect
+	*component.Animation
+	*component.ActorState
+	*component.InputDevice
+	*component.Position
+	*component.Health
 }
 
 func (p PlayerArchetype) GetInputDevice() input.PlayerInput {
-	return p.InputDeviceData.Device
+	return p.InputDevice.Device
 }
 func (p PlayerArchetype) GetFrame() *ebiten.Image {
-	return p.AnimationData.Animations[string(p.ActorStateData.GetCurrent())].GetFrame()
+	return p.Animation.Animation[string(p.ActorState.GetCurrent())].GetFrame()
 }
-func (p PlayerArchetype) GetPosition() *component.PositionData {
-	return p.PositionData
+func (p PlayerArchetype) GetPosition() *component.Position {
+	return p.Position
 }
 func (p PlayerArchetype) GetState() component.ActorStateType {
-	return p.ActorStateData.GetCurrent()
+	return p.ActorState.GetCurrent()
 }
 func (p PlayerArchetype) GetCurrent() *animation.Animation {
-	return p.Animations[string(p.GetState())]
+	return p.Animation.Animation[string(p.GetState())]
 }
 func (p PlayerArchetype) IterFrame() {
 	p.GetCurrent().IterFrame()
 }
-func (p PlayerArchetype) GetHealth() *component.HealthAspect {
-	return p.HealthAspect
+func (p PlayerArchetype) GetHealth() *component.Health {
+	return p.Health
+}
+func (p PlayerArchetype) GetActorState() *component.ActorState {
+	return p.ActorState
 }

@@ -1,9 +1,7 @@
 package system
 
 import (
-	"cheezewiz/internal/component"
 	"cheezewiz/internal/tag"
-	"math"
 
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
@@ -23,16 +21,16 @@ func NewProjectileContol() *ProjectileControl {
 }
 
 func (p ProjectileControl) Update(w donburi.World) {
-	p.query.EachEntity(w, func(e *donburi.Entry) {
-		position := component.GetPosition(e)
-		direction := component.GetDirection(e)
+	// 	p.query.EachEntity(w, func(e *donburi.Entry) {
+	// 		position := component.GetPosition(e)
+	// 		direction := component.GetDirection(e)
 
-		vy := math.Sin(direction.Angle)
-		vx := math.Cos(direction.Angle)
+	// 		vy := math.Sin(direction.Angle)
+	// 		vx := math.Cos(direction.Angle)
 
-		vy *= projectileSpeed
-		vx *= projectileSpeed
+	// 		vy *= projectileSpeed
+	// 		vx *= projectileSpeed
 
-		position.Update(position.X-vx, position.Y-vy)
-	})
+	// 		position.Update(position.X-vx, position.Y-vy)
+	// 	})
 }

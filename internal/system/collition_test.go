@@ -1,6 +1,7 @@
 package system
 
 import (
+	"cheezewiz/pkg/ecs"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ type test struct {
 }
 
 func TestIsCollide(t *testing.T) {
-	c := NewCollision()
+	c := NewCollision(ecs.NewWorld())
 	tests := []test{
 		{
 			a:        []float64{1, 1, 1, 1},

@@ -11,8 +11,8 @@ import (
 )
 
 type Player interface {
-	GetHealth() *component.HealthAspect
-	GetPosition() *component.PositionData
+	GetHealth() *component.Health
+	GetPosition() *component.Position
 	GetInputDevice() input.PlayerInput
 }
 
@@ -29,58 +29,58 @@ func NewPlayerControl() *PlayerControl {
 }
 
 func (p PlayerControl) Update(w donburi.World) {
-	p.query.EachEntity(w, func(entry *donburi.Entry) {
-		position := component.GetPosition(entry)
-		controller := component.GetInputDevice(entry)
-		state := component.GetActorState(entry)
-		// animation := component.GetAnimation(entry)
-		direction := component.GetDirection(entry)
+	// p.query.EachEntity(w, func(entry *donburi.Entry) {
+	// 	position := component.GetPosition(entry)
+	// 	controller := component.GetInputDevice(entry)
+	// 	state := component.GetActorState(entry)
+	// 	// animation := component.GetAnimation(entry)
+	// 	direction := component.GetDirection(entry)
 
-		isMovingRight := func() bool {
-			return controller.Device.IsRightPressed() || controller.Device.IsRightJustPressed()
-		}
+	// 	isMovingRight := func() bool {
+	// 		return controller.Device.IsRightPressed() || controller.Device.IsRightJustPressed()
+	// 	}
 
-		isMovingLeft := func() bool {
-			return controller.Device.IsLeftPressed() || controller.Device.IsLeftJustPressed()
-		}
+	// 	isMovingLeft := func() bool {
+	// 		return controller.Device.IsLeftPressed() || controller.Device.IsLeftJustPressed()
+	// 	}
 
-		updatePlayerMovement := func(xPos float64, yPos float64) {
-			position.Update(xPos, yPos)
-			state.Set(component.WalkingState)
-		}
+	// 	updatePlayerMovement := func(xPos float64, yPos float64) {
+	// 		position.Update(xPos, yPos)
+	// 		state.Set(component.WalkingState)
+	// 	}
 
-		state.Reset()
+	// 	state.Reset()
 
-		// Must check right and left first to have player facing in the correct direction
-		if isMovingRight() {
-			// animation.Get(state.Current).Sprite.SetFlipH(true)
-			direction.IsRight = true
+	// 	// Must check right and left first to have player facing in the correct direction
+	// 	if isMovingRight() {
+	// 		// animation.Get(state.Current).Sprite.SetFlipH(true)
+	// 		direction.IsRight = true
 
-			if controller.Device.IsRightPressed() {
-				updatePlayerMovement(position.X+playerSpeed, position.Y)
-			}
-		}
+	// 		if controller.Device.IsRightPressed() {
+	// 			updatePlayerMovement(position.X+playerSpeed, position.Y)
+	// 		}
+	// 	}
 
-		if isMovingLeft() {
-			direction.IsRight = false
-			// animation.Get(state.Current).Sprite.SetFlipH(false)
-			if controller.Device.IsLeftPressed() {
-				updatePlayerMovement(position.X-playerSpeed, position.Y)
-			}
-		}
+	// 	if isMovingLeft() {
+	// 		direction.IsRight = false
+	// 		// animation.Get(state.Current).Sprite.SetFlipH(false)
+	// 		if controller.Device.IsLeftPressed() {
+	// 			updatePlayerMovement(position.X-playerSpeed, position.Y)
+	// 		}
+	// 	}
 
-		if controller.Device.IsUpPressed() {
-			updatePlayerMovement(position.X, position.Y-playerSpeed)
-		}
+	// 	if controller.Device.IsUpPressed() {
+	// 		updatePlayerMovement(position.X, position.Y-playerSpeed)
+	// 	}
 
-		if controller.Device.IsDownPressed() {
-			updatePlayerMovement(position.X, position.Y+playerSpeed)
-			state.Set(component.IdleState)
-		}
+	// 	if controller.Device.IsDownPressed() {
+	// 		updatePlayerMovement(position.X, position.Y+playerSpeed)
+	// 		state.Set(component.IdleState)
+	// 	}
 
-		health := component.GetHealth(entry)
-		if health.HP <= 0 {
-			state.Set(component.DeathState)
-		}
-	})
+	// 	health := component.GetHealth(entry)
+	// 	if health.HP <= 0 {
+	// 		state.Set(component.DeathState)
+	// 	}
+	// })
 }

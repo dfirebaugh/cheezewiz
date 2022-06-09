@@ -8,7 +8,7 @@ import (
 
 type Controllable interface {
 	GetInputDevice() input.PlayerInput
-	GetPosition() *component.PositionData
+	GetPosition() *component.Position
 }
 
 type Controller struct {
