@@ -7,7 +7,7 @@
         "attack": "radishyellow.png",
         "death": "radishyellow.png"
     },
-    "actorState": "idle",
+    "state": "idle",
     "position": {
         "cx": 16,
         "cy": 16

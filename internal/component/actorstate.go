@@ -4,37 +4,37 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type ActorStateType string
+type StateType string
 
 const (
-	DebugState     ActorStateType = "debug"
-	IdleState      ActorStateType = "idle"
-	WalkingState   ActorStateType = "walk"
-	AttackingState ActorStateType = "attack"
-	HurtState      ActorStateType = "hurt"
-	DeathState     ActorStateType = "death"
+	DebugState     StateType = "debug"
+	IdleState      StateType = "idle"
+	WalkingState   StateType = "walk"
+	AttackingState StateType = "attack"
+	HurtState      StateType = "hurt"
+	DeathState     StateType = "death"
 )
 
-type ActorState struct {
-	current   ActorStateType
-	Available map[ActorStateType]ActorStateType
+type State struct {
+	current   StateType
+	Available map[StateType]StateType
 }
 
-func (p *ActorState) Reset() {
+func (p *State) Reset() {
 	p.current = IdleState
 }
-func (as *ActorState) SetAvailable(animations map[ActorStateType]ActorStateType) {
-	as.Available = map[ActorStateType]ActorStateType{}
+func (as *State) SetAvailable(animations map[StateType]StateType) {
+	as.Available = map[StateType]StateType{}
 	for label := range animations {
 		as.Available[label] = label
 	}
 }
-func (as *ActorState) Set(newState ActorStateType) {
+func (as *State) Set(newState StateType) {
 	as.current = newState
 }
 
-func (as *ActorState) GetCurrent() ActorStateType {
-	var current ActorStateType
+func (as *State) GetCurrent() StateType {
+	var current StateType
 	var ok bool
 
 	if current, ok = as.Available[as.current]; !ok {
@@ -42,5 +42,5 @@ func (as *ActorState) GetCurrent() ActorStateType {
 		return DebugState
 	}
 
-	return ActorStateType(current)
+	return StateType(current)
 }

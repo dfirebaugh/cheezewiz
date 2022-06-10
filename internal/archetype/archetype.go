@@ -10,23 +10,24 @@ import (
 
 type Actor interface {
 	GetHealth() *component.Health
-	GetActorState() *component.ActorState
+	GetState() *component.State
 }
 type Collidable interface {
 	GetRigidBody() *component.RigidBody
 	GetPosition() *component.Position
+	GetState() *component.State
 }
 type Enemy interface {
 	GetPosition() *component.Position
 	GetHealth() *component.Health
-	GetActorState() *component.ActorState
+	GetState() *component.State
 	GetEnemyTag() ecs.Tag
 }
 type Player interface {
 	GetHealth() *component.Health
 	GetPosition() *component.Position
 	GetInputDevice() input.PlayerInput
-	GetActorState() *component.ActorState
+	GetState() *component.State
 }
 type Projectile interface {
 	GetDirection() *component.Direction

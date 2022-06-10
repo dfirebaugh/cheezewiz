@@ -26,7 +26,7 @@ func (d DamageBufferGroup) Apply(actor interface{}, amount float64) {
 	}
 
 	health := a.GetHealth()
-	state := a.GetActorState()
+	state := a.GetState()
 	logrus.Info("health: ", health.Current, " Origin Health ")
 
 	if health.Current <= 0 {

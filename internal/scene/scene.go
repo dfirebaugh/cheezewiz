@@ -45,7 +45,7 @@ func Init() *Scene {
 			system.NewCollision(w),
 			system.Controller{World: w},
 			system.NewEnemyControl(w),
-			system.NewScheduler(LoadStressTest().Events, w),
+			system.NewScheduler(LoadLevelOne().Events, w),
 			system.NewWorldViewPortLocation(w),
 			system.DamageBufferGroup{World: w},
 			system.NewProjectileContol(w),

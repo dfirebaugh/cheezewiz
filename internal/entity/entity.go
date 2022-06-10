@@ -76,8 +76,8 @@ func buildPlayer(e EntityConfig, x float64, y float64) *Player {
 		InputDevice: &component.InputDevice{
 			Device: lookupInputDevice(e.InputDevice),
 		},
-		ActorState: e.getState(),
-		RigidBody:  e.buildRigidBody(),
+		State:     e.getState(),
+		RigidBody: e.buildRigidBody(),
 	}
 	return &p
 }
@@ -87,9 +87,9 @@ func buildProjectile(e EntityConfig, x float64, y float64) *Projectile {
 		Animation: &component.Animation{
 			Animation: e.getAnimations(),
 		},
-		ActorState: e.getState(),
-		RigidBody:  e.buildRigidBody(),
-		Direction:  &component.Direction{},
+		State:     e.getState(),
+		RigidBody: e.buildRigidBody(),
+		Direction: &component.Direction{},
 	}
 }
 
@@ -100,8 +100,8 @@ func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {
 		Animation: &component.Animation{
 			Animation: e.getAnimations(),
 		},
-		ActorState: e.getState(),
-		RigidBody:  e.buildRigidBody(),
+		State:     e.getState(),
+		RigidBody: e.buildRigidBody(),
 	}
 	return &p
 }
@@ -113,8 +113,8 @@ func buildActor(e EntityConfig, x float64, y float64) *Actor {
 		Animation: &component.Animation{
 			Animation: e.getAnimations(),
 		},
-		ActorState: e.getState(),
-		RigidBody:  e.buildRigidBody(),
+		State:     e.getState(),
+		RigidBody: e.buildRigidBody(),
 	}
 }
 
@@ -125,8 +125,8 @@ func lookupInputDevice(key string) input.PlayerInput {
 	return input.Keyboard{}
 }
 
-func (e EntityConfig) getAnimations() map[component.ActorStateType]*animation.Animation {
-	anim := map[component.ActorStateType]*animation.Animation{
+func (e EntityConfig) getAnimations() map[component.StateType]*animation.Animation {
+	anim := map[component.StateType]*animation.Animation{
 		component.DebugState: animation.MakeDebugAnimation(),
 	}
 
@@ -137,7 +137,7 @@ func (e EntityConfig) getAnimations() map[component.ActorStateType]*animation.An
 	return anim
 }
 
-func (e EntityConfig) stringToState(label string) component.ActorStateType {
+func (e EntityConfig) stringToState(label string) component.StateType {
 	switch label {
 	case "debug":
 		return component.DebugState
@@ -156,14 +156,14 @@ func (e EntityConfig) stringToState(label string) component.ActorStateType {
 	}
 }
 
-func (e EntityConfig) getState() *component.ActorState {
-	s := &component.ActorState{}
-	available := map[component.ActorStateType]component.ActorStateType{}
+func (e EntityConfig) getState() *component.State {
+	s := &component.State{}
+	available := map[component.StateType]component.StateType{}
 	for key, value := range e.Animations {
 		available[e.stringToState(key)] = e.stringToState(value)
 	}
 	s.SetAvailable(available)
-	s.Set(component.ActorStateType(e.ActorState))
+	s.Set(component.StateType(e.State))
 	return s
 }
 

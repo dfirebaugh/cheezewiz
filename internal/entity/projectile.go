@@ -10,7 +10,7 @@ import (
 
 type Projectile struct {
 	*component.Animation
-	*component.ActorState
+	*component.State
 	*component.Position
 	*component.RigidBody
 	*component.Direction
@@ -25,22 +25,22 @@ func (p Projectile) GetRigidBody() *component.RigidBody {
 	return p.RigidBody
 }
 func (p Projectile) GetFrame() *ebiten.Image {
-	return p.Animation.Animation[p.ActorState.GetCurrent()].GetFrame()
+	return p.Animation.Animation[p.State.GetCurrent()].GetFrame()
 }
 func (p Projectile) GetPosition() *component.Position {
 	return p.Position
 }
-func (p Projectile) GetState() component.ActorStateType {
-	return p.ActorState.GetCurrent()
+func (p Projectile) GetCurrentState() component.StateType {
+	return p.State.GetCurrent()
 }
 func (p Projectile) GetCurrent() *animation.Animation {
-	return p.Animation.Animation[p.GetState()]
+	return p.Animation.Animation[p.GetCurrentState()]
 }
 func (p Projectile) IterFrame() {
 	p.GetCurrent().IterFrame()
 }
-func (p Projectile) GetActorState() *component.ActorState {
-	return p.ActorState
+func (p Projectile) GetState() *component.State {
+	return p.State
 }
 func (p Projectile) GetDirection() *component.Direction {
 	return p.Direction

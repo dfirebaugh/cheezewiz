@@ -22,7 +22,7 @@ func (c Controller) controllable(e archetype.Player) {
 	controller := e.GetInputDevice()
 	position := e.GetPosition()
 	health := e.GetHealth()
-	state := e.GetActorState()
+	state := e.GetState()
 	if health.Current == 0 {
 		state.Set(component.DeathState)
 		return

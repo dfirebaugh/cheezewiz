@@ -7,7 +7,7 @@
         "attack": "nachomissile.png",
         "death": "nachomissile.png"
     },
-    "actorState": "walk",
+    "state": "walk",
     "position": {
         "cx": 16,
         "cy": 16

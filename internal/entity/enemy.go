@@ -10,7 +10,7 @@ import (
 
 type Enemy struct {
 	*component.Animation
-	*component.ActorState
+	*component.State
 	*component.Position
 	*component.Health
 	*component.RigidBody
@@ -24,18 +24,18 @@ func (e Enemy) GetRigidBody() *component.RigidBody {
 	return e.RigidBody
 }
 func (e Enemy) GetFrame() *ebiten.Image {
-	current := e.ActorState.GetCurrent()
+	current := e.State.GetCurrent()
 
 	return e.Animation.Animation[current].GetFrame()
 }
 func (e Enemy) GetPosition() *component.Position {
 	return e.Position
 }
-func (e Enemy) GetState() component.ActorStateType {
-	return e.ActorState.GetCurrent()
+func (e Enemy) GetCurrentState() component.StateType {
+	return e.State.GetCurrent()
 }
 func (e Enemy) GetCurrent() *animation.Animation {
-	return e.Animation.Animation[e.GetState()]
+	return e.Animation.Animation[e.GetCurrentState()]
 }
 func (e Enemy) IterFrame() {
 	e.GetCurrent().IterFrame()
@@ -43,6 +43,6 @@ func (e Enemy) IterFrame() {
 func (e Enemy) GetHealth() *component.Health {
 	return e.Health
 }
-func (e Enemy) GetActorState() *component.ActorState {
-	return e.ActorState
+func (e Enemy) GetState() *component.State {
+	return e.State
 }

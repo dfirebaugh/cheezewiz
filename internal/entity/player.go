@@ -11,7 +11,7 @@ import (
 
 type Player struct {
 	*component.Animation
-	*component.ActorState
+	*component.State
 	*component.InputDevice
 	*component.Position
 	*component.Health
@@ -29,16 +29,16 @@ func (p Player) GetInputDevice() input.PlayerInput {
 	return p.InputDevice.Device
 }
 func (p Player) GetFrame() *ebiten.Image {
-	return p.Animation.Animation[p.ActorState.GetCurrent()].GetFrame()
+	return p.Animation.Animation[p.State.GetCurrent()].GetFrame()
 }
 func (p Player) GetPosition() *component.Position {
 	return p.Position
 }
-func (p Player) GetState() component.ActorStateType {
-	return p.ActorState.GetCurrent()
+func (p Player) GetCurrentState() component.StateType {
+	return p.State.GetCurrent()
 }
 func (p Player) GetCurrent() *animation.Animation {
-	return p.Animation.Animation[p.GetState()]
+	return p.Animation.Animation[p.GetCurrentState()]
 }
 func (p Player) IterFrame() {
 	p.GetCurrent().IterFrame()
@@ -46,6 +46,6 @@ func (p Player) IterFrame() {
 func (p Player) GetHealth() *component.Health {
 	return p.Health
 }
-func (p Player) GetActorState() *component.ActorState {
-	return p.ActorState
+func (p Player) GetState() *component.State {
+	return p.State
 }

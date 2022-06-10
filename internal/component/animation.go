@@ -6,6 +6,6 @@ import (
 )
 
 type Animation struct {
-	Animation      map[ActorStateType]*animation.Animation
+	Animation      map[StateType]*animation.Animation
 	PrevUpdateTime time.Time
 }

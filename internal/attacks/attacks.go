@@ -14,7 +14,7 @@ type Actor interface {
 }
 type Player interface {
 	GetPosition() *component.Position
-	GetActorState() *component.ActorState
+	GetState() *component.State
 	GetPlayerTag() ecs.Tag
 }
 
@@ -37,7 +37,10 @@ var CheeseMissile = func(world ecs.World) func() {
 
 func findHeading(w ecs.World, player Player, playerHandle ecs.EntityHandle) {
 	position := player.GetPosition()
-	state := player.GetActorState()
+	state := player.GetState()
+	if state.GetCurrent() == component.DeathState {
+		return
+	}
 
 	enemies := map[ecs.EntityHandle]vector.Vector{}
 

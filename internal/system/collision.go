@@ -2,43 +2,66 @@ package system
 
 import (
 	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
 	"cheezewiz/pkg/throttle"
+
+	cache "github.com/Code-Hex/go-generics-cache"
 )
 
 type Collision struct {
-	world ecs.World
+	world           ecs.World
+	collidableCache *cache.Cache[cacheKey, []archetype.Collidable]
+	prevCount       int
 }
 
 func NewCollision(world ecs.World) *Collision {
+	c := cache.New[cacheKey, []archetype.Collidable]()
+	c.Set(collidable, ecs.FilterBy[archetype.Collidable](world))
+
 	return &Collision{
-		world: world,
+		world:           world,
+		collidableCache: c,
 	}
 }
 
 func (c Collision) Update() {
-
 	// we don't need to evaluate collisions on every update
 	// so let's slow it down a bit
 	if throttle.ShouldThrottle("collisionsystem", 5) {
 		return
 	}
+	var collidables []archetype.Collidable
+	var ok bool
 
-	for id, Collidable := range ecs.FilterBy[archetype.Collidable](c.world) {
-		c.updateCollidable(id, Collidable)
+	if c.prevCount != c.world.Count() {
+		c.prevCount = c.world.Count()
+		c.collidableCache.Set(collidable, ecs.FilterBy[archetype.Collidable](c.world))
+	}
+
+	if collidables, ok = c.collidableCache.Get(collidable); !ok {
+		return
+	}
+
+	for id, collidable := range collidables {
+		c.updateCollidable(id, collidables, collidable)
 	}
 }
 
-func (c Collision) updateCollidable(id int, collidable archetype.Collidable) {
+func (c Collision) updateCollidable(id int, collidables []archetype.Collidable, collidable archetype.Collidable) {
 	rb := collidable.GetRigidBody()
 	p := collidable.GetPosition()
+	state := collidable.GetState()
+	if state.GetCurrent() == component.DeathState {
+		return
+	}
 
 	ax := p.X - rb.L
 	ay := p.Y - rb.T
 	aw := rb.GetWidth()
 	ah := rb.GetHeight()
 
-	for idB, collidableB := range ecs.FilterBy[archetype.Collidable](c.world) {
+	for idB, collidableB := range collidables {
 		if id == idB {
 			continue
 		}

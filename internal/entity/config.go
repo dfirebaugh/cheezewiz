@@ -14,7 +14,7 @@ type DynamicEntity struct {
 	Position    *component.Position
 	RigidBody   *component.RigidBody
 	Animation   *component.Animation
-	ActorState  *component.ActorState
+	State       *component.State
 }
 
 type EntityConfig struct {
@@ -26,7 +26,7 @@ type EntityConfig struct {
 	Direction   component.Direction `json:"direction"`
 	Health      component.Health    `json:"health"`
 	Animations  map[string]string   `json:"animations"`
-	ActorState  string              `json:"actorState"`
+	State       string              `json:"state"`
 	InputDevice string              `json:"inputDevice"`
 }
 

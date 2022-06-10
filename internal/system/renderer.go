@@ -20,12 +20,6 @@ type Renderer struct {
 	prevAnimatableCount int
 }
 
-type cacheKey uint
-
-const (
-	animatable cacheKey = iota
-)
-
 func NewRenderer(w ecs.World) Renderer {
 	c := cache.New[cacheKey, []archetype.Animatable]()
 

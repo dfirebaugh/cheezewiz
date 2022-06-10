@@ -8,7 +8,7 @@
         "attack": "jellybeangreen.png",
         "death": "jellybeangreen.png"
     },
-    "actorState": "idle",
+    "state": "idle",
     "position": {
         "cx": 16,
         "cy": 16

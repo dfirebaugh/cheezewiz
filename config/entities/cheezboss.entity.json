@@ -7,7 +7,7 @@
         "attack": "cheezboss.png",
         "death": "cheezboss.png"
     },
-    "actorState": "walk",
+    "state": "walk",
     "direction": "",
     "position": {
         "cx": 16,

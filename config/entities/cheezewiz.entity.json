@@ -1,7 +1,7 @@
 {
     "archetype": "player",
     "inputDevice": "keyboard",
-    "actorState": "idle",
+    "state": "idle",
     "animations": {
         "idle": "cheezewiz.png",
         "walk": "cheezewiz.png",
