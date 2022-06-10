@@ -17,7 +17,7 @@ func main() {
 
 	c := config.Get()
 	game := &ebitenwrapper.Game{
-		Scene:           scene.Init("./level1"),
+		Scene:           scene.Init(),
 		WindowTitle:     c.Title,
 		WindowScale:     c.ScaleFactor,
 		Width:           c.Window.Width,

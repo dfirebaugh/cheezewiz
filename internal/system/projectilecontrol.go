@@ -1,18 +1,14 @@
 package system
 
 import (
-	"cheezewiz/internal/component"
+	"cheezewiz/internal/archetype"
 	"cheezewiz/pkg/ecs"
 	"math"
 )
 
-type Projectile interface {
-	GetDirection() *component.Direction
-	GetPosition() *component.Position
-	GetProjectileTag() ecs.Tag
-}
 type ProjectileControl struct {
-	world ecs.World
+	world          ecs.World
+	projectilCache []archetype.Projectile
 }
 
 const projectileSpeed = 1.5
@@ -24,7 +20,10 @@ func NewProjectileContol(w ecs.World) *ProjectileControl {
 }
 
 func (p ProjectileControl) Update() {
-	for _, e := range ecs.FilterBy[Projectile](p.world) {
+	if p.projectilCache == nil {
+		p.projectilCache = ecs.FilterBy[archetype.Projectile](p.world)
+	}
+	for _, e := range p.projectilCache {
 		position := e.GetPosition()
 		direction := e.GetDirection()
 

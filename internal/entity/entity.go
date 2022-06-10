@@ -53,8 +53,8 @@ func buildEntity(e EntityConfig, x float64, y float64) ecs.Entity {
 	switch e.Archetype {
 	case "player":
 		return buildPlayer(e, x, y)
-	// case "actor":
-	// 	return buildActor(e, x, y)
+	case "actor":
+		return buildActor(e, x, y)
 	case "enemy":
 		return buildEnemy(e, x, y)
 	case "projectile":
@@ -84,7 +84,6 @@ func buildPlayer(e EntityConfig, x float64, y float64) *Player {
 func buildProjectile(e EntityConfig, x float64, y float64) *Projectile {
 	return &Projectile{
 		Position: e.buildPosition(x, y),
-		Health:   &e.Health,
 		Animation: &component.Animation{
 			Animation: e.getAnimations(),
 		},
@@ -107,17 +106,17 @@ func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {
 	return &p
 }
 
-// func buildActor(e EntityConfig, x float64, y float64) *Actor {
-// 	p := Actor{
-// 		Position: e.buildPosition(x, y),
-// 		Health:   &e.Health,
-// 		Animation: &component.Animation{
-// 			Animation: e.getAnimations(),
-// 		},
-// 		ActorState: e.getState(),
-// 	}
-// 	return &p
-// }
+func buildActor(e EntityConfig, x float64, y float64) *Actor {
+	return &Actor{
+		Position: e.buildPosition(x, y),
+		Health:   &e.Health,
+		Animation: &component.Animation{
+			Animation: e.getAnimations(),
+		},
+		ActorState: e.getState(),
+		RigidBody:  e.buildRigidBody(),
+	}
+}
 
 func lookupInputDevice(key string) input.PlayerInput {
 	if key == "keyboard" {
@@ -126,39 +125,47 @@ func lookupInputDevice(key string) input.PlayerInput {
 	return input.Keyboard{}
 }
 
-func (e EntityConfig) getAnimations() map[string]*animation.Animation {
-	anim := map[string]*animation.Animation{
-		string(component.DebugState): animation.MakeDebugAnimation(),
+func (e EntityConfig) getAnimations() map[component.ActorStateType]*animation.Animation {
+	anim := map[component.ActorStateType]*animation.Animation{
+		component.DebugState: animation.MakeDebugAnimation(),
 	}
 
 	for label, path := range e.Animations {
-		anim[label] = animation.MakeAnimation(path, 32, 32)
+		anim[e.stringToState(label)] = animation.MakeAnimation(path, 32, 32)
 	}
 
 	return anim
 }
 
+func (e EntityConfig) stringToState(label string) component.ActorStateType {
+	switch label {
+	case "debug":
+		return component.DebugState
+	case "idle":
+		return component.IdleState
+	case "walk":
+		return component.WalkingState
+	case "attack":
+		return component.AttackingState
+	case "hurt":
+		return component.HurtState
+	case "death":
+		return component.DeathState
+	default:
+		return component.DebugState
+	}
+}
+
 func (e EntityConfig) getState() *component.ActorState {
 	s := &component.ActorState{}
-	s.SetAvailable(e.Animations)
+	available := map[component.ActorStateType]component.ActorStateType{}
+	for key, value := range e.Animations {
+		available[e.stringToState(key)] = e.stringToState(value)
+	}
+	s.SetAvailable(available)
 	s.Set(component.ActorStateType(e.ActorState))
 	return s
 }
-
-// func (e EntityConfig) HasComponent(label componentLabel) bool {
-// 	if len(e.Components) == 0 {
-// 		return false
-// 	}
-// 	for _, value := range e.Components {
-// 		if value != label {
-// 			continue
-// 		}
-
-// 		return true
-// 	}
-
-// 	return false
-// }
 
 func (e EntityConfig) buildPosition(x float64, y float64) *component.Position {
 	position := &component.Position{

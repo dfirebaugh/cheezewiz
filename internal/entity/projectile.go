@@ -12,9 +12,9 @@ type Projectile struct {
 	*component.Animation
 	*component.ActorState
 	*component.Position
-	*component.Health
 	*component.RigidBody
 	*component.Direction
+	*component.Health
 	ProjectileTag ecs.Tag
 }
 
@@ -25,7 +25,7 @@ func (p Projectile) GetRigidBody() *component.RigidBody {
 	return p.RigidBody
 }
 func (p Projectile) GetFrame() *ebiten.Image {
-	return p.Animation.Animation[string(p.ActorState.GetCurrent())].GetFrame()
+	return p.Animation.Animation[p.ActorState.GetCurrent()].GetFrame()
 }
 func (p Projectile) GetPosition() *component.Position {
 	return p.Position
@@ -34,17 +34,17 @@ func (p Projectile) GetState() component.ActorStateType {
 	return p.ActorState.GetCurrent()
 }
 func (p Projectile) GetCurrent() *animation.Animation {
-	return p.Animation.Animation[string(p.GetState())]
+	return p.Animation.Animation[p.GetState()]
 }
 func (p Projectile) IterFrame() {
 	p.GetCurrent().IterFrame()
-}
-func (p Projectile) GetHealth() *component.Health {
-	return p.Health
 }
 func (p Projectile) GetActorState() *component.ActorState {
 	return p.ActorState
 }
 func (p Projectile) GetDirection() *component.Direction {
 	return p.Direction
+}
+func (p Projectile) GetHealth() *component.Health {
+	return p.Health
 }

@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/config"
+	"cheezewiz/internal/archetype"
 	"cheezewiz/pkg/ecs"
 
 	"github.com/sirupsen/logrus"
@@ -18,19 +19,19 @@ func NewWorldViewPortLocation(w ecs.World) *WorldViewPortLocation {
 }
 
 func (w *WorldViewPortLocation) Update() {
-	initialPlayer, err := ecs.FirstEntity[Player](w.world)
+	initialPlayer, err := ecs.FirstEntity[archetype.Player](w.world)
 	if err != nil {
 		logrus.Errorf("unable to find player: %s", err)
 		return
 	}
-	playerPosition := initialPlayer.GetPosition()
 
-	worldViewPort, err := ecs.FirstEntity[ViewPort](w.world)
+	viewPort, err := ecs.FirstEntity[archetype.ViewPort](w.world)
 	if err != nil {
 		logrus.Errorf("viewport update: %s", err)
 		return
 	}
-	worldViewPortPos := worldViewPort.GetPosition()
+	playerPosition := initialPlayer.GetPosition()
+	worldViewPortPos := viewPort.GetPosition()
 
 	worldViewPortPos.X = getWorldViewCenterLocation(playerPosition.X, config.Get().Window.Height) + 20
 	worldViewPortPos.Y = 0

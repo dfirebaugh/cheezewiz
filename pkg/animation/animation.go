@@ -38,9 +38,11 @@ func MakeAnimation(path string, height int, width int) *Animation {
 	return a
 }
 
+var debugImg = ebiten.NewImage(10, 10)
+
 func MakeDebugAnimation() *Animation {
 	a := &Animation{
-		Image:       ebiten.NewImage(10, 10),
+		Image:       debugImg,
 		FrameWidth:  10,
 		FrameHeight: 10,
 	}

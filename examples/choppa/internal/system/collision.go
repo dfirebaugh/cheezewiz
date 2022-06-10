@@ -9,7 +9,7 @@ import (
 	"github.com/yohamta/donburi"
 	"github.com/yohamta/donburi/filter"
 	"github.com/yohamta/donburi/query"
-	"golang.org/x/exp/shiny/materialdesign/colornames"
+	"golang.org/x/image/colornames"
 )
 
 type Collision struct {
@@ -82,13 +82,13 @@ func (c *Collision) Draw(w donburi.World, screen *ebiten.Image) {
 
 		c.chippaQuery.EachEntity(w, func(entry *donburi.Entry) {
 			position := component.GetPosition(entry)
-			ebitenutil.DrawRect(screen, pPosition.X, pPosition.Y, 100, 5, colornames.Red100)
-			ebitenutil.DrawRect(screen, position.X, position.Y, 32, 32, colornames.Red100)
+			ebitenutil.DrawRect(screen, pPosition.X, pPosition.Y, 100, 5, colornames.Red)
+			ebitenutil.DrawRect(screen, position.X, position.Y, 32, 32, colornames.Red)
 		})
 		c.fighterQuery.EachEntity(w, func(entry *donburi.Entry) {
 			position := component.GetPosition(entry)
-			ebitenutil.DrawRect(screen, pPosition.X, pPosition.Y, 100, 5, colornames.Red100)
-			ebitenutil.DrawRect(screen, position.X, position.Y, 32, 32, colornames.Red100)
+			ebitenutil.DrawRect(screen, pPosition.X, pPosition.Y, 100, 5, colornames.Red)
+			ebitenutil.DrawRect(screen, position.X, position.Y, 32, 32, colornames.Red)
 		})
 	})
 }

@@ -13,11 +13,19 @@ type worldDefinition struct {
 	LevelName string             `json:"levelName"`
 }
 
-func loadWorld(path string) worldDefinition {
+func (w *worldDefinition) Unmarshal(raw []byte) *worldDefinition {
+	json.Unmarshal(raw, &w)
 
-	var l worldDefinition
-	json.Unmarshal(levels.Level1Raw, &l)
+	return w
+}
 
-	return l
-
+func LoadLevelOne() worldDefinition {
+	w := worldDefinition{}
+	w.Unmarshal(levels.Level1Raw)
+	return w
+}
+func LoadStressTest() worldDefinition {
+	w := worldDefinition{}
+	w.Unmarshal(levels.StressTest)
+	return w
 }

@@ -1,17 +1,10 @@
 package system
 
 import (
+	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/input"
 	"cheezewiz/pkg/ecs"
 )
-
-type Player interface {
-	GetHealth() *component.Health
-	GetPosition() *component.Position
-	GetInputDevice() input.PlayerInput
-	GetActorState() *component.ActorState
-}
 
 type Controller struct {
 	World ecs.World
@@ -20,12 +13,12 @@ type Controller struct {
 const playerSpeed = 1
 
 func (c Controller) Update() {
-	for _, player := range ecs.FilterBy[Player](c.World) {
+	for _, player := range ecs.FilterBy[archetype.Player](c.World) {
 		c.controllable(player)
 	}
 }
 
-func (c Controller) controllable(e Player) {
+func (c Controller) controllable(e archetype.Player) {
 	controller := e.GetInputDevice()
 	position := e.GetPosition()
 	health := e.GetHealth()

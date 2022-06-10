@@ -1,0 +1,132 @@
+{
+    "levelName": "garden",
+    "events": [
+        {
+            "time": 120,
+            "event": "SpawnWave",
+            "args": ["radish","40","5"]
+        },
+        {
+            "time": 119,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 117,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 116,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 115,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 114,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 113,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 112,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 111,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 110,
+            "event": "SpawnWave",
+            "args": ["radish","40","5"]
+        },
+        {
+            "time": 109,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 107,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 106,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 105,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 104,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 103,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 102,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 101,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+
+        {
+            "time": 30,
+            "event": "SpawnWave",
+            "args": ["radish","10","5"]
+        },
+        {
+            "time": 118,
+            "event": "SpawnWave",
+            "args": ["radish","2","5"]
+        },
+        {
+            "time": 116,
+            "event": "SpawnWave",
+            "args": ["radish","3","5"]
+        },
+        {
+            "time": 111,
+            "event": "SpawnWave",
+            "args": ["radish","23","5"]
+        },
+        {
+            "time": 30,
+            "event": "HurryUp",
+            "args": []
+        },
+        {
+            "time": 100,
+            "event": "SpawnBoss",
+            "args": ["cheezboss","1000","900"]
+        },
+        {
+            "time": 0,
+            "event": "Death",
+            "args": []
+        }
+    ]
+}
+

@@ -1,5 +1,5 @@
 {
-    "jellyBeanTag": "",
+    "archetype": "actor",
     "xp": 1,
     "animations": {
         "idle": "jellybeanpink.png",

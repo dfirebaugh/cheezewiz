@@ -1,14 +1,10 @@
 package system
 
 import (
-	"cheezewiz/internal/component"
+	"cheezewiz/internal/archetype"
 	"cheezewiz/pkg/ecs"
+	"cheezewiz/pkg/throttle"
 )
-
-type Collidable interface {
-	GetRigidBody() *component.RigidBody
-	GetPosition() *component.Position
-}
 
 type Collision struct {
 	world ecs.World
@@ -21,12 +17,19 @@ func NewCollision(world ecs.World) *Collision {
 }
 
 func (c Collision) Update() {
-	for id, Collidable := range ecs.FilterBy[Collidable](c.world) {
+
+	// we don't need to evaluate collisions on every update
+	// so let's slow it down a bit
+	if throttle.ShouldThrottle("collisionsystem", 5) {
+		return
+	}
+
+	for id, Collidable := range ecs.FilterBy[archetype.Collidable](c.world) {
 		c.updateCollidable(id, Collidable)
 	}
 }
 
-func (c Collision) updateCollidable(id int, collidable Collidable) {
+func (c Collision) updateCollidable(id int, collidable archetype.Collidable) {
 	rb := collidable.GetRigidBody()
 	p := collidable.GetPosition()
 
@@ -35,7 +38,7 @@ func (c Collision) updateCollidable(id int, collidable Collidable) {
 	aw := rb.GetWidth()
 	ah := rb.GetHeight()
 
-	for idB, collidableB := range ecs.FilterBy[Collidable](c.world) {
+	for idB, collidableB := range ecs.FilterBy[archetype.Collidable](c.world) {
 		if id == idB {
 			continue
 		}

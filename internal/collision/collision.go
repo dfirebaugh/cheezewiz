@@ -4,6 +4,8 @@ import (
 	"cheezewiz/pkg/attackgroup"
 	"cheezewiz/pkg/ecs"
 	"fmt"
+
+	"github.com/sirupsen/logrus"
 )
 
 type HandlerLabel string
@@ -30,22 +32,27 @@ const (
 
 var c = map[HandlerLabel]func(w ecs.World, e any){
 	EnemyCollisionLabel: func(w ecs.World, e any) {
-		if ecs.IsType[Player](e) {
-			println("enemy collided with player")
+		if ecs.Is[Player](e) {
+			logrus.Info("enemy collided with player")
 			attackgroup.AddPlayerDamage(e, 10, nil)
+		}
+		if ecs.Is[Projectile](e) {
+			logrus.Info("enemy collided with projectile")
+			// remove projectile
+			w.Remove(e)
 		}
 	},
 	RocketCollisionLabel: func(w ecs.World, e any) {
-		if ecs.IsType[Enemy](w) {
-			println("rocket collided with enemy")
+		if ecs.Is[Enemy](e) {
+			logrus.Info("rocket collided with enemy")
 			attackgroup.AddEnemyDamage(e, 10, nil)
 		}
 	},
 	BossCollisionLabel: func(w ecs.World, e any) {
 	},
 	PlayerCollisionLabel: func(w ecs.World, e any) {
-		if ecs.IsType[Enemy](w) {
-			println("player collided with enemy")
+		if ecs.Is[Enemy](e) {
+			logrus.Info("player collided with enemy")
 		}
 	},
 }

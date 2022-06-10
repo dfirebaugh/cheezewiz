@@ -24,7 +24,9 @@ func (e Enemy) GetRigidBody() *component.RigidBody {
 	return e.RigidBody
 }
 func (e Enemy) GetFrame() *ebiten.Image {
-	return e.Animation.Animation[string(e.ActorState.GetCurrent())].GetFrame()
+	current := e.ActorState.GetCurrent()
+
+	return e.Animation.Animation[current].GetFrame()
 }
 func (e Enemy) GetPosition() *component.Position {
 	return e.Position
@@ -33,7 +35,7 @@ func (e Enemy) GetState() component.ActorStateType {
 	return e.ActorState.GetCurrent()
 }
 func (e Enemy) GetCurrent() *animation.Animation {
-	return e.Animation.Animation[string(e.GetState())]
+	return e.Animation.Animation[e.GetState()]
 }
 func (e Enemy) IterFrame() {
 	e.GetCurrent().IterFrame()

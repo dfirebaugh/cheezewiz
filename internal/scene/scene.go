@@ -27,11 +27,11 @@ type Scene struct {
 	drawables []Drawable
 }
 
-// const level1 string = "level1.json"
-
-func Init(level string) *Scene {
+func Init() *Scene {
 	// World
 	w := ecs.NewWorld()
+
+	// entities
 	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(w))
 	addEntities(w)
 
@@ -45,7 +45,7 @@ func Init(level string) *Scene {
 			system.NewCollision(w),
 			system.Controller{World: w},
 			system.NewEnemyControl(w),
-			system.NewScheduler(loadWorld(level).Events, w),
+			system.NewScheduler(LoadStressTest().Events, w),
 			system.NewWorldViewPortLocation(w),
 			system.DamageBufferGroup{World: w},
 			system.NewProjectileContol(w),

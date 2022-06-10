@@ -29,7 +29,7 @@ func (p Player) GetInputDevice() input.PlayerInput {
 	return p.InputDevice.Device
 }
 func (p Player) GetFrame() *ebiten.Image {
-	return p.Animation.Animation[string(p.ActorState.GetCurrent())].GetFrame()
+	return p.Animation.Animation[p.ActorState.GetCurrent()].GetFrame()
 }
 func (p Player) GetPosition() *component.Position {
 	return p.Position
@@ -38,7 +38,7 @@ func (p Player) GetState() component.ActorStateType {
 	return p.ActorState.GetCurrent()
 }
 func (p Player) GetCurrent() *animation.Animation {
-	return p.Animation.Animation[string(p.GetState())]
+	return p.Animation.Animation[p.GetState()]
 }
 func (p Player) IterFrame() {
 	p.GetCurrent().IterFrame()

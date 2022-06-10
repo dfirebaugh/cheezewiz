@@ -59,12 +59,9 @@ func GetPNG(path string) *ebiten.Image {
 		return nil
 	}
 
-	ei := ebiten.NewImageFromImage(img)
-
 	// save to cache
-	pngCache[path] = ei
-
-	return ei
+	pngCache[path] = ebiten.NewImageFromImage(img)
+	return pngCache[path]
 }
 
 func GetLevel(path string) []byte {

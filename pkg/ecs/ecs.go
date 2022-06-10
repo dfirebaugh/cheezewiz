@@ -16,20 +16,23 @@ var NilEntityHandle = EntityHandle(uuid.Nil)
 
 type World interface {
 	Add(entity Entity) (EntityHandle, Entity)
+	Remove(entity Entity)
 	GetEntities() map[EntityHandle]Entity
 	GetSortedEntityHandles() []EntityHandle
 	GetEntity(id EntityHandle) Entity
+	Count() int
 }
 
 type world struct {
 	EntityMap map[EntityHandle]Entity
-	mut       sync.RWMutex
 }
 
+var mut sync.RWMutex
+
 func NewWorld() *world {
+	mut = sync.RWMutex{}
 	return &world{
 		EntityMap: map[EntityHandle]Entity{},
-		mut:       sync.RWMutex{},
 	}
 }
 
@@ -42,12 +45,24 @@ func NewEntityHandle() EntityHandle {
 }
 
 func (w *world) Add(entity Entity) (EntityHandle, Entity) {
-	w.mut.Lock()
-	defer w.mut.Unlock()
+	mut.Lock()
+	defer mut.Unlock()
 
 	id := NewEntityHandle()
 	w.EntityMap[id] = entity
 	return id, entity
+}
+
+func (w *world) Remove(entity Entity) {
+	for handle, e := range w.GetEntities() {
+		if e == entity {
+			delete(w.EntityMap, handle)
+		}
+	}
+}
+
+func (w *world) Count() int {
+	return len(w.EntityMap)
 }
 
 func (w *world) GetEntities() map[EntityHandle]Entity {
@@ -55,16 +70,16 @@ func (w *world) GetEntities() map[EntityHandle]Entity {
 }
 
 func (w *world) GetEntity(id EntityHandle) Entity {
-	w.mut.Lock()
-	defer w.mut.Unlock()
+	mut.Lock()
+	defer mut.Unlock()
 	return w.EntityMap[id]
 }
 
 // getSortedEntityHandles returns the entities in order.
 //   Otherwise, they would render in a seemingly random order.
 func (w *world) GetSortedEntityHandles() []EntityHandle {
-	w.mut.Lock()
-	defer w.mut.Unlock()
+	mut.Lock()
+	defer mut.Unlock()
 
 	handles := make([]EntityHandle, 0)
 	for handle := range w.EntityMap {
@@ -81,6 +96,8 @@ func (w *world) GetSortedEntityHandles() []EntityHandle {
 // FilterMapBy is unordered, but allows you to get the
 //  handle and entity
 func FilterMapBy[T any](w World) map[EntityHandle]T {
+	mut.Lock()
+	defer mut.Unlock()
 	result := map[EntityHandle]T{}
 	for handle, e := range w.GetEntities() {
 		if e, ok := e.(T); ok {
@@ -91,10 +108,22 @@ func FilterMapBy[T any](w World) map[EntityHandle]T {
 	return result
 }
 
-func FilterBy[T any](w World) []T {
+func FilterBySorted[T any](w World) []T {
 	var result []T
 	for _, h := range w.GetSortedEntityHandles() {
 		if e, ok := w.GetEntity(h).(T); ok {
+			result = append(result, e)
+		}
+	}
+
+	return result
+}
+func FilterBy[T any](w World) []T {
+	mut.Lock()
+	defer mut.Unlock()
+	var result []T
+	for _, e := range w.GetEntities() {
+		if e, ok := e.(T); ok {
 			result = append(result, e)
 		}
 	}
@@ -113,7 +142,8 @@ func FirstEntity[T any](w World) (T, error) {
 	return filtered[0], nil
 }
 
-func IsType[T any](entity Entity) bool {
+// Is of type passed in
+func Is[T any](entity Entity) bool {
 	_, ok := entity.(T)
 	return ok
 }

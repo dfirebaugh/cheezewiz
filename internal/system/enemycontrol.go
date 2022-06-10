@@ -1,8 +1,7 @@
 package system
 
 import (
-	"cheezewiz/internal/component"
-	"cheezewiz/internal/entity"
+	"cheezewiz/internal/archetype"
 	"cheezewiz/pkg/ecs"
 	"cheezewiz/pkg/gamemath"
 	"math"
@@ -10,14 +9,9 @@ import (
 	"github.com/atedja/go-vector"
 )
 
-type Enemy interface {
-	GetPosition() *component.Position
-	GetHealth() *component.Health
-	GetEnemyTag() ecs.Tag
-}
-
 type EnemyControl struct {
-	world ecs.World
+	world       ecs.World
+	playerCache []archetype.Player
 }
 
 const enemySpeed = 0.5
@@ -29,42 +23,21 @@ func NewEnemyControl(w ecs.World) *EnemyControl {
 }
 
 func (e EnemyControl) Update() {
-	for _, ent := range ecs.FilterBy[Enemy](e.world) {
-		isDead := e.updateHealth(ent)
-		if isDead {
-			return
-		}
-
+	for _, ent := range ecs.FilterBy[archetype.Enemy](e.world) {
 		e.updatePosition(ent)
 	}
 }
 
-// updateHealh returns true if the enemy has died
-func (e EnemyControl) updateHealth(enemy Enemy) bool {
-	health := enemy.GetHealth()
+func (e EnemyControl) updatePosition(enemy archetype.Enemy) {
 	position := enemy.GetPosition()
-	if health.Current <= 0 {
-		// w.Remove(entry.Entity())
-		entity.MakeRandEntity(e.world, []string{
-			"entities/jellybeangreen.entity.json",
-			"entities/jellybeanpink.entity.json",
-			"entities/jellybeanblue.entity.json",
-			"entities/jellybeanrainbow.entity.json",
-		}, position.X-position.CX, position.Y-position.CY)
-		return true
-	}
-	return false
-}
-
-func (e EnemyControl) updatePosition(enemy Enemy) {
-	if enemy == nil {
-		return
-	}
-	position := enemy.GetPosition()
-	var closestPlayer Player
+	var closestPlayer archetype.Player
 	var closestDistance float64 = 100000000
 
-	for _, player := range ecs.FilterBy[Player](e.world) {
+	if enemy.GetHealth().Current <= 0 {
+		return
+	}
+
+	for _, player := range ecs.FilterBy[archetype.Player](e.world) {
 		playerPosition := player.GetPosition()
 		if closestPlayer != nil {
 			closestPlayer = player
@@ -80,7 +53,7 @@ func (e EnemyControl) updatePosition(enemy Enemy) {
 	e.moveTowardPlayer(closestPlayer, enemy)
 }
 
-func (ec EnemyControl) moveTowardPlayer(player Player, enemy Enemy) {
+func (ec EnemyControl) moveTowardPlayer(player archetype.Player, enemy archetype.Enemy) {
 	if player == nil || enemy == nil {
 		return
 	}
@@ -94,11 +67,11 @@ func (ec EnemyControl) moveTowardPlayer(player Player, enemy Enemy) {
 	r := vector.Unit(vector.Subtract(p, e))
 
 	speed := enemySpeed
-	if ec.isOverPositionLimit(e, p, 100) {
+	if ec.isOverPositionLimit(e, p, 80) {
 		// as they get closer, slow down a bit
 		speed = .2
 	}
-	if ec.isOverPositionLimit(e, p, 23) {
+	if ec.isOverPositionLimit(e, p, 28) {
 		return
 	}
 	r.Scale(speed)
