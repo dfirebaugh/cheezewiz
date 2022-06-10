@@ -58,6 +58,8 @@ func buildEntity(e EntityConfig, x float64, y float64) ecs.Entity {
 	// 	return buildActor(e, x, y)
 	case "enemy":
 		return buildEnemy(e, x, y)
+	case "projectile":
+		return buildProjectile(e, x, y)
 	default:
 		logrus.Errorf("archetype is not defined: %s", e.Archetype)
 	}
@@ -79,6 +81,18 @@ func buildPlayer(e EntityConfig, x float64, y float64) *Player {
 		RigidBody:  e.buildRigidBody(),
 	}
 	return &p
+}
+func buildProjectile(e EntityConfig, x float64, y float64) *Projectile {
+	return &Projectile{
+		Position: e.buildPosition(x, y),
+		Health:   &e.Health,
+		Animation: &component.Animation{
+			Animation: e.getAnimations(),
+		},
+		ActorState: e.getState(),
+		RigidBody:  e.buildRigidBody(),
+		Direction:  &component.Direction{},
+	}
 }
 
 func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {

@@ -14,6 +14,7 @@ type Projectile struct {
 	*component.Position
 	*component.Health
 	*component.RigidBody
+	*component.Direction
 	ProjectileTag ecs.Tag
 }
 
@@ -43,4 +44,7 @@ func (p Projectile) GetHealth() *component.Health {
 }
 func (p Projectile) GetActorState() *component.ActorState {
 	return p.ActorState
+}
+func (p Projectile) GetDirection() *component.Direction {
+	return p.Direction
 }

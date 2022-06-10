@@ -1,5 +1,5 @@
 {
-    "archetype": "actor",
+    "archetype": "projectile",
     "animations": {
         "idle": "nachomissile.png",
         "walk": "nachomissile.png",

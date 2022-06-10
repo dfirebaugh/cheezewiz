@@ -7,6 +7,7 @@ import (
 	"cheezewiz/pkg/gamemath"
 
 	"github.com/atedja/go-vector"
+	"github.com/google/uuid"
 )
 
 type Actor interface {
@@ -15,6 +16,7 @@ type Actor interface {
 type Player interface {
 	GetPosition() *component.Position
 	GetActorState() *component.ActorState
+	GetPlayerTag() ecs.Tag
 }
 
 type attackGroup interface {
@@ -28,19 +30,19 @@ type Directionable interface {
 var CheeseMissile = func(world ecs.World) func() {
 	w := world
 	return func() {
-		for handle, player := range ecs.FilterBy[Player](w) {
+		for handle, player := range ecs.FilterMapBy[Player](w) {
 			findHeading(w, player, handle)
 		}
 	}
 }
 
-func findHeading(w ecs.World, player Player, playerHandle int) {
+func findHeading(w ecs.World, player Player, playerHandle uuid.UUID) {
 	position := player.GetPosition()
 	state := player.GetActorState()
 
-	enemies := map[int]vector.Vector{}
+	enemies := map[uuid.UUID]vector.Vector{}
 
-	for handle, actor := range ecs.FilterBy[Actor](w) {
+	for handle, actor := range ecs.FilterMapBy[Actor](w) {
 		if handle == playerHandle {
 			continue
 		}
@@ -52,11 +54,11 @@ func findHeading(w ecs.World, player Player, playerHandle int) {
 	if closestHandle == playerHandle {
 		return
 	}
-	// closestEnemy, ok := w.EntityMap[closestHandle].(Actor)
-	// if !ok {
-	// 	return
-	// }
-	// launchProjectile(w, *position, *closestEnemy.GetPosition())
+	closestEnemy, ok := w.GetEntity(closestHandle).(Actor)
+	if !ok {
+		return
+	}
+	launchProjectile(w, *position, *closestEnemy.GetPosition())
 	state.Set(component.AttackingState)
 }
 
