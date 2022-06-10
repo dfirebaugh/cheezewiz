@@ -1,28 +1,17 @@
 package system
 
 import (
-	"cheezewiz/internal/entity"
-	"cheezewiz/internal/tag"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/yohamta/donburi"
-	"github.com/yohamta/donburi/filter"
-	"github.com/yohamta/donburi/query"
 )
 
 type Expbar struct {
-	jellyBeanQuery *query.Query
-	query          *query.Query
 }
 
 func NewExpbar() *Expbar {
-	return &Expbar{
-		jellyBeanQuery: query.NewQuery(filter.Contains(tag.JellyBean)),
-		query:          query.NewQuery(filter.Contains(entity.ExpBarTag)),
-	}
+	return &Expbar{}
 }
 
-func (ne *Expbar) Update(world donburi.World) {
+func (ne *Expbar) Update() {
 	// ne.query.EachEntity(world, func(entry *donburi.Entry) {
 	// 	exp := component.GetExp(entry)
 	// 	nextLevel := component.GetNextLevel(entry)
@@ -40,7 +29,7 @@ func (ne *Expbar) Update(world donburi.World) {
 	// })
 }
 
-func (ne *Expbar) Draw(world donburi.World, screen *ebiten.Image) {
+func (ne *Expbar) Draw(screen *ebiten.Image) {
 	// ne.query.EachEntity(world, func(entry *donburi.Entry) {
 	// 	exp := component.GetExp(entry)
 	// 	position := component.GetPosition(entry)

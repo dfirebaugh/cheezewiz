@@ -1,10 +1,10 @@
 package gamemath
 
 import (
+	"cheezewiz/pkg/ecs"
 	"math"
 
 	"github.com/atedja/go-vector"
-	"github.com/google/uuid"
 )
 
 func GetHeading(a, b vector.Vector) float64 {
@@ -20,9 +20,9 @@ func GetDistance(a, b []float64) float64 {
 	return math.Sqrt(math.Pow(a[0]-b[0], 2) + math.Pow(a[1]-b[1], 2))
 }
 
-func GetClosest(src vector.Vector, dest map[uuid.UUID]vector.Vector) uuid.UUID {
+func GetClosest(src vector.Vector, dest map[ecs.EntityHandle]vector.Vector) ecs.EntityHandle {
 	var closestDistance float64 = 100000000
-	var closestHandle uuid.UUID
+	var closestHandle ecs.EntityHandle
 
 	for handle, v := range dest {
 		distance := GetDistance(src, v)

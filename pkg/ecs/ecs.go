@@ -8,24 +8,27 @@ import (
 	"github.com/google/uuid"
 )
 
+type EntityHandle uuid.UUID
 type Entity interface{}
 type Tag interface{}
 
+var NilEntityHandle = EntityHandle(uuid.Nil)
+
 type World interface {
-	Add(entity Entity) (uuid.UUID, Entity)
-	GetEntities() map[uuid.UUID]Entity
-	GetSortedEntityHandles() []uuid.UUID
-	GetEntity(id uuid.UUID) Entity
+	Add(entity Entity) (EntityHandle, Entity)
+	GetEntities() map[EntityHandle]Entity
+	GetSortedEntityHandles() []EntityHandle
+	GetEntity(id EntityHandle) Entity
 }
 
 type world struct {
-	EntityMap map[uuid.UUID]Entity
+	EntityMap map[EntityHandle]Entity
 	mut       sync.RWMutex
 }
 
 func NewWorld() *world {
 	return &world{
-		EntityMap: map[uuid.UUID]Entity{},
+		EntityMap: map[EntityHandle]Entity{},
 		mut:       sync.RWMutex{},
 	}
 }
@@ -34,20 +37,24 @@ func NewTag() Tag {
 	return struct{}{}
 }
 
-func (w *world) Add(entity Entity) (uuid.UUID, Entity) {
+func NewEntityHandle() EntityHandle {
+	return EntityHandle(uuid.New())
+}
+
+func (w *world) Add(entity Entity) (EntityHandle, Entity) {
 	w.mut.Lock()
 	defer w.mut.Unlock()
 
-	uuid := uuid.New()
-	w.EntityMap[uuid] = entity
-	return uuid, entity
+	id := NewEntityHandle()
+	w.EntityMap[id] = entity
+	return id, entity
 }
 
-func (w *world) GetEntities() map[uuid.UUID]Entity {
+func (w *world) GetEntities() map[EntityHandle]Entity {
 	return w.EntityMap
 }
 
-func (w *world) GetEntity(id uuid.UUID) Entity {
+func (w *world) GetEntity(id EntityHandle) Entity {
 	w.mut.Lock()
 	defer w.mut.Unlock()
 	return w.EntityMap[id]
@@ -55,17 +62,17 @@ func (w *world) GetEntity(id uuid.UUID) Entity {
 
 // getSortedEntityHandles returns the entities in order.
 //   Otherwise, they would render in a seemingly random order.
-func (w *world) GetSortedEntityHandles() []uuid.UUID {
+func (w *world) GetSortedEntityHandles() []EntityHandle {
 	w.mut.Lock()
 	defer w.mut.Unlock()
 
-	handles := make([]uuid.UUID, 0)
+	handles := make([]EntityHandle, 0)
 	for handle := range w.EntityMap {
 		handles = append(handles, handle)
 	}
 
 	sort.SliceStable(handles, func(i, j int) bool {
-		return handles[i].ID() < handles[j].ID()
+		return uuid.UUID(handles[i]).ID() < uuid.UUID(handles[j]).ID()
 	})
 
 	return handles
@@ -73,8 +80,8 @@ func (w *world) GetSortedEntityHandles() []uuid.UUID {
 
 // FilterMapBy is unordered, but allows you to get the
 //  handle and entity
-func FilterMapBy[T any](w World) map[uuid.UUID]T {
-	result := map[uuid.UUID]T{}
+func FilterMapBy[T any](w World) map[EntityHandle]T {
+	result := map[EntityHandle]T{}
 	for handle, e := range w.GetEntities() {
 		if e, ok := e.(T); ok {
 			result[handle] = e

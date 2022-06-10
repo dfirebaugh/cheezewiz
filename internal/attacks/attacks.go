@@ -7,7 +7,6 @@ import (
 	"cheezewiz/pkg/gamemath"
 
 	"github.com/atedja/go-vector"
-	"github.com/google/uuid"
 )
 
 type Actor interface {
@@ -36,11 +35,11 @@ var CheeseMissile = func(world ecs.World) func() {
 	}
 }
 
-func findHeading(w ecs.World, player Player, playerHandle uuid.UUID) {
+func findHeading(w ecs.World, player Player, playerHandle ecs.EntityHandle) {
 	position := player.GetPosition()
 	state := player.GetActorState()
 
-	enemies := map[uuid.UUID]vector.Vector{}
+	enemies := map[ecs.EntityHandle]vector.Vector{}
 
 	for handle, actor := range ecs.FilterMapBy[Actor](w) {
 		if handle == playerHandle {

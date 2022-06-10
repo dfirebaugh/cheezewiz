@@ -9,7 +9,6 @@ import (
 	"cheezewiz/pkg/ecs"
 	"math/rand"
 
-	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,7 +16,7 @@ type Directionable interface {
 	GetDirection() *component.Direction
 }
 
-func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float64) (uuid.UUID, ecs.Entity) {
+func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float64) (ecs.EntityHandle, ecs.Entity) {
 	handle, entity := MakeEntity(w, path, x, y)
 
 	e, ok := entity.(Directionable)
@@ -27,21 +26,21 @@ func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float
 	direction := e.GetDirection()
 	if direction == nil {
 		logrus.Error("not a valid direction")
-		return uuid.Nil, nil
+		return ecs.NilEntityHandle, nil
 	}
 
 	direction.Angle = dir
 	return handle, e
 }
 
-func MakeEntity(w ecs.World, path string, x float64, y float64) (uuid.UUID, ecs.Entity) {
+func MakeEntity(w ecs.World, path string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.GetEntity(path))
 
 	return w.Add(buildEntity(e, x, y))
 }
-func MakeRandEntity(w ecs.World, path []string, x float64, y float64) (uuid.UUID, ecs.Entity) {
+func MakeRandEntity(w ecs.World, path []string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.GetEntity(path[rand.Intn(len(path))]))

@@ -3,18 +3,11 @@ package system
 import (
 	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
-
-	"github.com/yohamta/donburi"
 )
 
 type Collidable interface {
 	GetRigidBody() *component.RigidBody
 	GetPosition() *component.Position
-}
-
-type attackMediator interface {
-	AddPlayerDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)
-	AddEnemyDamage(destination *donburi.Entry, amount float64, origin *donburi.Entry)
 }
 
 type Collision struct {
