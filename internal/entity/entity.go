@@ -9,6 +9,7 @@ import (
 	"cheezewiz/pkg/ecs"
 	"math/rand"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,7 +17,7 @@ type Directionable interface {
 	GetDirection() *component.Direction
 }
 
-func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float64) (int, ecs.Entity) {
+func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float64) (uuid.UUID, ecs.Entity) {
 	handle, entity := MakeEntity(w, path, x, y)
 
 	e, ok := entity.(Directionable)
@@ -26,29 +27,29 @@ func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float
 	direction := e.GetDirection()
 	if direction == nil {
 		logrus.Error("not a valid direction")
-		return -1, nil
+		return uuid.Nil, nil
 	}
 
 	direction.Angle = dir
 	return handle, e
 }
 
-func MakeEntity(w ecs.World, path string, x float64, y float64) (int, ecs.Entity) {
+func MakeEntity(w ecs.World, path string, x float64, y float64) (uuid.UUID, ecs.Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.GetEntity(path))
 
-	return w.Add(buildArchetype(e, x, y))
+	return w.Add(buildEntity(e, x, y))
 }
-func MakeRandEntity(w ecs.World, path []string, x float64, y float64) (int, ecs.Entity) {
+func MakeRandEntity(w ecs.World, path []string, x float64, y float64) (uuid.UUID, ecs.Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.GetEntity(path[rand.Intn(len(path))]))
 
-	return w.Add(buildArchetype(e, x, y))
+	return w.Add(buildEntity(e, x, y))
 }
 
-func buildArchetype(e EntityConfig, x float64, y float64) ecs.Entity {
+func buildEntity(e EntityConfig, x float64, y float64) ecs.Entity {
 	// check entities componentlabels and build archetype based on that?
 	switch e.Archetype {
 	case "player":

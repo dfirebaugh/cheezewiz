@@ -3,18 +3,20 @@ package ecs
 import (
 	"errors"
 	"sort"
+
+	"github.com/google/uuid"
 )
 
 type Entity interface{}
 type Tag interface{}
 
 type World struct {
-	EntityMap map[int]Entity
+	EntityMap map[uuid.UUID]Entity
 }
 
 func NewWorld() World {
 	return World{
-		EntityMap: map[int]Entity{},
+		EntityMap: map[uuid.UUID]Entity{},
 	}
 }
 
@@ -22,24 +24,28 @@ func NewTag() Tag {
 	return struct{}{}
 }
 
-func (w *World) Add(entity Entity) (int, Entity) {
-	uuid := len(w.EntityMap)
+func (w *World) Add(entity Entity) (uuid.UUID, Entity) {
+	uuid := uuid.New()
 	w.EntityMap[uuid] = entity
 	return uuid, entity
 }
 
-func (w World) GetEntities() map[int]Entity {
+func (w World) GetEntities() map[uuid.UUID]Entity {
 	return w.EntityMap
 }
 
 // getSortedEntityHandles returns the entities in order.
 //   Otherwise, they would render in a seemingly random order.
-func (w World) getSortedEntityHandles() []int {
-	handles := make([]int, 0)
+func (w World) getSortedEntityHandles() []uuid.UUID {
+	handles := make([]uuid.UUID, 0)
 	for handle := range w.EntityMap {
 		handles = append(handles, handle)
 	}
-	sort.Ints(handles)
+
+	sort.SliceStable(handles, func(i, j int) bool {
+		return handles[i].ID() < handles[j].ID()
+	})
+
 	return handles
 }
 
