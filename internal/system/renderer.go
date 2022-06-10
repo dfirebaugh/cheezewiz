@@ -3,11 +3,11 @@ package system
 import (
 	"cheezewiz/config"
 	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/cache"
 	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
 	"fmt"
 
-	cache "github.com/Code-Hex/go-generics-cache"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/sirupsen/logrus"
@@ -15,30 +15,20 @@ import (
 )
 
 type Renderer struct {
-	World               ecs.World
-	animatableCache     *cache.Cache[cacheKey, []archetype.Animatable]
-	prevAnimatableCount int
+	World ecs.World
 }
 
 func NewRenderer(w ecs.World) Renderer {
-	c := cache.New[cacheKey, []archetype.Animatable]()
-
-	c.Set(animatable, ecs.FilterBySorted[archetype.Animatable](w))
 	return Renderer{
-		World:           w,
-		animatableCache: c,
+		World: w,
 	}
 }
 
-func (r Renderer) Update() {
+func (r *Renderer) Update() {
 	var animatables []archetype.Animatable
 	var ok bool
 
-	if r.prevAnimatableCount != r.World.Count() {
-		r.prevAnimatableCount = r.World.Count()
-		r.animatableCache.Set(animatable, ecs.FilterBySorted[archetype.Animatable](r.World))
-	}
-	if animatables, ok = r.animatableCache.Get(animatable); !ok {
+	if animatables, ok = cache.GetAnimatables(r.World); !ok {
 		return
 	}
 	for _, entity := range animatables {
@@ -56,7 +46,7 @@ func (r Renderer) Draw(screen *ebiten.Image) {
 
 	r.debug(screen)
 
-	if animatables, ok = r.animatableCache.Get(animatable); !ok {
+	if animatables, ok = cache.GetAnimatables(r.World); !ok {
 		return
 	}
 	for _, entity := range animatables {
@@ -103,7 +93,12 @@ func (r Renderer) debug(screen *ebiten.Image) {
 	}
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f -- entities: %d\n", ebiten.CurrentFPS(), r.World.Count()))
 
-	for _, c := range ecs.FilterBySorted[archetype.Collidable](r.World) {
+	var collidables []archetype.Collidable
+	var ok bool
+	if collidables, ok = cache.GetCollidables(r.World); !ok {
+		return
+	}
+	for _, c := range collidables {
 		p := c.GetPosition()
 		rb := c.GetRigidBody()
 		x, y := r.getWorldCoord(p)

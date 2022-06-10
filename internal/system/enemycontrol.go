@@ -2,6 +2,7 @@ package system
 
 import (
 	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/cache"
 	"cheezewiz/pkg/ecs"
 	"cheezewiz/pkg/gamemath"
 	"math"
@@ -10,8 +11,7 @@ import (
 )
 
 type EnemyControl struct {
-	world       ecs.World
-	playerCache []archetype.Player
+	world ecs.World
 }
 
 const enemySpeed = 0.5
@@ -23,7 +23,12 @@ func NewEnemyControl(w ecs.World) *EnemyControl {
 }
 
 func (e EnemyControl) Update() {
-	for _, ent := range ecs.FilterBy[archetype.Enemy](e.world) {
+	var enemies []archetype.Enemy
+	var ok bool
+	if enemies, ok = cache.GetEnemies(e.world); !ok {
+		return
+	}
+	for _, ent := range enemies {
 		e.updatePosition(ent)
 	}
 }
@@ -37,7 +42,12 @@ func (e EnemyControl) updatePosition(enemy archetype.Enemy) {
 		return
 	}
 
-	for _, player := range ecs.FilterBy[archetype.Player](e.world) {
+	var players []archetype.Player
+	var ok bool
+	if players, ok = cache.GetPlayers(e.world); !ok {
+		return
+	}
+	for _, player := range players {
 		playerPosition := player.GetPosition()
 		if closestPlayer != nil {
 			closestPlayer = player

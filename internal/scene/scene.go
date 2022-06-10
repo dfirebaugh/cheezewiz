@@ -41,7 +41,7 @@ func Init() *Scene {
 	s := &Scene{
 		world: w,
 		systems: []System{
-			renderer,
+			&renderer,
 			system.NewCollision(w),
 			system.Controller{World: w},
 			system.NewEnemyControl(w),

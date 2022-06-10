@@ -2,30 +2,23 @@ package system
 
 import (
 	"cheezewiz/internal/archetype"
+	"cheezewiz/internal/cache"
 	"cheezewiz/internal/component"
 	"cheezewiz/pkg/ecs"
 	"cheezewiz/pkg/throttle"
-
-	cache "github.com/Code-Hex/go-generics-cache"
 )
 
 type Collision struct {
-	world           ecs.World
-	collidableCache *cache.Cache[cacheKey, []archetype.Collidable]
-	prevCount       int
+	world ecs.World
 }
 
 func NewCollision(world ecs.World) *Collision {
-	c := cache.New[cacheKey, []archetype.Collidable]()
-	c.Set(collidable, ecs.FilterBy[archetype.Collidable](world))
-
 	return &Collision{
-		world:           world,
-		collidableCache: c,
+		world: world,
 	}
 }
 
-func (c Collision) Update() {
+func (c *Collision) Update() {
 	// we don't need to evaluate collisions on every update
 	// so let's slow it down a bit
 	if throttle.ShouldThrottle("collisionsystem", 5) {
@@ -34,12 +27,7 @@ func (c Collision) Update() {
 	var collidables []archetype.Collidable
 	var ok bool
 
-	if c.prevCount != c.world.Count() {
-		c.prevCount = c.world.Count()
-		c.collidableCache.Set(collidable, ecs.FilterBy[archetype.Collidable](c.world))
-	}
-
-	if collidables, ok = c.collidableCache.Get(collidable); !ok {
+	if collidables, ok = cache.GetCollidables(c.world); !ok {
 		return
 	}
 
