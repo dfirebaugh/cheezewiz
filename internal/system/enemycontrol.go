@@ -4,6 +4,7 @@ import (
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/entity"
 	"cheezewiz/pkg/ecs"
+	"cheezewiz/pkg/gamemath"
 	"math"
 
 	"github.com/atedja/go-vector"
@@ -92,9 +93,21 @@ func (ec EnemyControl) moveTowardPlayer(player Player, enemy Enemy) {
 
 	r := vector.Unit(vector.Subtract(p, e))
 
-	r.Scale(enemySpeed)
+	speed := enemySpeed
+	if ec.isOverPositionLimit(e, p, 100) {
+		// as they get closer, slow down a bit
+		speed = .2
+	}
+	if ec.isOverPositionLimit(e, p, 23) {
+		return
+	}
+	r.Scale(speed)
 
 	newloc := vector.Add(e, r)
 
 	position.Update(newloc[0], newloc[1])
+}
+
+func (ec EnemyControl) isOverPositionLimit(a []float64, b []float64, limit float64) bool {
+	return gamemath.GetDistance(a, b) < limit
 }
