@@ -62,19 +62,19 @@ func refreshEnemies(w ecs.World) {
 	if !enemyShouldRefresh(w) {
 		return
 	}
-	enemy.Set(enemyKey, ecs.FilterBy[archetype.Enemy](w))
+	enemy.Set(enemyKey, ecs.FilterByTag[archetype.Enemy](w, ecs.ArchetypeTag(archetype.EnemyTag)))
 }
 func refreshProjectiles(w ecs.World) {
 	if !projectileShouldRefresh(w) {
 		return
 	}
-	projectile.Set(projectileKey, ecs.FilterBy[archetype.Projectile](w))
+	projectile.Set(projectileKey, ecs.FilterByTag[archetype.Projectile](w, ecs.ArchetypeTag(archetype.ProjectileTag)))
 }
 func refreshPlayers(w ecs.World) {
 	if !playerShouldRefresh(w) {
 		return
 	}
-	player.Set(playerKey, ecs.FilterBy[archetype.Player](w))
+	player.Set(playerKey, ecs.FilterByTag[archetype.Player](w, ecs.ArchetypeTag(archetype.PlayerTag)))
 }
 func refreshPlayerHandles(w ecs.World) {
 	if !playerShouldRefresh(w) {
@@ -92,7 +92,7 @@ func refreshCollidables(w ecs.World) {
 	if !collidablesShouldRefresh(w) {
 		return
 	}
-	collidable.Set(collidableKey, ecs.FilterBy[archetype.Collidable](w))
+	collidable.Set(collidableKey, ecs.FilterByTag[archetype.Collidable](w, ecs.ArchetypeTag(archetype.CollidableTag)))
 }
 func collidablesShouldRefresh(w ecs.World) bool {
 	if len(collidable.Keys()) == 0 {
