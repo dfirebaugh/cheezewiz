@@ -7,6 +7,7 @@ import (
 
 type Adapter interface {
 	GetWorld() ecs.World
+	Add(entity ecs.Entity) (ecs.EntityHandle, ecs.Entity)
 	GetEntity(handle ecs.EntityHandle) ecs.Entity
 	GetEnemies() ([]archetype.Enemy, bool)
 	GetProjectiles() ([]archetype.Projectile, bool)

@@ -3,6 +3,7 @@ package entity
 import (
 	"cheezewiz/internal/collision"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/filesystem"
 	"cheezewiz/internal/input"
 	"cheezewiz/pkg/animation"
@@ -16,7 +17,7 @@ type Directionable interface {
 	GetDirection() *component.Direction
 }
 
-func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float64) (ecs.EntityHandle, ecs.Entity) {
+func MakeWithDirection(w adapter.Adapter, path string, x float64, y float64, dir float64) (ecs.EntityHandle, ecs.Entity) {
 	handle, entity := MakeEntity(w, path, x, y)
 
 	e, ok := entity.(Directionable)
@@ -33,14 +34,14 @@ func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float
 	return handle, e
 }
 
-func MakeEntity(w ecs.World, path string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
+func MakeEntity(w adapter.Adapter, path string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.Game.GetEntity(path))
 
 	return w.Add(buildEntity(e, x, y))
 }
-func MakeRandEntity(w ecs.World, path []string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
+func MakeRandEntity(w adapter.Adapter, path []string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.Game.GetEntity(path[rand.Intn(len(path))]))

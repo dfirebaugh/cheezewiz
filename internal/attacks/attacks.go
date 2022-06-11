@@ -2,6 +2,7 @@ package attacks
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/entity"
 	"cheezewiz/pkg/ecs"
 	"cheezewiz/pkg/gamemath"
@@ -26,16 +27,16 @@ type Directionable interface {
 	GetDirection() *component.Direction
 }
 
-var CheeseMissile = func(world ecs.World) func() {
+var CheeseMissile = func(world adapter.Adapter) func() {
 	w := world
 	return func() {
-		for handle, player := range ecs.FilterMapBy[Player](w) {
+		for handle, player := range ecs.FilterMapBy[Player](w.GetWorld()) {
 			findHeading(w, player, handle)
 		}
 	}
 }
 
-func findHeading(w ecs.World, player Player, playerHandle ecs.EntityHandle) {
+func findHeading(w adapter.Adapter, player Player, playerHandle ecs.EntityHandle) {
 	position := player.GetPosition()
 	state := player.GetState()
 	if state.GetCurrent() == component.DeathState {
@@ -44,7 +45,7 @@ func findHeading(w ecs.World, player Player, playerHandle ecs.EntityHandle) {
 
 	enemies := map[ecs.EntityHandle]vector.Vector{}
 
-	for handle, actor := range ecs.FilterMapBy[Actor](w) {
+	for handle, actor := range ecs.FilterMapBy[Actor](w.GetWorld()) {
 		if handle == playerHandle {
 			continue
 		}
@@ -64,7 +65,7 @@ func findHeading(w ecs.World, player Player, playerHandle ecs.EntityHandle) {
 	state.Set(component.AttackingState)
 }
 
-func launchProjectile(w ecs.World, from component.Position, to component.Position) {
+func launchProjectile(w adapter.Adapter, from component.Position, to component.Position) {
 	e := gamemath.GetVector(from.X, from.Y)
 	m := gamemath.GetVector(to.X, to.Y)
 	entity.MakeWithDirection(w, "entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))

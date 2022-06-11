@@ -1,8 +1,8 @@
 package system
 
 import (
+	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/event"
-	"cheezewiz/pkg/ecs"
 )
 
 type Scheduler struct {
@@ -12,7 +12,7 @@ type Scheduler struct {
 	}
 }
 
-func NewScheduler(sceneEvents []event.SceneEvent, w ecs.World) *Scheduler {
+func NewScheduler(sceneEvents []event.SceneEvent, w adapter.Adapter) *Scheduler {
 	scheduler := &Scheduler{
 		events: map[uint32][]func(){},
 		countdown: struct {

@@ -35,8 +35,8 @@ func Init() *Scene {
 	adapter := adapter.Adapt(w)
 
 	// entities
-	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(w))
-	addEntities(w)
+	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(adapter))
+	addEntities(adapter)
 
 	// System
 	renderer := system.NewRenderer(adapter)
@@ -48,7 +48,7 @@ func Init() *Scene {
 			system.NewCollision(adapter),
 			system.MakePlayerControl(adapter, level),
 			system.NewEnemyControl(adapter),
-			system.NewScheduler(LoadLevelOne().Events, w),
+			system.NewScheduler(LoadLevelOne().Events, adapter),
 			system.NewWorldViewPortLocation(adapter),
 			system.DamageBufferGroup{World: w},
 			system.NewProjectileContol(adapter),
@@ -61,7 +61,7 @@ func Init() *Scene {
 	return s
 }
 
-func addEntities(world ecs.World) {
+func addEntities(world adapter.Adapter) {
 	// 	// entity.MakeExpBar(world)
 	world.Add(&entity.ViewPort{
 		Position: &component.Position{},

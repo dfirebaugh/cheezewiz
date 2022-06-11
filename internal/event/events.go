@@ -2,6 +2,7 @@ package event
 
 import (
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/entity"
 	"cheezewiz/pkg/ecs"
 	"math"
@@ -24,12 +25,12 @@ type Enemy interface {
 
 type Job struct {
 	json_name string
-	Callback  func(w ecs.World, args []string)
+	Callback  func(w adapter.Adapter, args []string)
 	priority  int
 }
 
-func spawnWave(w ecs.World, args []string) {
-	firstplayer, err := ecs.FirstEntity[Player](w)
+func spawnWave(w adapter.Adapter, args []string) {
+	firstplayer, err := w.FirstPlayer()
 	if err != nil {
 		logrus.Errorf("unable to find player: %s", err)
 		return
@@ -69,7 +70,7 @@ func spawnWave(w ecs.World, args []string) {
 	}
 }
 
-func spawnBoss(w ecs.World, args []string) {
+func spawnBoss(w adapter.Adapter, args []string) {
 	// // hp, _ := strconv.Atoi(args[1])
 	// distance, _ := strconv.Atoi(args[2])
 	// loc_radian := rand.Float64() * (math.Pi * 2)
@@ -93,11 +94,11 @@ func spawnBoss(w ecs.World, args []string) {
 	// entity.MakeEntity(w, "entities/cheezboss.entity.json", v[0], v[1])
 }
 
-func outputHurryUp(w ecs.World, args []string) {
+func outputHurryUp(w adapter.Adapter, args []string) {
 	logrus.Info("HURRY UP")
 }
 
-func outputDeath(w ecs.World, args []string) {
+func outputDeath(w adapter.Adapter, args []string) {
 	logrus.Info("Death")
 }
 
