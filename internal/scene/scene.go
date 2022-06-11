@@ -4,6 +4,7 @@ import (
 	"cheezewiz/config"
 	"cheezewiz/internal/attacks"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/entity"
 	"cheezewiz/internal/system"
 	"cheezewiz/pkg/ecs"
@@ -30,25 +31,27 @@ type Scene struct {
 func Init() *Scene {
 	// World
 	w := ecs.NewWorld()
+	level := entity.Level{}
+	adapter := adapter.Adapt(w)
 
 	// entities
 	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(w))
 	addEntities(w)
 
 	// System
-	renderer := system.NewRenderer(w)
+	renderer := system.NewRenderer(adapter)
 
 	s := &Scene{
 		world: w,
 		systems: []System{
 			&renderer,
-			system.NewCollision(w),
-			system.Controller{World: w},
-			system.NewEnemyControl(w),
+			system.NewCollision(adapter),
+			system.MakePlayerControl(adapter, level),
+			system.NewEnemyControl(adapter),
 			system.NewScheduler(LoadLevelOne().Events, w),
-			system.NewWorldViewPortLocation(w),
+			system.NewWorldViewPortLocation(adapter),
 			system.DamageBufferGroup{World: w},
-			system.NewProjectileContol(w),
+			system.NewProjectileContol(adapter),
 		},
 		drawables: []Drawable{
 			renderer,

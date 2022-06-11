@@ -3,8 +3,8 @@ package system
 import (
 	"cheezewiz/config"
 	"cheezewiz/internal/archetype"
-	"cheezewiz/internal/cache"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/pkg/ecs"
 	"fmt"
 
@@ -15,12 +15,12 @@ import (
 )
 
 type Renderer struct {
-	World ecs.World
+	ecs adapter.Adapter
 }
 
-func NewRenderer(w ecs.World) Renderer {
+func NewRenderer(a adapter.Adapter) Renderer {
 	return Renderer{
-		World: w,
+		ecs: a,
 	}
 }
 
@@ -28,7 +28,7 @@ func (r *Renderer) Update() {
 	var animatables []archetype.Animatable
 	var ok bool
 
-	if animatables, ok = cache.GetAnimatables(r.World); !ok {
+	if animatables, ok = r.ecs.GetAnimatables(); !ok {
 		return
 	}
 	for _, entity := range animatables {
@@ -46,7 +46,7 @@ func (r Renderer) Draw(screen *ebiten.Image) {
 
 	r.debug(screen)
 
-	if animatables, ok = cache.GetAnimatables(r.World); !ok {
+	if animatables, ok = r.ecs.GetAnimatables(); !ok {
 		return
 	}
 	for _, entity := range animatables {
@@ -78,7 +78,7 @@ func (r Renderer) healthBar(screen *ebiten.Image, entity archetype.Animatable) {
 }
 
 func (r Renderer) getWorldCoord(position *component.Position) (float64, float64) {
-	viewPort, err := ecs.FirstEntity[archetype.ViewPort](r.World)
+	viewPort, err := r.ecs.FirstViewPort()
 	if err != nil {
 		logrus.Errorf("viewport: %s", err)
 		return position.X, position.Y
@@ -91,11 +91,11 @@ func (r Renderer) debug(screen *ebiten.Image) {
 	if !config.Get().DebugEnabled {
 		return
 	}
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f -- entities: %d\n", ebiten.CurrentFPS(), r.World.Count()))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f -- entities: %d\n", ebiten.CurrentFPS(), r.ecs.Count()))
 
 	var collidables []archetype.Collidable
 	var ok bool
-	if collidables, ok = cache.GetCollidables(r.World); !ok {
+	if collidables, ok = r.ecs.GetCollidables(); !ok {
 		return
 	}
 	for _, c := range collidables {

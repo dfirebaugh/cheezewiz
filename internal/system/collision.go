@@ -2,19 +2,19 @@ package system
 
 import (
 	"cheezewiz/internal/archetype"
-	"cheezewiz/internal/cache"
 	"cheezewiz/internal/component"
-	"cheezewiz/pkg/ecs"
+	"cheezewiz/internal/ecs/adapter"
+	"cheezewiz/pkg/gamemath"
 	"cheezewiz/pkg/throttle"
 )
 
 type Collision struct {
-	world ecs.World
+	ecs adapter.Adapter
 }
 
-func NewCollision(world ecs.World) *Collision {
+func NewCollision(adapter adapter.Adapter) *Collision {
 	return &Collision{
-		world: world,
+		ecs: adapter,
 	}
 }
 
@@ -24,10 +24,9 @@ func (c *Collision) Update() {
 	if throttle.ShouldThrottle("collisionsystem", 5) {
 		return
 	}
-	var collidables []archetype.Collidable
-	var ok bool
 
-	if collidables, ok = cache.GetCollidables(c.world); !ok {
+	collidables, ok := c.ecs.GetCollidables()
+	if !ok {
 		return
 	}
 
@@ -59,29 +58,12 @@ func (c Collision) updateCollidable(id int, collidables []archetype.Collidable, 
 		by := p2.Y - erb.T
 		bw := erb.GetWidth()
 		bh := erb.GetHeight()
-		if c.IsCollide([]float64{ax, ay, aw, ah}, []float64{bx, by, bw, bh}) {
+		if gamemath.Rect([]float64{ax, ay, aw, ah}).IsAxisAlignedCollision(gamemath.Rect([]float64{bx, by, bw, bh})) {
 			if rb.CollisionHandler == nil {
 				return
 			}
-			rb.CollisionHandler(c.world, collidableB)
+			rb.CollisionHandler(c.ecs.GetWorld(), collidableB)
 		}
 
 	}
-}
-
-func (c Collision) IsCollide(a []float64, b []float64) bool {
-	ax := a[0]
-	ay := a[1]
-	aw := a[2]
-	ah := a[3]
-
-	bx := b[0]
-	by := b[1]
-	bw := b[2]
-	bh := b[3]
-
-	return ax < bx+bw &&
-		ax+aw > bx &&
-		ay < by+bh &&
-		ah+ay > by
 }

@@ -8,6 +8,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type Level interface {
+	GetTile(x int, y int) *component.Tile
+	ToString() string
+	MoveActor(origin component.Position, destination component.Position, handle ecs.EntityHandle, entity ecs.Entity)
+}
+
 type Actor interface {
 	GetHealth() *component.Health
 	GetState() *component.State

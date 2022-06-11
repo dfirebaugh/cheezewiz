@@ -100,9 +100,11 @@ func FilterMapBy[T any](w World) map[EntityHandle]T {
 	defer mut.Unlock()
 	result := map[EntityHandle]T{}
 	for handle, e := range w.GetEntities() {
-		if e, ok := e.(T); ok {
-			result[handle] = e
+		e, ok := e.(T)
+		if !ok {
+			continue
 		}
+		result[handle] = e
 	}
 
 	return result
@@ -111,9 +113,11 @@ func FilterMapBy[T any](w World) map[EntityHandle]T {
 func FilterBySorted[T any](w World) []T {
 	var result []T
 	for _, h := range w.GetSortedEntityHandles() {
-		if e, ok := w.GetEntity(h).(T); ok {
-			result = append(result, e)
+		e, ok := w.GetEntity(h).(T)
+		if !ok {
+			continue
 		}
+		result = append(result, e)
 	}
 
 	return result
@@ -123,9 +127,24 @@ func FilterBy[T any](w World) []T {
 	defer mut.Unlock()
 	var result []T
 	for _, e := range w.GetEntities() {
-		if e, ok := e.(T); ok {
-			result = append(result, e)
+		ent, ok := e.(T)
+		if !ok {
+			continue
 		}
+		result = append(result, ent)
+	}
+
+	return result
+}
+func FilterHandlesBy[T any](w World) []EntityHandle {
+	mut.Lock()
+	defer mut.Unlock()
+	var result []EntityHandle
+	for handle, e := range w.GetEntities() {
+		if _, ok := e.(T); !ok {
+			continue
+		}
+		result = append(result, handle)
 	}
 
 	return result

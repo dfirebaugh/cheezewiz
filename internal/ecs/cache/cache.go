@@ -13,10 +13,14 @@ const (
 	animatableKey cacheKey = iota
 	collidableKey
 	playerKey
+	projectileKey
+	playerHandlesKey
 	enemyKey
 )
 
+var projectile = cache.New[cacheKey, []archetype.Projectile]()
 var player = cache.New[cacheKey, []archetype.Player]()
+var playerHandles = cache.New[cacheKey, []ecs.EntityHandle]()
 var enemy = cache.New[cacheKey, []archetype.Enemy]()
 var animatable = cache.New[cacheKey, []archetype.Animatable]()
 var collidable = cache.New[cacheKey, []archetype.Collidable]()
@@ -38,17 +42,20 @@ func GetCollidables(w ecs.World) ([]archetype.Collidable, bool) {
 	prevEntityCount = w.Count()
 	return collidable.Get(collidableKey)
 }
+func GetProjectiles(w ecs.World) ([]archetype.Projectile, bool) {
+	refreshProjectiles(w)
+	prevEntityCount = w.Count()
+	return projectile.Get(projectileKey)
+}
 func GetPlayers(w ecs.World) ([]archetype.Player, bool) {
 	refreshPlayers(w)
 	prevEntityCount = w.Count()
 	return player.Get(playerKey)
 }
-
-func RefreshCache(w ecs.World) {
-	refreshEnemies(w)
-	refreshPlayers(w)
-	refreshAnimatables(w)
+func GetPlayerHandles(w ecs.World) ([]ecs.EntityHandle, bool) {
+	refreshPlayerHandles(w)
 	prevEntityCount = w.Count()
+	return playerHandles.Get(playerHandlesKey)
 }
 
 func refreshEnemies(w ecs.World) {
@@ -57,17 +64,28 @@ func refreshEnemies(w ecs.World) {
 	}
 	enemy.Set(enemyKey, ecs.FilterBy[archetype.Enemy](w))
 }
+func refreshProjectiles(w ecs.World) {
+	if !projectileShouldRefresh(w) {
+		return
+	}
+	projectile.Set(projectileKey, ecs.FilterBy[archetype.Projectile](w))
+}
 func refreshPlayers(w ecs.World) {
 	if !playerShouldRefresh(w) {
 		return
 	}
 	player.Set(playerKey, ecs.FilterBy[archetype.Player](w))
 }
+func refreshPlayerHandles(w ecs.World) {
+	if !playerShouldRefresh(w) {
+		return
+	}
+	playerHandles.Set(playerHandlesKey, ecs.FilterHandlesBy[archetype.Player](w))
+}
 func refreshAnimatables(w ecs.World) {
 	if !animatableShouldRefresh(w) {
 		return
 	}
-	println("update animatables")
 	animatable.Set(animatableKey, ecs.FilterBySorted[archetype.Animatable](w))
 }
 func refreshCollidables(w ecs.World) {
@@ -76,14 +94,18 @@ func refreshCollidables(w ecs.World) {
 	}
 	collidable.Set(collidableKey, ecs.FilterBy[archetype.Collidable](w))
 }
-
 func collidablesShouldRefresh(w ecs.World) bool {
 	if len(collidable.Keys()) == 0 {
 		return true
 	}
 	return prevEntityCount == w.Count()
 }
-
+func projectileShouldRefresh(w ecs.World) bool {
+	if len(projectile.Keys()) == 0 {
+		return true
+	}
+	return prevEntityCount == w.Count()
+}
 func enemyShouldRefresh(w ecs.World) bool {
 	if len(enemy.Keys()) == 0 {
 		return true

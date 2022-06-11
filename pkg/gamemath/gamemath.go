@@ -2,6 +2,7 @@ package gamemath
 
 import (
 	"cheezewiz/pkg/ecs"
+	"fmt"
 	"math"
 
 	"github.com/atedja/go-vector"
@@ -33,4 +34,36 @@ func GetClosest(src vector.Vector, dest map[ecs.EntityHandle]vector.Vector) ecs.
 	}
 
 	return closestHandle
+}
+
+// Vector a float64 slice with 2 elements []float64{x, y}
+type Vector []float64
+
+// Rect a float64 slice with 4 elements []float64{x, y, width, height}
+type Rect []float64
+
+func (v Vector) ToString() string {
+	return fmt.Sprintf("%d, %d", int(v[0]), int(v[1]))
+}
+
+// origin (0,0) is top left of screen
+func (v Vector) ToTileCoord(tileSize float64) Vector {
+	return Vector([]float64{v[0] / tileSize, v[1] / tileSize})
+}
+
+func (r Rect) IsAxisAlignedCollision(other Rect) bool {
+	ax := r[0]
+	ay := r[1]
+	aw := r[2]
+	ah := r[3]
+
+	bx := other[0]
+	by := other[1]
+	bw := other[2]
+	bh := other[3]
+
+	return ax < bx+bw &&
+		ax+aw > bx &&
+		ay < by+bh &&
+		ah+ay > by
 }
