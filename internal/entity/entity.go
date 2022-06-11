@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/collision"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/ecs/adapter"
@@ -49,7 +50,7 @@ func MakeRandEntity(w adapter.Adapter, path []string, x float64, y float64) (ecs
 	return w.Add(buildEntity(e, x, y))
 }
 
-func buildEntity(e EntityConfig, x float64, y float64) ecs.Entity {
+func buildEntity(e EntityConfig, x float64, y float64) (ecs.Entity, []ecs.ArchetypeTag) {
 	// check entities componentlabels and build archetype based on that?
 	switch e.Archetype {
 	case "player":
@@ -64,10 +65,11 @@ func buildEntity(e EntityConfig, x float64, y float64) ecs.Entity {
 		logrus.Errorf("archetype is not defined: %s", e.Archetype)
 	}
 
-	return nil
+	return nil, nil
 }
 
-func buildPlayer(e EntityConfig, x float64, y float64) *Player {
+func buildPlayer(e EntityConfig, x float64, y float64) (*Player, []ecs.ArchetypeTag) {
+	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.PlayerTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
 	p := Player{
 		Position: e.buildPosition(x, y),
 		Health:   &e.Health,
@@ -80,10 +82,12 @@ func buildPlayer(e EntityConfig, x float64, y float64) *Player {
 		State:     e.getState(),
 		RigidBody: e.buildRigidBody(),
 	}
-	return &p
+	return &p, archetypes
 }
-func buildProjectile(e EntityConfig, x float64, y float64) *Projectile {
-	return &Projectile{
+func buildProjectile(e EntityConfig, x float64, y float64) (*Projectile, []ecs.ArchetypeTag) {
+	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ProjectileTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
+
+	p := &Projectile{
 		Position: e.buildPosition(x, y),
 		Animation: &component.Animation{
 			Animation: e.getAnimations(),
@@ -92,9 +96,12 @@ func buildProjectile(e EntityConfig, x float64, y float64) *Projectile {
 		RigidBody: e.buildRigidBody(),
 		Direction: &component.Direction{},
 	}
+	return p, archetypes
 }
 
-func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {
+func buildEnemy(e EntityConfig, x float64, y float64) (*Enemy, []ecs.ArchetypeTag) {
+	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.EnemyTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
+
 	p := Enemy{
 		Position: e.buildPosition(x, y),
 		Health:   &e.Health,
@@ -104,11 +111,12 @@ func buildEnemy(e EntityConfig, x float64, y float64) *Enemy {
 		State:     e.getState(),
 		RigidBody: e.buildRigidBody(),
 	}
-	return &p
+	return &p, archetypes
 }
 
-func buildActor(e EntityConfig, x float64, y float64) *Actor {
-	return &Actor{
+func buildActor(e EntityConfig, x float64, y float64) (*Actor, []ecs.ArchetypeTag) {
+	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ActorTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
+	a := &Actor{
 		Position: e.buildPosition(x, y),
 		Health:   &e.Health,
 		Animation: &component.Animation{
@@ -117,6 +125,7 @@ func buildActor(e EntityConfig, x float64, y float64) *Actor {
 		State:     e.getState(),
 		RigidBody: e.buildRigidBody(),
 	}
+	return a, archetypes
 }
 
 func lookupInputDevice(key string) input.PlayerInput {

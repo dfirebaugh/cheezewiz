@@ -14,10 +14,9 @@ func (cs CustomECS) GetWorld() ecs.World {
 	return cs.World
 }
 
-func (cs CustomECS) Add(entity ecs.Entity) (ecs.EntityHandle, ecs.Entity) {
-	return cs.GetWorld().Add(entity)
+func (cs CustomECS) Add(entity ecs.Entity, archetypes []ecs.ArchetypeTag) (ecs.EntityHandle, ecs.Entity) {
+	return cs.GetWorld().Add(entity, archetypes)
 }
-
 func (ce CustomECS) GetEnemies() ([]archetype.Enemy, bool) {
 	return cache.GetEnemies(ce.World)
 }

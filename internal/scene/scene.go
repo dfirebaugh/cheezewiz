@@ -2,6 +2,7 @@ package scene
 
 import (
 	"cheezewiz/config"
+	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/attacks"
 	"cheezewiz/internal/component"
 	"cheezewiz/internal/ecs/adapter"
@@ -42,15 +43,15 @@ func Init() *Scene {
 	renderer := system.NewRenderer(adapter)
 
 	s := &Scene{
-		world: w,
+		// world: w,
 		systems: []System{
 			&renderer,
 			system.NewCollision(adapter),
 			system.MakePlayerControl(adapter, level),
 			system.NewEnemyControl(adapter),
-			system.NewScheduler(LoadLevelOne().Events, adapter),
+			system.NewScheduler(LoadStressTest().Events, adapter),
 			system.NewWorldViewPortLocation(adapter),
-			system.DamageBufferGroup{World: w},
+			// system.DamageBufferGroup{World: w},
 			system.NewProjectileContol(adapter),
 		},
 		drawables: []Drawable{
@@ -65,7 +66,7 @@ func addEntities(world adapter.Adapter) {
 	// 	// entity.MakeExpBar(world)
 	world.Add(&entity.ViewPort{
 		Position: &component.Position{},
-	})
+	}, []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ViewPortTag)})
 	entity.MakeEntity(world, "entities/cheezewiz.entity.json",
 		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
 		float64(config.Get().Window.Height/config.Get().ScaleFactor/2))

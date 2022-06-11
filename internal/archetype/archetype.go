@@ -8,6 +8,19 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type archetypeTag uint
+
+const (
+	LevelTag archetypeTag = iota
+	ActorTag
+	CollidableTag
+	PlayerTag
+	EnemyTag
+	ProjectileTag
+	AnimatableTag
+	ViewPortTag
+)
+
 type Level interface {
 	GetTile(x int, y int) *component.Tile
 	ToString() string

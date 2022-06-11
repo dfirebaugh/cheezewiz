@@ -11,20 +11,23 @@ import (
 type EntityHandle uuid.UUID
 type Entity interface{}
 type Tag interface{}
+type ArchetypeTag uint
 
 var NilEntityHandle = EntityHandle(uuid.Nil)
 
 type World interface {
-	Add(entity Entity) (EntityHandle, Entity)
+	Add(entity Entity, archetypes []ArchetypeTag) (EntityHandle, Entity)
 	Remove(entity Entity)
 	GetEntities() map[EntityHandle]Entity
+	GetArchetypes() map[ArchetypeTag][]EntityHandle
 	GetSortedEntityHandles() []EntityHandle
 	GetEntity(id EntityHandle) Entity
 	Count() int
 }
 
 type world struct {
-	EntityMap map[EntityHandle]Entity
+	EntityMap    map[EntityHandle]Entity
+	archetypeMap map[ArchetypeTag][]EntityHandle
 }
 
 var mut sync.RWMutex
@@ -32,7 +35,8 @@ var mut sync.RWMutex
 func NewWorld() *world {
 	mut = sync.RWMutex{}
 	return &world{
-		EntityMap: map[EntityHandle]Entity{},
+		EntityMap:    map[EntityHandle]Entity{},
+		archetypeMap: map[ArchetypeTag][]EntityHandle{},
 	}
 }
 
@@ -44,12 +48,16 @@ func NewEntityHandle() EntityHandle {
 	return EntityHandle(uuid.New())
 }
 
-func (w *world) Add(entity Entity) (EntityHandle, Entity) {
+func (w *world) Add(entity Entity, archetypes []ArchetypeTag) (EntityHandle, Entity) {
 	mut.Lock()
 	defer mut.Unlock()
 
 	id := NewEntityHandle()
 	w.EntityMap[id] = entity
+
+	for _, arch := range archetypes {
+		w.archetypeMap[arch] = append(w.archetypeMap[arch], id)
+	}
 	return id, entity
 }
 
@@ -69,6 +77,9 @@ func (w *world) GetEntities() map[EntityHandle]Entity {
 	return w.EntityMap
 }
 
+func (w *world) GetArchetypes() map[ArchetypeTag][]EntityHandle {
+	return w.archetypeMap
+}
 func (w *world) GetEntity(id EntityHandle) Entity {
 	mut.Lock()
 	defer mut.Unlock()
@@ -147,6 +158,18 @@ func FilterHandlesBy[T any](w World) []EntityHandle {
 		result = append(result, handle)
 	}
 
+	return result
+}
+
+func FilterByTag[T any](w World, archetype ArchetypeTag) []T {
+	result := []T{}
+	for _, handle := range w.GetArchetypes()[archetype] {
+		e, ok := w.GetEntity(handle).(T)
+		if !ok {
+			continue
+		}
+		result = append(result, e)
+	}
 	return result
 }
 

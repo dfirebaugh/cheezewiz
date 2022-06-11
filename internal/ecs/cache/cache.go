@@ -86,7 +86,7 @@ func refreshAnimatables(w ecs.World) {
 	if !animatableShouldRefresh(w) {
 		return
 	}
-	animatable.Set(animatableKey, ecs.FilterBySorted[archetype.Animatable](w))
+	animatable.Set(animatableKey, ecs.FilterByTag[archetype.Animatable](w, ecs.ArchetypeTag(archetype.AnimatableTag)))
 }
 func refreshCollidables(w ecs.World) {
 	if !collidablesShouldRefresh(w) {
