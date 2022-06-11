@@ -1,7 +1,6 @@
 package animation
 
 import (
-	"cheezewiz/internal/filesystem"
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -20,7 +19,11 @@ type Animation struct {
 	OY          int
 }
 
-func MakeAnimation(path string, height int, width int) *Animation {
+type fs interface {
+	GetPNG(path string) *ebiten.Image
+}
+
+func MakeAnimation(path string, height int, width int, fs fs) *Animation {
 	a := &Animation{
 		Path:        path,
 		FrameWidth:  height,
@@ -28,7 +31,7 @@ func MakeAnimation(path string, height int, width int) *Animation {
 	}
 
 	if len(a.Path) > 0 {
-		a.Image = filesystem.GetPNG(path)
+		a.Image = fs.GetPNG(path)
 	}
 	if a.Image == nil {
 		logrus.Error("no source image for this animation")

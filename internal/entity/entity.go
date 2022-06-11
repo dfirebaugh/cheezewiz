@@ -36,14 +36,14 @@ func MakeWithDirection(w ecs.World, path string, x float64, y float64, dir float
 func MakeEntity(w ecs.World, path string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
 	var e EntityConfig
 
-	e.Unmarshal(filesystem.GetEntity(path))
+	e.Unmarshal(filesystem.Game.GetEntity(path))
 
 	return w.Add(buildEntity(e, x, y))
 }
 func MakeRandEntity(w ecs.World, path []string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
 	var e EntityConfig
 
-	e.Unmarshal(filesystem.GetEntity(path[rand.Intn(len(path))]))
+	e.Unmarshal(filesystem.Game.GetEntity(path[rand.Intn(len(path))]))
 
 	return w.Add(buildEntity(e, x, y))
 }
@@ -131,7 +131,7 @@ func (e EntityConfig) getAnimations() map[component.StateType]*animation.Animati
 	}
 
 	for label, path := range e.Animations {
-		anim[e.stringToState(label)] = animation.MakeAnimation(path, 32, 32)
+		anim[e.stringToState(label)] = animation.MakeAnimation(path, 32, 32, &filesystem.Game)
 	}
 
 	return anim
