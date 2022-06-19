@@ -91,6 +91,56 @@
             "event": "SpawnWave",
             "args": ["radish","35","5"]
         },
+        {
+            "time": 100,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 99,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 98,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 97,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 96,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 95,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 94,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 93,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 92,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
+        {
+            "time": 91,
+            "event": "SpawnWave",
+            "args": ["radish","35","5"]
+        },
 
         {
             "time": 30,

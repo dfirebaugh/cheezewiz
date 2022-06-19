@@ -2,9 +2,9 @@ package event
 
 import (
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/entity"
-	"cheezewiz/pkg/ecs"
+	"cheezewiz/internal/tag"
+	"cheezewiz/internal/world"
 	"math"
 	"strconv"
 
@@ -14,27 +14,29 @@ import (
 
 type Player interface {
 	GetPosition() *component.Position
-	GetPlayerTag() ecs.Tag
 }
 
 type Enemy interface {
 	GetPosition() *component.Position
 	GetHealth() *component.Health
-	GetEnemyTag() ecs.Tag
 }
 
 type Job struct {
 	json_name string
-	Callback  func(w adapter.Adapter, args []string)
+	Callback  func(w world.World, args []string)
 	priority  int
 }
 
-func spawnWave(w adapter.Adapter, args []string) {
-	firstplayer, err := w.FirstPlayer()
-	if err != nil {
-		logrus.Errorf("unable to find player: %s", err)
+func spawnWave(w world.World, args []string) {
+	firstPlayerHandle := w.First(func(handle world.EntityHandle) bool {
+		return w.GetEntity(handle).HasTag(tag.Player)
+	})
+	if firstPlayerHandle.IsNil() {
+		logrus.Errorf("unable to find player")
 		return
 	}
+
+	firstplayer := w.GetEntity(firstPlayerHandle)
 	pPos := firstplayer.GetPosition()
 	playerVector := vector.NewWithValues([]float64{pPos.X, pPos.Y})
 
@@ -52,25 +54,20 @@ func spawnWave(w adapter.Adapter, args []string) {
 			spawnloc := vector.NewWithValues([]float64{x, y})
 			spawnloc.Scale(float64(distance))
 			spawnloc = vector.Add(spawnloc, playerVector)
-			_, e := entity.MakeRandEntity(w, []string{
+			_, e := entity.MakeRand(w, []string{
 				"entities/radishred.entity.json",
 				"entities/radishblue.entity.json",
 				"entities/radishyellow.entity.json",
 			}, spawnloc[0], spawnloc[1])
-			radish, ok := e.(Enemy)
-			if !ok {
-				logrus.Error("some error with building radish entity")
-				return
-			}
 
-			radish.GetHealth().Current = float64(hp)
+			e.GetHealth().Current = float64(hp)
 		}
 	default:
 		return
 	}
 }
 
-func spawnBoss(w adapter.Adapter, args []string) {
+func spawnBoss(w world.World, args []string) {
 	// // hp, _ := strconv.Atoi(args[1])
 	// distance, _ := strconv.Atoi(args[2])
 	// loc_radian := rand.Float64() * (math.Pi * 2)
@@ -94,11 +91,11 @@ func spawnBoss(w adapter.Adapter, args []string) {
 	// entity.MakeEntity(w, "entities/cheezboss.entity.json", v[0], v[1])
 }
 
-func outputHurryUp(w adapter.Adapter, args []string) {
+func outputHurryUp(w world.World, args []string) {
 	logrus.Info("HURRY UP")
 }
 
-func outputDeath(w adapter.Adapter, args []string) {
+func outputDeath(w world.World, args []string) {
 	logrus.Info("Death")
 }
 

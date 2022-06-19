@@ -22,5 +22,6 @@
     "health": {
         "hp": 100,
         "max": 100
-    }
+    },
+    "tags": ["animatable", "enemy", "collidable"]
 }

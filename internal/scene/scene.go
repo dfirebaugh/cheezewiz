@@ -2,13 +2,11 @@ package scene
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/archetype"
 	"cheezewiz/internal/attacks"
-	"cheezewiz/internal/component"
-	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/entity"
 	"cheezewiz/internal/system"
-	"cheezewiz/pkg/ecs"
+	"cheezewiz/internal/tag"
+	"cheezewiz/internal/world"
 	"cheezewiz/pkg/taskrunner"
 	"os"
 	"time"
@@ -24,53 +22,50 @@ type Drawable interface {
 	Draw(screen *ebiten.Image)
 }
 type Scene struct {
-	world     ecs.World
 	systems   []System
 	drawables []Drawable
 }
 
 func Init() *Scene {
 	// World
-	w := ecs.NewWorld()
-	level := entity.Level{}
-	adapter := adapter.Adapt(w)
+	w := world.New()
+	// level := entity.Level{}
 
 	// entities
-	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(adapter))
-	addEntities(adapter)
+	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile(w))
+	addEntities(w)
 
 	// System
-	renderer := system.NewRenderer(adapter)
+	renderer := system.NewRenderer(w)
 
 	s := &Scene{
 		// world: w,
 		systems: []System{
 			&renderer,
-			system.NewCollision(adapter),
-			system.MakePlayerControl(adapter, level),
-			system.NewEnemyControl(adapter),
-			system.NewScheduler(LoadStressTest().Events, adapter),
-			system.NewWorldViewPortLocation(adapter),
+			system.NewCollision(w),
+			system.MakePlayerControl(w),
+			system.NewEnemyControl(w),
+			system.NewScheduler(LoadStressTest().Events, w),
+			// system.NewWorldViewPortLocation(adapter),
 			// system.DamageBufferGroup{World: w},
-			system.NewProjectileContol(adapter),
+			// system.NewProjectileContol(adapter),
 		},
 		drawables: []Drawable{
+			system.NewDebugRenderer(w),
 			renderer,
 		},
 	}
-
 	return s
 }
 
-func addEntities(world adapter.Adapter) {
+func addEntities(world world.World) {
 	// 	// entity.MakeExpBar(world)
-	world.Add(&entity.ViewPort{
-		Position: &component.Position{},
-	}, []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ViewPortTag)})
-	entity.MakeEntity(world, "entities/cheezewiz.entity.json",
+	// world.Add(&entity.ViewPort{
+	// 	Position: &component.Position{},
+	// }, []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ViewPortTag)})
+	entity.MakeWithTags(world, "entities/cheezewiz.entity.json",
 		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
-		float64(config.Get().Window.Height/config.Get().ScaleFactor/2))
-
+		float64(config.Get().Window.Height/config.Get().ScaleFactor/2), []tag.Tag{tag.Player, tag.Animatable, tag.Collidable})
 	// 	entity.MakeBackground(world)
 	// 	entity.MakeTimer(world)
 	// 	// entity.MakePlayer(world, input.Keyboard{})
@@ -102,6 +97,7 @@ func (s *Scene) Update() {
 		s.Exit()
 	}
 }
+
 func (s *Scene) Draw(screen *ebiten.Image) {
 	for _, sys := range s.drawables {
 		sys.Draw(screen)

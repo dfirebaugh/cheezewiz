@@ -2,71 +2,67 @@ package attacks
 
 import (
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/ecs/adapter"
 	"cheezewiz/internal/entity"
-	"cheezewiz/pkg/ecs"
-	"cheezewiz/pkg/gamemath"
-
-	"github.com/atedja/go-vector"
+	"cheezewiz/internal/tag"
+	"cheezewiz/internal/world"
 )
 
-type Actor interface {
-	GetPosition() *component.Position
-}
-type Player interface {
-	GetPosition() *component.Position
-	GetState() *component.State
-	GetPlayerTag() ecs.Tag
-}
-
 type attackGroup interface {
-	AddEnemyDamage(reciever Actor, amount float64, origin Actor)
+	AddEnemyDamage(reciever entity.Entity, amount float64, origin entity.Entity)
 }
 
 type Directionable interface {
 	GetDirection() *component.Direction
 }
 
-var CheeseMissile = func(world adapter.Adapter) func() {
-	w := world
+var CheeseMissile = func(wl world.World) func() {
+	w := wl
 	return func() {
-		for handle, player := range ecs.FilterMapBy[Player](w.GetWorld()) {
+		w.EachEntity(func(handle world.EntityHandle) {
+			if !w.GetEntity(handle).HasTag(tag.Player) {
+				return
+			}
+			player := w.GetEntity(handle)
+
 			findHeading(w, player, handle)
-		}
+		})
 	}
 }
 
-func findHeading(w adapter.Adapter, player Player, playerHandle ecs.EntityHandle) {
-	position := player.GetPosition()
-	state := player.GetState()
-	if state.GetCurrent() == component.DeathState {
-		return
-	}
+func findHeading(w world.World, player entity.Entity, playerHandle world.EntityHandle) {
+	// position := player.GetPosition()
+	// state := player.GetState()
+	// if state.GetCurrent() == component.DeathState {
+	// 	return
+	// }
 
-	enemies := map[ecs.EntityHandle]vector.Vector{}
+	// enemies := map[world.EntityHandle]vector.Vector{}
 
-	for handle, actor := range ecs.FilterMapBy[Actor](w.GetWorld()) {
-		if handle == playerHandle {
-			continue
-		}
-		p := actor.GetPosition()
-		enemies[handle] = vector.NewWithValues([]float64{p.X, p.Y})
-	}
+	// w.EachEntity(func(handle world.EntityHandle) {
+	// 	if handle == playerHandle {
+	// 		return
+	// 	}
+	// 	p := w.GetEntity(handle).GetPosition()
+	// 	enemies[handle] = vector.NewWithValues([]float64{p.X, p.Y})
+	// })
 
-	closestHandle := gamemath.GetClosest(vector.NewWithValues([]float64{position.X, position.Y}), enemies)
-	if closestHandle == playerHandle {
-		return
-	}
-	closestEnemy, ok := w.GetEntity(closestHandle).(Actor)
-	if !ok {
-		return
-	}
-	launchProjectile(w, *position, *closestEnemy.GetPosition())
-	state.Set(component.AttackingState)
+	// if len(enemies) == 0 {
+	// 	return
+	// }
+
+	// closestHandle := gamemath.GetClosest(vector.NewWithValues([]float64{position.X, position.Y}), enemies)
+	// if closestHandle == playerHandle {
+	// 	return
+	// }
+	// closestEnemy := w.GetEntity(closestHandle)
+	// launchProjectile(w, *position, *closestEnemy.GetPosition())
+	// state.Set(component.AttackingState)
 }
 
-func launchProjectile(w adapter.Adapter, from component.Position, to component.Position) {
-	e := gamemath.GetVector(from.X, from.Y)
-	m := gamemath.GetVector(to.X, to.Y)
-	entity.MakeWithDirection(w, "entities/rocket.entity.json", from.X, from.Y, gamemath.GetHeading(e, m))
+func launchProjectile(w world.World, from component.Position, to component.Position) {
+	// 	e := gamemath.GetVector(from.X, from.Y)
+	// 	m := gamemath.GetVector(to.X, to.Y)
+	// 	_, entity := entity.Make(w, "entities/rocket.entity.json", from.X, from.Y)
+	// 	direction := entity.GetDirection()
+	// 	direction.Angle = gamemath.GetHeading(e, m)
 }

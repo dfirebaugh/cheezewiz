@@ -1,205 +1,110 @@
 package entity
 
 import (
-	"cheezewiz/internal/archetype"
-	"cheezewiz/internal/collision"
 	"cheezewiz/internal/component"
-	"cheezewiz/internal/ecs/adapter"
-	"cheezewiz/internal/filesystem"
 	"cheezewiz/internal/input"
+	"cheezewiz/internal/tag"
 	"cheezewiz/pkg/animation"
-	"cheezewiz/pkg/ecs"
-	"math/rand"
+	"cheezewiz/pkg/gamemath"
 
-	"github.com/sirupsen/logrus"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"golang.org/x/image/colornames"
 )
 
-type Directionable interface {
+type Entity interface {
+	GetHealth() *component.Health
+	GetState() *component.State
 	GetDirection() *component.Direction
+	GetPosition() *component.Position
+	GetRigidBody() *component.RigidBody
+	Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions)
+	DebugDraw(screen *ebiten.Image)
+	IterFrame()
+	AddTag(t tag.Tag)
+	HasTag(t tag.Tag) bool
+	GetInputDevice() input.PlayerInput
 }
 
-func MakeWithDirection(w adapter.Adapter, path string, x float64, y float64, dir float64) (ecs.EntityHandle, ecs.Entity) {
-	handle, entity := MakeEntity(w, path, x, y)
-
-	e, ok := entity.(Directionable)
-	if !ok {
-		logrus.Error("not able to get a direction for entity")
-	}
-	direction := e.GetDirection()
-	if direction == nil {
-		logrus.Error("not a valid direction")
-		return ecs.NilEntityHandle, nil
-	}
-
-	direction.Angle = dir
-	return handle, e
+type entity struct {
+	*component.Animation
+	*component.State
+	*component.Position
+	*component.Health
+	*component.RigidBody
+	*component.InputDevice
+	*component.Direction
+	*component.TagSet
 }
 
-func MakeEntity(w adapter.Adapter, path string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
-	var e EntityConfig
-
-	e.Unmarshal(filesystem.Game.GetEntity(path))
-
-	return w.Add(buildEntity(e, x, y))
+func (e entity) GetRigidBody() *component.RigidBody {
+	return e.RigidBody
 }
-func MakeRandEntity(w adapter.Adapter, path []string, x float64, y float64) (ecs.EntityHandle, ecs.Entity) {
-	var e EntityConfig
+func (e entity) GetFrame() *ebiten.Image {
+	current := e.State.GetCurrent()
 
-	e.Unmarshal(filesystem.Game.GetEntity(path[rand.Intn(len(path))]))
-
-	return w.Add(buildEntity(e, x, y))
+	return e.Animation.Animation[current].GetFrame()
 }
-
-func buildEntity(e EntityConfig, x float64, y float64) (ecs.Entity, []ecs.ArchetypeTag) {
-	// check entities componentlabels and build archetype based on that?
-	switch e.Archetype {
-	case "player":
-		return buildPlayer(e, x, y)
-	case "actor":
-		return buildActor(e, x, y)
-	case "enemy":
-		return buildEnemy(e, x, y)
-	case "projectile":
-		return buildProjectile(e, x, y)
-	default:
-		logrus.Errorf("archetype is not defined: %s", e.Archetype)
-	}
-
-	return nil, nil
+func (e entity) GetPosition() *component.Position {
+	return e.Position
 }
-
-func buildPlayer(e EntityConfig, x float64, y float64) (*Player, []ecs.ArchetypeTag) {
-	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.PlayerTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
-	p := Player{
-		Position: e.buildPosition(x, y),
-		Health:   &e.Health,
-		Animation: &component.Animation{
-			Animation: e.getAnimations(),
-		},
-		InputDevice: &component.InputDevice{
-			Device: lookupInputDevice(e.InputDevice),
-		},
-		State:     e.getState(),
-		RigidBody: e.buildRigidBody(),
-	}
-	return &p, archetypes
+func (e entity) GetCurrentState() component.StateType {
+	return e.State.GetCurrent()
 }
-func buildProjectile(e EntityConfig, x float64, y float64) (*Projectile, []ecs.ArchetypeTag) {
-	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ProjectileTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
-
-	p := &Projectile{
-		Position: e.buildPosition(x, y),
-		Animation: &component.Animation{
-			Animation: e.getAnimations(),
-		},
-		State:     e.getState(),
-		RigidBody: e.buildRigidBody(),
-		Direction: &component.Direction{},
-	}
-	return p, archetypes
+func (e entity) GetCurrent() *animation.Animation {
+	return e.Animation.Animation[e.GetCurrentState()]
 }
-
-func buildEnemy(e EntityConfig, x float64, y float64) (*Enemy, []ecs.ArchetypeTag) {
-	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.EnemyTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
-
-	p := Enemy{
-		Position: e.buildPosition(x, y),
-		Health:   &e.Health,
-		Animation: &component.Animation{
-			Animation: e.getAnimations(),
-		},
-		State:     e.getState(),
-		RigidBody: e.buildRigidBody(),
-	}
-	return &p, archetypes
+func (e entity) IterFrame() {
+	e.GetCurrent().IterFrame()
 }
-
-func buildActor(e EntityConfig, x float64, y float64) (*Actor, []ecs.ArchetypeTag) {
-	archetypes := []ecs.ArchetypeTag{ecs.ArchetypeTag(archetype.ActorTag), ecs.ArchetypeTag(archetype.AnimatableTag)}
-	a := &Actor{
-		Position: e.buildPosition(x, y),
-		Health:   &e.Health,
-		Animation: &component.Animation{
-			Animation: e.getAnimations(),
-		},
-		State:     e.getState(),
-		RigidBody: e.buildRigidBody(),
-	}
-	return a, archetypes
+func (e entity) GetHealth() *component.Health {
+	return e.Health
 }
-
-func lookupInputDevice(key string) input.PlayerInput {
-	if key == "keyboard" {
-		return input.Keyboard{}
-	}
-	return input.Keyboard{}
+func (e entity) GetState() *component.State {
+	return e.State
 }
-
-func (e EntityConfig) getAnimations() map[component.StateType]*animation.Animation {
-	anim := map[component.StateType]*animation.Animation{
-		component.DebugState: animation.MakeDebugAnimation(),
-	}
-
-	for label, path := range e.Animations {
-		anim[e.stringToState(label)] = animation.MakeAnimation(path, 32, 32, &filesystem.Game)
-	}
-
-	return anim
+func (e entity) GetDirection() *component.Direction {
+	return e.Direction
 }
-
-func (e EntityConfig) stringToState(label string) component.StateType {
-	switch label {
-	case "debug":
-		return component.DebugState
-	case "idle":
-		return component.IdleState
-	case "walk":
-		return component.WalkingState
-	case "attack":
-		return component.AttackingState
-	case "hurt":
-		return component.HurtState
-	case "death":
-		return component.DeathState
-	default:
-		return component.DebugState
-	}
+func (e entity) AddTag(t tag.Tag) {
+	e.TagSet.Add(t)
 }
-
-func (e EntityConfig) getState() *component.State {
-	s := &component.State{}
-	available := map[component.StateType]component.StateType{}
-	for key, value := range e.Animations {
-		available[e.stringToState(key)] = e.stringToState(value)
-	}
-	s.SetAvailable(available)
-	s.Set(component.StateType(e.State))
-	return s
+func (e entity) HasTag(t tag.Tag) bool {
+	return e.TagSet.Contains(t)
 }
+func (e entity) Draw(screen *ebiten.Image, op *ebiten.DrawImageOptions) {
+	position := e.GetPosition()
+	offset := gamemath.MakeVector(position.X, position.Y).Offset(gamemath.MakeVector(position.CX, position.CY))
+	// worldCoord := offset.Offset()
+	// wX, wY := r.getWorldCoord(position)
 
-func (e EntityConfig) buildPosition(x float64, y float64) *component.Position {
-	position := &component.Position{
-		X:  x,
-		Y:  y,
-		CX: e.Position.CX,
-		CY: e.Position.CY,
-	}
-	if e.Position.X > 0 {
-		position.X = e.Position.X
-	}
+	op.GeoM.Translate(offset[0], offset[1])
+	screen.DrawImage(e.GetFrame(), op)
 
-	if e.Position.Y > 0 {
-		position.Y = e.Position.Y
+	if !e.HasTag(tag.Player) {
+		return
 	}
-	return position
+	e.drawHealthBar(screen)
 }
-func (e EntityConfig) buildRigidBody() *component.RigidBody {
-	rb := component.RigidBody{}
-	rb.SetBorder(e.RigidBody.R, e.RigidBody.B)
-	ch := collision.HandlerLabel(e.RigidBody.CollisionHandlerLabel)
-	if ch == "" {
-		return &rb
-	}
-	rb.SetCollisionHandler(ch)
-	return &rb
+func (e entity) drawHealthBar(screen *ebiten.Image) {
+	position := e.GetPosition()
+	health := e.GetHealth()
+	// x, y := r.getWorldCoord(position)
+	offset := gamemath.MakeVector(position.X, position.Y).Offset(gamemath.MakeVector(position.CX, position.CY))
+
+	x := offset[0]
+	y := offset[1]
+
+	var marginBottom float64 = 35
+
+	ebitenutil.DrawRect(screen, float64(x), marginBottom+float64(y), health.Max/3, 3, colornames.Grey)
+	ebitenutil.DrawRect(screen, float64(x), marginBottom+float64(y), health.Current/3, 3, colornames.Red)
+}
+func (e entity) DebugDraw(screen *ebiten.Image) {
+	p := e.GetPosition()
+	rb := e.GetRigidBody()
+	ebitenutil.DrawRect(screen, p.X, p.Y, rb.GetWidth(), rb.GetHeight(), colornames.Aliceblue)
+}
+func (e entity) GetInputDevice() input.PlayerInput {
+	return e.InputDevice.Device
 }

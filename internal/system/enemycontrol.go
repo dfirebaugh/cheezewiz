@@ -1,8 +1,11 @@
 package system
 
 import (
-	"cheezewiz/internal/archetype"
-	"cheezewiz/internal/ecs/adapter"
+	"cheezewiz/internal/component"
+	"cheezewiz/internal/entity"
+	"cheezewiz/internal/world"
+	"cheezewiz/internal/world/query"
+	"cheezewiz/internal/world/query/filter"
 	"cheezewiz/pkg/gamemath"
 	"math"
 
@@ -10,43 +13,47 @@ import (
 )
 
 type EnemyControl struct {
-	ecs adapter.Adapter
+	w world.World
+	// get references to players ahead of time
+	//  for performance reasons.  We may need to update this list if a new player joins
+	playerHandles []world.EntityHandle
 }
 
 const enemySpeed = 0.5
 
-func NewEnemyControl(adapter adapter.Adapter) *EnemyControl {
+func NewEnemyControl(w world.World) *EnemyControl {
+	playerHandles := []world.EntityHandle{}
+
+	query.Each(w, filter.GetPlayers, func(handle world.EntityHandle) {
+		playerHandles = append(playerHandles, handle)
+	})
+
 	return &EnemyControl{
-		ecs: adapter,
+		w:             w,
+		playerHandles: playerHandles,
 	}
 }
 
 func (e EnemyControl) Update() {
-	var enemies []archetype.Enemy
-	var ok bool
-	if enemies, ok = e.ecs.GetEnemies(); !ok {
-		return
-	}
-	for _, ent := range enemies {
-		e.updatePosition(ent)
-	}
+	query.Each(e.w, filter.GetEnemies, func(handle world.EntityHandle) {
+		e.updatePosition(e.w.GetEntity(handle))
+	})
 }
 
-func (e EnemyControl) updatePosition(enemy archetype.Enemy) {
+func (e EnemyControl) updatePosition(enemy entity.Entity) {
 	position := enemy.GetPosition()
-	var closestPlayer archetype.Player
-	var closestDistance float64 = 100000000
-
 	if enemy.GetHealth().Current <= 0 {
 		return
 	}
 
-	var players []archetype.Player
-	var ok bool
-	if players, ok = e.ecs.GetPlayers(); !ok {
-		return
-	}
-	for _, player := range players {
+	e.moveTowardPlayer(e.findClosestPlayer(position), enemy)
+}
+
+func (e EnemyControl) findClosestPlayer(position *component.Position) entity.Entity {
+	var closestPlayer entity.Entity
+	var closestDistance float64 = 100000000
+	for _, handle := range e.playerHandles {
+		player := e.w.GetEntity(handle)
 		playerPosition := player.GetPosition()
 		if closestPlayer != nil {
 			closestPlayer = player
@@ -59,10 +66,10 @@ func (e EnemyControl) updatePosition(enemy archetype.Enemy) {
 		}
 	}
 
-	e.moveTowardPlayer(closestPlayer, enemy)
+	return closestPlayer
 }
 
-func (ec EnemyControl) moveTowardPlayer(player archetype.Player, enemy archetype.Enemy) {
+func (ec EnemyControl) moveTowardPlayer(player entity.Entity, enemy entity.Entity) {
 	if player == nil || enemy == nil {
 		return
 	}

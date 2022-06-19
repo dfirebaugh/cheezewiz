@@ -1,15 +1,13 @@
 package system
 
 import (
-	"cheezewiz/pkg/ecs"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type RegisterPlayer struct {
 	gamepadIDsBuf []ebiten.GamepadID
-	gamepadIDs    map[ebiten.GamepadID]ecs.EntityHandle
+	// gamepadIDs    map[ebiten.GamepadID]ecs.EntityHandle
 }
 
 func NewRegisterPlayer() *RegisterPlayer {
@@ -17,9 +15,9 @@ func NewRegisterPlayer() *RegisterPlayer {
 }
 
 func (rp *RegisterPlayer) Update() {
-	if rp.gamepadIDs == nil {
-		rp.gamepadIDs = make(map[ebiten.GamepadID]ecs.EntityHandle)
-	}
+	// if rp.gamepadIDs == nil {
+	// rp.gamepadIDs = make(map[ebiten.GamepadID]ecs.EntityHandle)
+	// }
 
 	// Log the gamepad connection events.
 	rp.gamepadIDsBuf = inpututil.AppendJustConnectedGamepadIDs(rp.gamepadIDsBuf[:0])

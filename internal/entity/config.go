@@ -5,18 +5,6 @@ import (
 	"encoding/json"
 )
 
-// DynamicEntity is an entity that can be configured at runtime by parsing a json file
-//  the structue of the json file will have to marshal out correctly
-type DynamicEntity struct {
-	config      EntityConfig
-	XP          *component.XP
-	SpriteSheet *component.SpriteSheet
-	Position    *component.Position
-	RigidBody   *component.RigidBody
-	Animation   *component.Animation
-	State       *component.State
-}
-
 type EntityConfig struct {
 	Archetype   string              `json:"archetype"`
 	XP          float64             `json:"xp"`
@@ -28,6 +16,7 @@ type EntityConfig struct {
 	Animations  map[string]string   `json:"animations"`
 	State       string              `json:"state"`
 	InputDevice string              `json:"inputDevice"`
+	Tags        []string            `json:"tags"`
 }
 
 func (e *EntityConfig) Unmarshal(bytes []byte) {

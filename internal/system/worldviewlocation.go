@@ -1,41 +1,34 @@
 package system
 
-import (
-	"cheezewiz/config"
-	"cheezewiz/internal/ecs/adapter"
+// type WorldViewPortLocation struct {
+// 	ecs adapter.Adapter
+// }
 
-	"github.com/sirupsen/logrus"
-)
+// func NewWorldViewPortLocation(adapter adapter.Adapter) *WorldViewPortLocation {
+// 	return &WorldViewPortLocation{
+// 		ecs: adapter,
+// 	}
+// }
 
-type WorldViewPortLocation struct {
-	ecs adapter.Adapter
-}
+// func (w *WorldViewPortLocation) Update() {
+// 	initialPlayer, err := w.ecs.FirstPlayer()
+// 	if err != nil {
+// 		logrus.Errorf("unable to find player: %s", err)
+// 		return
+// 	}
 
-func NewWorldViewPortLocation(adapter adapter.Adapter) *WorldViewPortLocation {
-	return &WorldViewPortLocation{
-		ecs: adapter,
-	}
-}
+// 	viewPort, err := w.ecs.FirstViewPort()
+// 	if err != nil {
+// 		logrus.Errorf("viewport update: %s", err)
+// 		return
+// 	}
+// 	playerPosition := initialPlayer.GetPosition()
+// 	worldViewPortPos := viewPort.GetPosition()
 
-func (w *WorldViewPortLocation) Update() {
-	initialPlayer, err := w.ecs.FirstPlayer()
-	if err != nil {
-		logrus.Errorf("unable to find player: %s", err)
-		return
-	}
+// 	worldViewPortPos.X = getWorldViewCenterLocation(playerPosition.X, config.Get().Window.Height) + 20
+// 	worldViewPortPos.Y = 0
+// }
 
-	viewPort, err := w.ecs.FirstViewPort()
-	if err != nil {
-		logrus.Errorf("viewport update: %s", err)
-		return
-	}
-	playerPosition := initialPlayer.GetPosition()
-	worldViewPortPos := viewPort.GetPosition()
-
-	worldViewPortPos.X = getWorldViewCenterLocation(playerPosition.X, config.Get().Window.Height) + 20
-	worldViewPortPos.Y = 0
-}
-
-func getWorldViewCenterLocation(coordinate float64, windowDim int) float64 {
-	return coordinate - float64(windowDim/config.Get().ScaleFactor)/2
-}
+// func getWorldViewCenterLocation(coordinate float64, windowDim int) float64 {
+// 	return coordinate - float64(windowDim/config.Get().ScaleFactor)/2
+// }
