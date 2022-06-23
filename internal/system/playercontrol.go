@@ -2,33 +2,41 @@ package system
 
 import (
 	"cheezewiz/config"
+	"cheezewiz/internal/attacks"
 	"cheezewiz/internal/component"
+	"cheezewiz/internal/entity"
+	"cheezewiz/internal/tag"
 	"cheezewiz/internal/world"
 	"cheezewiz/internal/world/query"
 	"cheezewiz/internal/world/query/filter"
 	"cheezewiz/pkg/gamemath"
+	"cheezewiz/pkg/taskrunner"
+	"time"
 )
 
-type Controller struct {
-	w world.World
-}
+type PlayerController struct{}
 
 const playerSpeed = 1
 
-func MakePlayerControl(w world.World) Controller {
-	return Controller{
-		w: w,
-	}
+func (c PlayerController) addPlayer() {
+	entity.MakeWithTags(world.Instance, "entities/cheezewiz.entity.json",
+		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
+		float64(config.Get().Window.Height/config.Get().ScaleFactor/2), []tag.Tag{tag.Player, tag.Animatable, tag.Collidable})
+
+	taskrunner.Add(time.Millisecond*800, attacks.CheeseMissile())
 }
 
-func (c Controller) Update() {
-	query.Each(c.w, filter.GetPlayers, func(handle world.EntityHandle) {
+func (c PlayerController) Update() {
+	if query.Count(world.Instance, filter.GetPlayers) == 0 {
+		c.addPlayer()
+	}
+	query.Each(world.Instance, filter.GetPlayers, func(handle world.EntityHandle) {
 		c.controllable(handle)
 	})
 }
 
-func (c Controller) controllable(handle world.EntityHandle) {
-	p := c.w.GetEntity(handle)
+func (c PlayerController) controllable(handle world.EntityHandle) {
+	p := world.Instance.GetEntity(handle)
 
 	controller := p.GetInputDevice()
 	position := p.GetPosition()
@@ -84,8 +92,4 @@ func (c Controller) controllable(handle world.EntityHandle) {
 	// if health.HP <= 0 {
 	// 	state.Set(component.DeathState)
 	// }
-}
-
-func (c Controller) setTilePosition(position component.Position) {
-
 }

@@ -24,3 +24,6 @@ func IsAnimatable(w world.World) EntityPredicate {
 func IsEnemy(w world.World) EntityPredicate {
 	return HasTag(w, tag.Enemy)
 }
+func IsCollidable(w world.World) EntityPredicate {
+	return HasTag(w, tag.Collidable)
+}

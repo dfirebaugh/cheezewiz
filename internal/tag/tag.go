@@ -11,4 +11,5 @@ const (
 	Projectile
 	Animatable
 	ViewPort
+	Bound
 )

@@ -12,7 +12,7 @@ type Scheduler struct {
 	}
 }
 
-func NewScheduler(sceneEvents []event.SceneEvent, w world.World) *Scheduler {
+func NewScheduler(sceneEvents []event.SceneEvent) *Scheduler {
 	scheduler := &Scheduler{
 		events: map[uint32][]func(){},
 		countdown: struct {
@@ -24,11 +24,10 @@ func NewScheduler(sceneEvents []event.SceneEvent, w world.World) *Scheduler {
 
 	for _, se := range sceneEvents {
 		scheduler.events[se.Time] = append(scheduler.events[se.Time], func() func() {
-			world := w
 			args := se.EventArgs
 			name := se.EventName
 			return func() {
-				event.JobTypes[name].Callback(world, args)
+				event.JobTypes[name].Callback(world.Instance, args)
 			}
 		}())
 	}

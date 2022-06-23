@@ -2,32 +2,39 @@ package main
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/scene"
+	"cheezewiz/internal/entity"
 	"cheezewiz/internal/scenebuilder"
 	"cheezewiz/internal/system"
+	"cheezewiz/internal/tag"
+	"cheezewiz/internal/world"
 	"cheezewiz/pkg/ebitenwrapper"
 	"image/color"
 
 	"github.com/sirupsen/logrus"
 )
 
-func initScene() {}
+func initScene() {
+	entity.MakeWithTags(world.Instance, "entities/cheezewiz.entity.json",
+		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
+		float64(config.Get().Window.Height/config.Get().ScaleFactor/2), []tag.Tag{tag.Player, tag.Animatable, tag.Collidable})
+}
 
 func main() {
 	logrus.SetLevel(logrus.ErrorLevel)
+
 	c := config.Get()
 
-	renderer := system.NewRenderer()
 	systems := []scenebuilder.System{
+		mover{},
+		collision{},
+		clickSpawner{},
 		system.PlayerController{},
-		&system.EnemyController{},
-		system.NewScheduler(scene.LoadStressTest().Events),
-		&renderer,
 	}
 
 	drawables := []scenebuilder.Drawable{
 		system.DebugRenderer{},
-		renderer,
+		hud{},
+		renderer{},
 	}
 
 	game := &ebitenwrapper.Game{

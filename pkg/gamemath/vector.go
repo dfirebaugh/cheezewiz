@@ -1,6 +1,11 @@
 package gamemath
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+
+	"github.com/atedja/go-vector"
+)
 
 // Vector a float64 slice with 2 elements []float64{x, y}
 type Vector []float64
@@ -28,4 +33,22 @@ func (v Vector) ToLocation() (int, int) {
 
 func (v Vector) Offset(o Vector) Vector {
 	return Vector([]float64{v[0] - o[0], v[1] - o[1]})
+}
+
+func (v Vector) GetDistance(b Vector) float64 {
+	return math.Sqrt(math.Pow(v[0]-b[0], 2) + math.Pow(v[1]-b[1], 2))
+}
+
+// returns radian toward vector
+func (v Vector) GetHeading(target Vector) float64 {
+	r := vector.Unit(vector.Subtract(vector.Vector(v), vector.Vector(target)))
+	return math.Atan2(r[1], r[0])
+}
+
+func (v Vector) Scale(value float64) {
+	vector.Vector(v).Scale(value)
+}
+
+func (v Vector) Add(o Vector) Vector {
+	return Vector(vector.Add(vector.Vector(v), vector.Vector(o)))
 }

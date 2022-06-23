@@ -6,6 +6,7 @@ import (
 	"github.com/atedja/go-vector"
 )
 
+// returns radian toward vector
 func GetHeading(a, b vector.Vector) float64 {
 	r := vector.Unit(vector.Subtract(a, b))
 	return math.Atan2(r[1], r[0])

@@ -15,13 +15,13 @@ func Make(w world.World, path string, x float64, y float64) (world.EntityHandle,
 
 	e.Unmarshal(filesystem.Game.GetEntity(path))
 
-	return w.Add(buildEntity(e, x, y))
+	return w.Add(BuildEntity(e, x, y))
 }
 func MakeWithTags(w world.World, path string, x float64, y float64, tags []tag.Tag) (world.EntityHandle, Entity) {
 	var e EntityConfig
 
 	e.Unmarshal(filesystem.Game.GetEntity(path))
-	entity := buildEntity(e, x, y)
+	entity := BuildEntity(e, x, y)
 	for _, t := range tags {
 		entity.AddTag(t)
 	}
@@ -33,18 +33,18 @@ func MakeRand(w world.World, path []string, x float64, y float64) (world.EntityH
 	var e EntityConfig
 	e.Unmarshal(filesystem.Game.GetEntity(path[rand.Intn(len(path))]))
 
-	return w.Add(buildEntity(e, x, y))
+	return w.Add(BuildEntity(e, x, y))
 }
 
-func buildEntity(e EntityConfig, x float64, y float64) Entity {
+func BuildEntity(e EntityConfig, x float64, y float64) Entity {
 	return entity{
 		Position:    e.buildPosition(x, y),
 		Health:      e.buildHealth(),
+		TagSet:      e.buildTagSet(),
 		Animation:   e.buildAnimations(),
 		InputDevice: e.buildInputDevice(),
 		State:       e.buildState(),
 		RigidBody:   e.buildRigidBody(),
-		TagSet:      e.buildTagSet(),
 		Direction:   &component.Direction{},
 	}
 }
@@ -69,9 +69,9 @@ func (e EntityConfig) buildHealth() *component.Health {
 	return &e.Health
 }
 func (e EntityConfig) buildAnimations() *component.Animation {
-	if e.Animations == nil {
-		return nil
-	}
+	// if e.Animations == nil {
+	// 	return nil
+	// }
 	return &component.Animation{
 		Animation: e.getAnimations(),
 	}
@@ -161,6 +161,8 @@ func tagLookup(t string) tag.Tag {
 		return tag.Animatable
 	case "viewport":
 		return tag.ViewPort
+	case "bound":
+		return tag.Bound
 	default:
 		return tag.Nil
 	}

@@ -15,21 +15,20 @@ type Directionable interface {
 	GetDirection() *component.Direction
 }
 
-var CheeseMissile = func(wl world.World) func() {
-	w := wl
+var CheeseMissile = func() func() {
 	return func() {
-		w.EachEntity(func(handle world.EntityHandle) {
-			if !w.GetEntity(handle).HasTag(tag.Player) {
+		world.Instance.EachEntity(func(handle world.EntityHandle) {
+			if !world.Instance.GetEntity(handle).HasTag(tag.Player) {
 				return
 			}
-			player := w.GetEntity(handle)
+			player := world.Instance.GetEntity(handle)
 
-			findHeading(w, player, handle)
+			findHeading(player, handle)
 		})
 	}
 }
 
-func findHeading(w world.World, player entity.Entity, playerHandle world.EntityHandle) {
+func findHeading(player entity.Entity, playerHandle world.EntityHandle) {
 	// position := player.GetPosition()
 	// state := player.GetState()
 	// if state.GetCurrent() == component.DeathState {
@@ -38,11 +37,11 @@ func findHeading(w world.World, player entity.Entity, playerHandle world.EntityH
 
 	// enemies := map[world.EntityHandle]vector.Vector{}
 
-	// w.EachEntity(func(handle world.EntityHandle) {
+	// world.Instance.EachEntity(func(handle world.EntityHandle) {
 	// 	if handle == playerHandle {
 	// 		return
 	// 	}
-	// 	p := w.GetEntity(handle).GetPosition()
+	// 	p := world.Instance.GetEntity(handle).GetPosition()
 	// 	enemies[handle] = vector.NewWithValues([]float64{p.X, p.Y})
 	// })
 
@@ -54,15 +53,15 @@ func findHeading(w world.World, player entity.Entity, playerHandle world.EntityH
 	// if closestHandle == playerHandle {
 	// 	return
 	// }
-	// closestEnemy := w.GetEntity(closestHandle)
+	// closestEnemy := world.Instance.GetEntity(closestHandle)
 	// launchProjectile(w, *position, *closestEnemy.GetPosition())
 	// state.Set(component.AttackingState)
 }
 
-func launchProjectile(w world.World, from component.Position, to component.Position) {
+func launchProjectile(from component.Position, to component.Position) {
 	// 	e := gamemath.GetVector(from.X, from.Y)
 	// 	m := gamemath.GetVector(to.X, to.Y)
-	// 	_, entity := entity.Make(w, "entities/rocket.entity.json", from.X, from.Y)
+	// 	_, entity := entity.Make(world.Instance, "entities/rocket.entity.json", from.X, from.Y)
 	// 	direction := entity.GetDirection()
 	// 	direction.Angle = gamemath.GetHeading(e, m)
 }

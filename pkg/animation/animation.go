@@ -2,6 +2,8 @@ package animation
 
 import (
 	"image"
+	"image/color"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/sirupsen/logrus"
@@ -41,16 +43,25 @@ func MakeAnimation(path string, height int, width int, fs fs) *Animation {
 	return a
 }
 
-var debugImg = ebiten.NewImage(10, 10)
+// var debugImg =
+var possibleColors = []color.Color{
+	colornames.Violet,
+	colornames.Tomato,
+	colornames.Orange,
+	colornames.Red,
+	colornames.Purple,
+	colornames.Green,
+	colornames.Yellow,
+}
 
 func MakeDebugAnimation() *Animation {
 	a := &Animation{
-		Image:       debugImg,
+		Image:       ebiten.NewImage(10, 10),
 		FrameWidth:  10,
 		FrameHeight: 10,
 	}
 
-	a.Image.Fill(colornames.Yellowgreen)
+	a.Image.Fill(possibleColors[rand.Intn(len(possibleColors))])
 	return a
 }
 

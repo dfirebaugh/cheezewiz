@@ -30,3 +30,6 @@ func GetAnimatables(w world.World, h []world.EntityHandle) []world.EntityHandle 
 func GetEnemies(w world.World, h []world.EntityHandle) []world.EntityHandle {
 	return filter(h, predicate.IsEnemy(w))
 }
+func GetCollidables(w world.World, h []world.EntityHandle) []world.EntityHandle {
+	return filter(h, predicate.IsCollidable(w))
+}

@@ -3,6 +3,9 @@ package ebitenwrapper
 import (
 	"image/color"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	ebiten "github.com/hajimehoshi/ebiten/v2"
 )
@@ -38,6 +41,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (g *Game) Run() {
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc,
+		syscall.SIGINT,
+		syscall.SIGTERM)
+	go func() {
+		<-sigc
+		g.Exit()
+	}()
+
 	ebiten.SetWindowSize(g.Width, g.Height)
 	ebiten.SetWindowTitle(g.WindowTitle)
 	ebiten.SetWindowResizable(true)

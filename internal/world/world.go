@@ -7,6 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
+// Instance makes the World a singleton
+var Instance = New()
+
 type World interface {
 	Add(adapter.Entity) (EntityHandle, adapter.Entity)
 	Remove(EntityHandle)

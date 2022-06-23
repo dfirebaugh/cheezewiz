@@ -17,3 +17,13 @@ func Each(w world.World, f filter, iter entityiterator) {
 		iter(handle)
 	}
 }
+
+func Count(w world.World, f filter) int {
+	handles, _ := cache.Get(w)
+	return len(f(w, handles))
+}
+
+func Get(w world.World, f filter) []world.EntityHandle {
+	handles, _ := cache.Get(w)
+	return f(w, handles)
+}

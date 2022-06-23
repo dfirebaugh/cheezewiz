@@ -1,56 +1,66 @@
 package collision
 
-// type HandlerLabel string
+import (
+	"cheezewiz/internal/tag"
+	"fmt"
 
-// type entity interface {
-// 	HasTag(struct{}) bool
-// }
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+)
 
-// // type World interface {
-// // 	Remove(handle ecs.EntityHandle)
-// // 	GetEntity(handle ecs.EntityHandle)
-// // }
+type World interface {
+	Remove(handle entityHandle)
+	GetEntity(handle entityHandle) entity
+}
+type entity interface {
+	HasTag(tag.Tag) bool
+}
 
-// const (
-// 	PlayerCollisionLabel    HandlerLabel = "player"
-// 	EnemyCollisionLabel     HandlerLabel = "enemy"
-// 	BossCollisionLabel      HandlerLabel = "boss"
-// 	RocketCollisionLabel    HandlerLabel = "rocket"
-// 	JellyBeanCollisionLabel HandlerLabel = "jellybean"
-// )
+type CollisionHandler func(w World, handle entityHandle)
+type HandlerLabel string
 
-// var c = map[HandlerLabel]func(w ecs.World, h ecs.EntityHandle){
-// 	EnemyCollisionLabel: func(w ecs.World, h ecs.EntityHandle) {
-// 		e := w.GetEntity(h)
-// 		if e.HasTag(tag.Player) {
-// 			logrus.Info("enemy collided with player")
-// 			attackgroup.AddPlayerDamage(e, 10, nil)
-// 		}
-// 		if e.HasTag(tag.Projectile) {
-// 			logrus.Info("enemy collided with projectile")
-// 			// remove projectile
-// 			w.Remove(e)
-// 		}
-// 	},
-// 	RocketCollisionLabel: func(w ecs.World, h ecs.EntityHandle) {
-// 		// if ecs.Is[Enemy](e) {
-// 		// 	logrus.Info("rocket collided with enemy")
-// 		// 	attackgroup.AddEnemyDamage(e, 10, nil)
-// 		// }
-// 	},
-// 	BossCollisionLabel: func(w ecs.World, h ecs.EntityHandle) {
-// 	},
-// 	PlayerCollisionLabel: func(w ecs.World, h ecs.EntityHandle) {
-// 		// if ecs.Is[Enemy](e) {
-// 		// 	logrus.Info("player collided with enemy")
-// 		// }
-// 	},
-// }
+type entityHandle uuid.UUID
 
-// func GetCollisionHandler(label HandlerLabel) (func(w ecs.World, h ecs.EntityHandle), error) {
-// 	if _, ok := c[label]; !ok {
-// 		return nil, fmt.Errorf("could not find collision handler: %s", label)
-// 	}
+const (
+	PlayerCollisionLabel    HandlerLabel = "player"
+	EnemyCollisionLabel     HandlerLabel = "enemy"
+	BossCollisionLabel      HandlerLabel = "boss"
+	RocketCollisionLabel    HandlerLabel = "rocket"
+	JellyBeanCollisionLabel HandlerLabel = "jellybean"
+)
 
-// 	return c[label], nil
-// }
+var c = map[HandlerLabel]CollisionHandler{
+	EnemyCollisionLabel: func(w World, h entityHandle) {
+		e := w.GetEntity(h)
+		if e.HasTag(tag.Player) {
+			logrus.Info("enemy collided with player")
+			// attackgroup.AddPlayerDamage(e, 10, nil)
+		}
+		if e.HasTag(tag.Projectile) {
+			logrus.Info("enemy collided with projectile")
+			// remove projectile
+			w.Remove(h)
+		}
+	},
+	RocketCollisionLabel: func(w World, h entityHandle) {
+		// if ecs.Is[Enemy](e) {
+		// 	logrus.Info("rocket collided with enemy")
+		// 	attackgroup.AddEnemyDamage(e, 10, nil)
+		// }
+	},
+	BossCollisionLabel: func(w World, h entityHandle) {
+	},
+	PlayerCollisionLabel: func(w World, h entityHandle) {
+		// if ecs.Is[Enemy](e) {
+		// 	logrus.Info("player collided with enemy")
+		// }
+	},
+}
+
+func GetCollisionHandler(label HandlerLabel) (func(w World, h entityHandle), error) {
+	if _, ok := c[label]; !ok {
+		return nil, fmt.Errorf("could not find collision handler: %s", label)
+	}
+
+	return c[label], nil
+}
