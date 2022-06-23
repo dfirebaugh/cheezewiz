@@ -2,11 +2,8 @@ package main
 
 import (
 	"cheezewiz/config"
-	"cheezewiz/internal/entity"
 	"cheezewiz/internal/scenebuilder"
 	"cheezewiz/internal/system"
-	"cheezewiz/internal/tag"
-	"cheezewiz/internal/world"
 	"cheezewiz/pkg/ebitenwrapper"
 	"image/color"
 
@@ -14,9 +11,7 @@ import (
 )
 
 func initScene() {
-	entity.MakeWithTags(world.Instance, "entities/cheezewiz.entity.json",
-		float64(config.Get().Window.Width/config.Get().ScaleFactor/2),
-		float64(config.Get().Window.Height/config.Get().ScaleFactor/2), []tag.Tag{tag.Player, tag.Animatable, tag.Collidable})
+
 }
 
 func main() {
@@ -28,7 +23,6 @@ func main() {
 		mover{},
 		collision{},
 		clickSpawner{},
-		system.PlayerController{},
 	}
 
 	drawables := []scenebuilder.Drawable{
