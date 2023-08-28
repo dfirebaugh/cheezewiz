@@ -1,0 +1,22 @@
+{
+    "jellyBeanTag": "",
+    "xp":  1,
+    "animations": {
+        "idle": "jellybeanrainbow.png",
+        "walk": "jellybeanrainbow.png",
+        "hurt": "jellybeanrainbow.png",
+        "attack": "jellybeanrainbow.png",
+        "death": "jellybeanrainbow.png"
+    },
+    "actorState": "idle",
+    "position": {
+        "cx": 16,
+        "cy": 16
+    },
+    "rigidBody": {
+        "l": 16,
+        "r": 16,
+        "t": 16,
+        "b": 16
+    }
+}

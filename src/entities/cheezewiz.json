@@ -1,0 +1,69 @@
+{
+    "tag": "cheezewiz",
+    "position": {
+        "X": 200,
+        "Y": 200
+    },
+    "direction": {
+        "angle": 0
+    },
+    "rigidBody": {
+        "r": 32,
+        "l": 32,
+        "t": 32,
+        "b": 32,
+        "collisionLabel": "player"
+    },
+    "health": {
+        "hp": 100,
+        "max": 100,
+        "regenRate": 10,
+        "invulnerabilityDuration": 1000
+    },
+    "size": {
+        "height": 32,
+        "width": 32
+    },
+    "light": {
+        "intensity": 2,
+        "radius": 100,
+        "color": "0x808080"
+    },
+    "animations": [
+        {
+            "name": "idle",
+            "path": "./assets/cheezewiz.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "walk",
+            "path": "./assets/cheezewiz.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "hurt",
+            "path": "./assets/cheezewiz-damaged.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "attack",
+            "path": "./assets/cheezewiz-damaged.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "death",
+            "path": "./assets/cheezewiz-death.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "name": "cheezewiz",
+    "version": "0.0.1",
+    "description": "",
+    "main": "src/game.ts",
+    "scripts": {
+        "dev": "rollup --config rollup.config.dev.mjs",
+        "build": "rollup --config rollup.config.dist.mjs",
+        "watch": "rollup --watch --config rollup.config.dev.mjs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dfirebaugh/cheezewiz.git"
+    },
+    "author": "Dustin Firebaugh<dafirebaugh@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dfirebaugh/cheezewiz/issues"
+    },
+    "homepage": "https://github.com/dfirebaugh/cheezewiz#readme",
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^24.1.0",
+        "@rollup/plugin-json": "^6.0.0",
+        "@rollup/plugin-node-resolve": "^15.2.1",
+        "@rollup/plugin-replace": "^5.0.2",
+        "@rollup/plugin-terser": "^0.4.3",
+        "@rollup/plugin-typescript": "^11.1.2",
+        "phaser": "^3.60.0",
+        "rollup": "^3.28.1",
+        "rollup-plugin-serve": "^2.0.2",
+        "typescript": "^5.2.2"
+    },
+    "dependencies": {
+        "rollup-plugin-copy": "^3.4.0",
+        "tslib": "^2.6.2"
+    }
+}

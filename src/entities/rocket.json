@@ -1,0 +1,8 @@
+{
+    "animations": [
+        {
+            "name": "walk",
+            "path": "./assets/nachomissile.png"
+        }
+    ]
+}

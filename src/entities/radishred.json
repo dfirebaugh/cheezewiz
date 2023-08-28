@@ -1,0 +1,64 @@
+{
+    "tag": "radishred",
+    "animations": [
+        {
+            "name": "idle",
+            "path": "./assets/radishred.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "walk",
+            "path": "./assets/radishred.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "hurt",
+            "path": "./assets/radishred.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "attack",
+            "path": "./assets/radishred.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "death",
+            "path": "./assets/radishred.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        }
+    ],
+    "position": {
+        "X": 400,
+        "Y": 200
+    },
+    "size": {
+        "height": 32,
+        "width": 32
+    },
+    "speed": 0.3,
+    "velocity": {
+        "VX": 1,
+        "VY": 1
+    },
+    "rigidBody": {
+        "r": 32,
+        "l": 32,
+        "t": 32,
+        "b": 32,
+        "collisionLabel": "enemy"
+    },
+    "health": {
+        "hp": 100,
+        "max": 100
+    }
+}

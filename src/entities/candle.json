@@ -1,0 +1,11 @@
+{
+    "position": {
+        "X": 400,
+        "Y": 300
+    },
+    "light": {
+        "intensity": 2,
+        "radius": 280,
+        "color": "0x808080"
+    }
+}
