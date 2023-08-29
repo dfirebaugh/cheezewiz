@@ -9,6 +9,7 @@ import {
     SpeedComponent,
     IDComponent,
     HealthBar,
+    DefenseComponent,
 } from "../component";
 import LightComponent from "../component/light";
 import { StateMapping } from "../component/state";
@@ -26,6 +27,7 @@ export class Entity {
     speed?: SpeedComponent;
     healthBar?: HealthBar;
     light?: LightComponent;
+    defense?: DefenseComponent;
 
     constructor(tag: string) {
         this.tag = tag;
@@ -82,6 +84,10 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
                 repeat: -1,
             })
         });
+    }
+
+    if (fileData.defense) {
+        entity.defense = new DefenseComponent(fileData.defense);
     }
 
     return entity

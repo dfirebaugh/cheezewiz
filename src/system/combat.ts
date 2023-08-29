@@ -1,9 +1,17 @@
 import { State } from "../component/state";
 import { Entity } from "../entities";
 
+function mitigateDamage(entity: Entity, damage: number): number {
+    if (!entity.defense) {
+        return damage;
+    }
+
+    return damage - (damage * entity.defense.mitigation)
+}
+
 function takeDamage(scene: Phaser.Scene, entity: Entity) {
     const currentTime = scene.time.now;
-    const damage = 15; // This can be adjusted based on attacker's power and defender's defense
+    const damage = mitigateDamage(entity, 15); // This can be adjusted based on attacker's power and defender's defense
     entity.health.current -= damage;
     entity.state.setState(State.Hurt);
 

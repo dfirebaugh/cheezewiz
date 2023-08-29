@@ -8,6 +8,7 @@ import { HealthBar } from "./health";
 import SizeComponent from "./size";
 import StateComponent from "./state";
 import SpeedComponent from "./speed";
+import DefenseComponent from "./defense";
 
 export {
     IDComponent,
@@ -20,4 +21,5 @@ export {
     StateComponent,
     SpeedComponent,
     HealthBar,
+    DefenseComponent,
 }
