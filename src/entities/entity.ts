@@ -69,11 +69,12 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
 
         entity.sprite = new SpriteComponent(scene, fileData.tag)
 
-        fileData.Animations?.forEach(e => {
+        fileData.animations?.forEach(e => {
             if (entity.sprite.sprite.anims.exists(e.name)) return;
+
             entity.sprite.addAnimation({
                 key: e.name,
-                frames: entity.sprite.sprite.anims.generateFrameNumbers(e.name, {
+                frames: entity.sprite.sprite.anims.generateFrameNumbers(e.textureName, {
                     start: 0,
                     end: e.frameCount - 1,
                 }),

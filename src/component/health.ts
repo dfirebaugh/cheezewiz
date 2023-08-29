@@ -93,12 +93,12 @@ export default class HealthComponent {
             stroke: '#000',
             strokeThickness: 2
         });
-    
+
         const randomAngle = Phaser.Math.Between(0, 360) * (Math.PI / 180);
-    
+
         const offsetX = 30 * Math.cos(randomAngle);
         const offsetY = 30 * Math.sin(randomAngle);
-    
+
         scene.tweens.add({
             targets: healthGainText,
             x: healthGainText.x + offsetX,
@@ -110,5 +110,4 @@ export default class HealthComponent {
             }
         });
     }
-    
 }

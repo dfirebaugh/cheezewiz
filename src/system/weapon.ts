@@ -1,9 +1,5 @@
 import { Entity } from "../entities/entity";
 
-export default class WeaponSystem {
-    // weapons: Array<Weapon>
+export default function WeaponSystem(entity: Entity) {
 
-    static update(entity: Entity) {
-
-    }
 }

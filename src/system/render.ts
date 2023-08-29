@@ -1,28 +1,25 @@
-import * as Phaser from 'phaser';
 import { Entity } from "../entities/entity";
 import { HealthBar } from '../component';
 
-export default class RenderSystem {
-    static renderHealthBar(entity: Entity) {
-        if (!entity.health) return;
-        if (!entity.health?.current && !entity.health?.max) return;
-        if (!entity.health.graphics) return;
-        if (!entity.health || !entity.position) return;
+function renderHealthBar(entity: Entity) {
+    if (!entity.health) return;
+    if (!entity.health?.current && !entity.health?.max) return;
+    if (!entity.health.graphics) return;
+    if (!entity.health || !entity.position) return;
 
-        if (!entity.healthBar) {
-            entity.healthBar = new HealthBar()
-        }
-
-        entity.healthBar.draw(entity)
+    if (!entity.healthBar) {
+        entity.healthBar = new HealthBar()
     }
 
-    static update(entity: Entity) {
-        RenderSystem.renderHealthBar(entity);
-        entity.sprite?.sprite?.setPosition(entity.position.X, entity.position.Y);
-        if (!entity.state?.toString()) return;
-        if (!entity.sprite?.sprite.anims.exists(entity.state?.toString())) return;
+    entity.healthBar.draw(entity)
+}
 
+export default function RenderSystem(entity: Entity) {
+    renderHealthBar(entity);
+    entity.sprite?.sprite?.setPosition(entity.position.X, entity.position.Y);
 
-        entity.sprite?.sprite?.play(entity.state?.toString());
+    console.log(entity.state.toString())
+    if (entity.sprite.sprite.anims.currentAnim?.key !== entity.state?.toString()) {
+        entity.sprite.sprite.play(entity.state?.toString());
     }
 }

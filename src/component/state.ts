@@ -2,15 +2,17 @@
 export enum State {
     Dead = 0,
     Idle,
+    Hurt,
+    Attacking,
     Walking,
-    Attacking
 }
 
 export const StateMapping = {
     "dead": 0,
     "idle": 1,
-    "walking": 2,
+    "hurt": 2,
     "attacking": 3,
+    "walk": 4,
 }
 
 export default class StateComponent {
@@ -22,12 +24,18 @@ export default class StateComponent {
                 return "dead"
             case State.Idle:
                 return "idle"
+            case State.Hurt:
+                return "hurt"
             case State.Walking:
-                return "walking"
+                return "walk"
             case State.Attacking:
-                return "attacking"
+                return "attack"
             default:
                 return "idle"
         }
+    }
+
+    setState(state: State) {
+        this.current = state;
     }
 }

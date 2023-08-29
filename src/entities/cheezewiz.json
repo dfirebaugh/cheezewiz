@@ -32,38 +32,38 @@
     "animations": [
         {
             "name": "idle",
-            "path": "./assets/cheezewiz.png",
+            "textureName": "cheezewiz",
             "frameWidth": 32,
             "frameHeight": 32,
-            "frameCount": 3
+            "frameCount": 1
         },
         {
             "name": "walk",
-            "path": "./assets/cheezewiz.png",
+            "textureName": "cheezewiz",
             "frameWidth": 32,
             "frameHeight": 32,
             "frameCount": 3
         },
         {
             "name": "hurt",
-            "path": "./assets/cheezewiz-damaged.png",
+            "textureName": "cheezewiz-damaged",
             "frameWidth": 32,
             "frameHeight": 32,
             "frameCount": 3
         },
         {
             "name": "attack",
-            "path": "./assets/cheezewiz-damaged.png",
+            "textureName": "cheezewiz-damaged",
             "frameWidth": 32,
             "frameHeight": 32,
             "frameCount": 3
         },
         {
-            "name": "death",
-            "path": "./assets/cheezewiz-death.png",
+            "name": "dead",
+            "textureName": "cheezewiz-death",
             "frameWidth": 32,
             "frameHeight": 32,
-            "frameCount": 3
+            "frameCount": 1
         }
     ]
 }

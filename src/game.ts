@@ -18,6 +18,8 @@ import { LoadAssets } from './assetLoader';
 
 const ScreenWidth = 640;
 const ScreenHeight = 512;
+const SceneWidth = 5088
+const SceneHeight = 512
 
 export default class Demo extends Phaser.Scene {
     constructor() {
@@ -26,6 +28,7 @@ export default class Demo extends Phaser.Scene {
 
     wiz: Entity;
     enemies: Array<Entity>;
+
 
     preload() {
         LoadAssets(this)
@@ -40,7 +43,7 @@ export default class Demo extends Phaser.Scene {
 
         this.cameras.main.startFollow(this.wiz.sprite.sprite);
         this.cameras.main.setLerp(0.1, 0.1);
-        this.cameras.main.setBounds(0, 0, 5088, ScreenHeight);
+        this.cameras.main.setBounds(0, 0, SceneWidth, ScreenHeight);
 
         this.enemies = [];
 
@@ -61,15 +64,15 @@ export default class Demo extends Phaser.Scene {
     }
 
     update() {
+        LightSystem(this.wiz)
         this.enemies.forEach(e => {
-            EnemyMovementSystem.update(e, this.wiz)
-            RenderSystem.update(e)
+            EnemyMovementSystem(e, this.wiz)
+            RenderSystem(e)
         })
 
-        CollisionSystem.update(this, this.wiz, this.enemies)
-        InputSystem.update(this, this.wiz)
-        RenderSystem.update(this.wiz)
-        LightSystem.update(this.wiz)
+        CollisionSystem(this, this.wiz, this.enemies)
+        InputSystem(this, this.wiz)
+        RenderSystem(this.wiz)
     }
 }
 
