@@ -37,6 +37,11 @@ export default class Demo extends Phaser.Scene {
         map.createLayer('Tile Layer 1', tileset, 0, 0).setPipeline('Light2D');
 
         this.wiz = EntityFactory(this, WizData)
+
+        this.cameras.main.startFollow(this.wiz.sprite.sprite);
+        this.cameras.main.setLerp(0.1, 0.1);
+        this.cameras.main.setBounds(0, 0, 5088, ScreenHeight);
+
         this.enemies = [];
 
         for (let i = 0; i < 10; i++) {
