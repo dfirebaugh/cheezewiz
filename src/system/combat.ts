@@ -1,5 +1,6 @@
 import { State } from "../component/state";
 import { Entity } from "../entities";
+import { displayDamage, displayHealthGain } from "./combatText";
 
 function mitigateDamage(entity: Entity, damage: number): number {
     if (!entity.defense) {
@@ -9,21 +10,53 @@ function mitigateDamage(entity: Entity, damage: number): number {
     return damage - (damage * entity.defense.mitigation)
 }
 
+const baseMeleeAttack = 10;
+
 function takeDamage(scene: Phaser.Scene, entity: Entity) {
-    const currentTime = scene.time.now;
-    const damage = mitigateDamage(entity, 15); // This can be adjusted based on attacker's power and defender's defense
+    if (entity.isDestroyed) return;
+
+    const attackPower = entity.weapon?.power || baseMeleeAttack;
+    const damage = mitigateDamage(entity, attackPower);
     entity.health.current -= damage;
+
     entity.state.setState(State.Hurt);
 
-    // Set the defender to be invulnerable and record the hit time
-    entity.health.invulnerable = true;
-    entity.health.lastHitTime = currentTime;
+    const currentTime = scene.time.now;
 
-    entity.health.displayDamage(scene, entity, damage);
+    // Check if the entity is still within its invulnerability duration
+    if (currentTime - entity.health.lastHitTime < entity.health.invulnerabilityDuration) {
+        entity.health.invulnerable = true;
+    } else {
+        entity.health.invulnerable = false;
+        entity.health.lastHitTime = currentTime;
+    }
+
+    displayDamage(scene, entity, damage);
 
     if (entity.health?.current <= 0) {
+        entity.health.current = 0;
         entity.state.setState(State.Dead);
+        if (!!entity.destroyable) {
+            entity.destroy();
+        }
     }
+}
+
+export function HealthRegen(scene: Phaser.Scene, entity: Entity) {
+    if (!entity.health.regenRate) return;
+
+    const startTick = () => {
+        const interval = setInterval(() => {
+            entity.health.current += entity.health.regenRate;
+
+            if (entity.health.current > entity.health.max) entity.health.current = entity.health.max;
+            displayHealthGain(scene, entity, entity.health.regenRate);
+        }, 2000); // 2000 milliseconds = 2 seconds
+
+        return interval;
+    }
+
+    startTick();
 }
 
 export default function CombatSystem(scene: Phaser.Scene, attacker: Entity, defender: Entity) {
@@ -34,13 +67,9 @@ export default function CombatSystem(scene: Phaser.Scene, attacker: Entity, defe
         defender.health.invulnerable = false;
     }
 
-    if (attacker.state.current == State.Dead || defender.state.current == State.Dead) return;
 
     // If the defender is invulnerable, exit early without applying damage
-    if (defender.health.invulnerable) return;
-
-    // take into account attacker's ability power or something
-    // consider the defenders defense score?
-    takeDamage(scene, defender)
-    takeDamage(scene, attacker)
+    if (!defender.health.invulnerable) {
+        takeDamage(scene, defender);
+    }
 }

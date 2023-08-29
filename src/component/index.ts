@@ -9,6 +9,8 @@ import SizeComponent from "./size";
 import StateComponent from "./state";
 import SpeedComponent from "./speed";
 import DefenseComponent from "./defense";
+import { Condition } from "./condition";
+import WeaponComponent from "./weapon";
 
 export {
     IDComponent,
@@ -22,4 +24,6 @@ export {
     SpeedComponent,
     HealthBar,
     DefenseComponent,
+    Condition,
+    WeaponComponent,
 }

@@ -1,3 +1,5 @@
+import * as Phaser from "phaser";
+
 import { State } from "../component/state";
 import { Entity } from "../entities/entity";
 import CombatSystem from "./combat";
@@ -12,8 +14,12 @@ function checkCollision(entityA: Entity, entityB: Entity): boolean {
 }
 
 export default function CollisionSystem(scene: Phaser.Scene, entity: Entity, collidables: Array<Entity>) {
+    if (entity?.isDestroyed) return;
+
     for (let collidable of collidables) {
+        if (collidable.isDestroyed) continue;
         if (collidable.state.current == State.Dead) continue;
+
 
         if (entity !== collidable && checkCollision(entity, collidable)) {
             CombatSystem(scene, entity, collidable)

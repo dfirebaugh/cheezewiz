@@ -5,6 +5,7 @@ import {
     EntityFactory,
     WizData,
     RadishRedData,
+    NachoMissileData,
 } from './entities/'
 
 import {
@@ -12,9 +13,15 @@ import {
     EnemyMovementSystem,
     InputSystem,
     LightSystem,
+    MissileTrackingSystem,
     RenderSystem,
 } from './system/';
 import { LoadAssets } from './assetLoader';
+
+import MissileSpawner from './system/missileSpawner';
+import { WeaponType } from './component/weapon';
+import { HealthRegen } from './system/combat';
+import EnemySpawner from './system/enemySpawner';
 
 const ScreenWidth = 640;
 const ScreenHeight = 512;
@@ -28,7 +35,7 @@ export default class Demo extends Phaser.Scene {
 
     wiz: Entity;
     enemies: Array<Entity>;
-
+    missiles: Array<Entity>;
 
     preload() {
         LoadAssets(this)
@@ -40,27 +47,17 @@ export default class Demo extends Phaser.Scene {
         map.createLayer('Tile Layer 1', tileset, 0, 0).setPipeline('Light2D');
 
         this.wiz = EntityFactory(this, WizData)
+        HealthRegen(this, this.wiz)
+
+        this.missiles = []
+        MissileSpawner(this, this.wiz, 'nachomissile', 20, 20, WeaponType.EXPLOSIVE)
 
         this.cameras.main.startFollow(this.wiz.sprite.sprite);
         this.cameras.main.setLerp(0.1, 0.1);
         this.cameras.main.setBounds(0, 0, SceneWidth, ScreenHeight);
 
         this.enemies = [];
-
-        for (let i = 0; i < 10; i++) {
-            this.enemies.push(EntityFactory(this, RadishRedData))
-        }
-
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        this.enemies.forEach(e => {
-            e.position.X = getRandomInt(0, 800)
-            e.position.Y = getRandomInt(0, 600)
-        })
+        EnemySpawner(this, this.wiz, .2)
     }
 
     update() {
@@ -73,6 +70,15 @@ export default class Demo extends Phaser.Scene {
         CollisionSystem(this, this.wiz, this.enemies)
         InputSystem(this, this.wiz)
         RenderSystem(this.wiz)
+
+        this.missiles.forEach(missile => {
+            if (missile?.isDestroyed) return;
+
+            CollisionSystem(this, missile, this.enemies)
+            MissileTrackingSystem(missile, this.enemies)
+            LightSystem(missile)
+            RenderSystem(missile)
+        })
     }
 }
 
@@ -81,7 +87,7 @@ const config = {
     backgroundColor: '#000',
     width: ScreenWidth,
     height: ScreenHeight,
-    scene: Demo
+    scene: Demo,
 };
 
 const game = new Phaser.Game(config);

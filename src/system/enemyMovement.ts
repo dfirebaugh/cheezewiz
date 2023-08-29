@@ -1,6 +1,23 @@
 import { State } from "../component/state";
 import { Entity } from "../entities/entity";
 
+const MAP_WIDTH = 800;
+const MAP_HEIGHT = 600;
+const MAP_LEFT_BOUND = 0;
+const MAP_RIGHT_BOUND = MAP_WIDTH;
+const MAP_TOP_BOUND = 0;
+const MAP_BOTTOM_BOUND = MAP_HEIGHT;
+const DISTANCE_THRESHOLD = 500;
+
+function isOutsideMap(entity: Entity): boolean {
+    return (
+        entity.position.X < MAP_LEFT_BOUND ||
+        entity.position.X > MAP_RIGHT_BOUND ||
+        entity.position.Y < MAP_TOP_BOUND ||
+        entity.position.Y > MAP_BOTTOM_BOUND
+    );
+}
+
 function trackPlayer(entity: Entity, player: Entity) {
     if (player.state.current == State.Dead) {
         defaultMovement(entity, player);
@@ -18,7 +35,37 @@ function trackPlayer(entity: Entity, player: Entity) {
     entity.velocity.VY = unitY * entity.speed.value;
 }
 
+function moveToMap(entity: Entity) {
+    const center = {
+        X: MAP_WIDTH / 2,
+        Y: MAP_HEIGHT / 2
+    };
+    const dirXToCenter = center.X - entity.position.X;
+    const dirYToCenter = center.Y - entity.position.Y;
+    const distanceToCenter = Math.sqrt(dirXToCenter * dirXToCenter + dirYToCenter * dirYToCenter);
+    const unitX = dirXToCenter / distanceToCenter;
+    const unitY = dirYToCenter / distanceToCenter;
+
+    moveTo(entity, unitX, unitY);
+}
+
 function defaultMovement(entity: Entity, player: Entity) {
+    const dirXToPlayer = player.position.X - entity.position.X;
+    const dirYToPlayer = player.position.Y - entity.position.Y;
+    const distanceToPlayer = Math.sqrt(dirXToPlayer * dirXToPlayer + dirYToPlayer * dirYToPlayer);
+
+    if (distanceToPlayer > DISTANCE_THRESHOLD) {
+        const unitX = dirXToPlayer / distanceToPlayer;
+        const unitY = dirYToPlayer / distanceToPlayer;
+
+        moveTo(entity, unitX, unitY);
+        return;
+    }
+
+    if (isOutsideMap(entity)) {
+        moveToMap(entity)
+        return
+    }
     const center = {
         X: 800 / 2,
         Y: 600 / 2
@@ -35,7 +82,7 @@ function defaultMovement(entity: Entity, player: Entity) {
     }
 
     if (distanceToCenter < 100) {
-        moveAwayFrom(entity, player.position.X, player.position.Y); // Corrected to move away from the center
+        moveAwayFrom(entity, player.position.X, player.position.Y);
         return;
     }
 

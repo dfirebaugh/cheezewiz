@@ -5,6 +5,7 @@ import InputSystem from './input';
 import EnemyMovementSystem from './enemyMovement';
 import CollisionSystem from './collision';
 import LightSystem from './light';
+import MissileTrackingSystem from './missileTracking';
 
 export {
     RenderSystem,
@@ -14,4 +15,5 @@ export {
     EnemyMovementSystem,
     CollisionSystem,
     LightSystem,
+    MissileTrackingSystem,
 }

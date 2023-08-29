@@ -27,6 +27,7 @@ export default class HealthComponent {
     graphics?: Phaser.GameObjects.Graphics;
     scene?: Phaser.Scene;
     entity?: Entity;
+    disableHealthBar?: boolean;
 
     invulnerabilityDuration = 500; // half a sec
     invulnerable: boolean = false;
@@ -37,77 +38,5 @@ export default class HealthComponent {
         this.entity = entity;
         this.graphics = new Phaser.GameObjects.Graphics(scene);
         scene.add.existing(this.graphics);
-        this.regen();
-    }
-
-    regen() {
-        if (!this.regenRate) return;
-
-        const startTick = () => {
-            const interval = setInterval(() => {
-                this.current += this.regenRate
-
-                if (this.current > this.max) this.current = this.max;
-
-                this.displayHealthGain(this.scene, this.entity, this.regenRate)
-            }, 2000); // 2000 milliseconds = 2 seconds
-
-            return interval;
-        }
-
-        startTick();
-    }
-
-    displayDamage(scene: Phaser.Scene, entity: Entity, damage: number) {
-        // Create a text object to display the damage
-        const damageText = scene.add.text(entity.position.X, entity.position.Y, `-${damage}`, {
-            fontSize: '12px',
-            color: '#ff0000',
-            stroke: '#000',
-            strokeThickness: 2
-        });
-
-        const randomAngle = Phaser.Math.Between(0, 360) * (Math.PI / 180);
-
-        const offsetX = 30 * Math.cos(randomAngle);
-        const offsetY = 30 * Math.sin(randomAngle);
-
-
-        scene.tweens.add({
-            targets: damageText,
-            x: damageText.x + offsetX,
-            y: damageText.y + offsetY,
-            alpha: 0,
-            duration: 1000,
-            onComplete: () => {
-                damageText.destroy();
-            }
-        });
-    }
-
-    displayHealthGain(scene: Phaser.Scene, entity: Entity, gain: number) {
-        // Create a text object to display the health gain
-        const healthGainText = scene.add.text(entity.position.X, entity.position.Y, `+${gain}`, {
-            fontSize: '12px',
-            color: '#00ff00', // Green color
-            stroke: '#000',
-            strokeThickness: 2
-        });
-
-        const randomAngle = Phaser.Math.Between(0, 360) * (Math.PI / 180);
-
-        const offsetX = 30 * Math.cos(randomAngle);
-        const offsetY = 30 * Math.sin(randomAngle);
-
-        scene.tweens.add({
-            targets: healthGainText,
-            x: healthGainText.x + offsetX,
-            y: healthGainText.y + offsetY,
-            alpha: 0,
-            duration: 1000,
-            onComplete: () => {
-                healthGainText.destroy();
-            }
-        });
     }
 }

@@ -10,9 +10,12 @@ import {
     IDComponent,
     HealthBar,
     DefenseComponent,
+    Condition,
+    WeaponComponent,
 } from "../component";
 import LightComponent from "../component/light";
 import { StateMapping } from "../component/state";
+// import WeaponComponent from "../component/weapon";
 
 export class Entity {
     id: IDComponent;
@@ -28,10 +31,35 @@ export class Entity {
     healthBar?: HealthBar;
     light?: LightComponent;
     defense?: DefenseComponent;
+    conditions?: Array<Condition>;
+    weapon?: WeaponComponent;
+    // weapons?: Array<WeaponComponent>;
+    destroyable?: boolean;
+    isDestroyed: boolean = false;
+    rotation?: number;
 
     constructor(tag: string) {
         this.tag = tag;
         this.id = new IDComponent();
+    }
+
+    destroy() {
+        this.isDestroyed = true
+        // this.position = null
+        // this.velocity = null
+        // this.rigidBody = null
+        // this.health = null
+        // this.size = null
+        // this.state = null
+        // this.sprite = null
+        // this.speed = null
+        // this.healthBar = null
+        // this.light = null
+        // this.defense = null
+        // this.conditions = null
+        // this.weapon = null
+        // this.weapons  = null
+        // this.destroyable = null
     }
 }
 
@@ -50,6 +78,7 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
     if (fileData.health?.max, fileData.health?.hp) {
         entity.health = new HealthComponent(scene, entity, fileData.health?.max, fileData.health?.hp, fileData.health?.regenRate);
         entity.health.invulnerabilityDuration = fileData.health?.invulnerabilityDuration
+        entity.health.disableHealthBar = fileData.health?.disableHealthBar
     }
 
     if (fileData.size?.height, fileData.size?.width)
@@ -86,8 +115,16 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
         });
     }
 
+    if (fileData.weapon) {
+        entity.weapon = new WeaponComponent(fileData.weapon?.label, fileData.weapon?.speed, fileData.weapon?.power, fileData.weapon?.type);
+    }
+
     if (fileData.defense) {
         entity.defense = new DefenseComponent(fileData.defense);
+    }
+
+    if (fileData.destroyable) {
+        entity.destroyable = fileData.destroyable
     }
 
     return entity

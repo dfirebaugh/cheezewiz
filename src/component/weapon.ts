@@ -7,9 +7,11 @@ export enum WeaponType {
     FORCE,
     ACID,
     PIERCING,
-    SLASHING
+    SLASHING,
+    EXPLOSIVE,
 }
 
 export default class WeaponComponent {
-    constructor(public speed: number, public power: number, public weaponType: WeaponType) {}
+    public distanceTraveled: number = 0;
+    constructor(public label: string, public speed: number, public power: number, public weaponType: WeaponType) { }
 }

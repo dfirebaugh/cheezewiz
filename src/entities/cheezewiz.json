@@ -26,7 +26,7 @@
         "width": 32
     },
     "light": {
-        "intensity": 2,
+        "intensity": 1.5,
         "radius": 100,
         "color": "0x808080"
     },

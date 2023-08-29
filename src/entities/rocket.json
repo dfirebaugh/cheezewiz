@@ -1,8 +1,43 @@
 {
+    "tag": "nachomissile",
+    "position": {
+        "X": 200,
+        "Y": 200
+    },
+    "velocity": {
+        "VX": 0.3,
+        "VY": 0.3
+    },
+    "size": {
+        "height": 8,
+        "width": 8
+    },
+    "light": {
+        "intensity": 0.5,
+        "radius": 10,
+        "color": "0x808080"
+    },
+    "health": {
+        "hp": 10,
+        "max": 10,
+        "regenRate": 0,
+        "invulnerabilityDuration": 1000,
+        "disableHealthBar": true
+    },
+    "destroyable": true,
+    "weapon": {
+        "label": "nachomissile",
+        "speed": 0.4,
+        "power": 20,
+        "type": "explosive"
+    },
     "animations": [
         {
             "name": "walk",
-            "path": "./assets/nachomissile.png"
+            "textureName": "nachomissile",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
         }
     ]
 }

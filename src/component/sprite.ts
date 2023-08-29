@@ -25,7 +25,7 @@ export default class SpriteComponent {
             repeat: -1,
         }, config);
 
-        this.sprite.anims.create(animationConfig);
+        this.sprite?.anims.create(animationConfig);
     }
 }
 
