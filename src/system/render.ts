@@ -18,7 +18,6 @@ export default function RenderSystem(entity: Entity) {
     renderHealthBar(entity);
     entity.sprite?.sprite?.setPosition(entity.position.X, entity.position.Y);
 
-    console.log(entity.state.toString())
     if (entity.sprite.sprite.anims.currentAnim?.key !== entity.state?.toString()) {
         entity.sprite.sprite.play(entity.state?.toString());
     }
