@@ -10,6 +10,8 @@ export default function MovementSystem(entity: Entity) {
 }
 
 export function MoveAway(source: Entity, target: Entity, speed: number) {
+    if (!speed) return;
+
     const distanceX = source.position.X - target.position.X;
     const distanceY = source.position.Y - target.position.Y;
 
@@ -29,4 +31,15 @@ export function MoveToward(source: Entity, target: Entity, speed: number) {
 
     source.position.X = newX;
     source.position.Y = newY;
+}
+
+
+export function MoveTo(entity: Entity, unitX: number, unitY: number) {
+    entity.velocity.VX = unitX * entity.speed.value;
+    entity.velocity.VY = unitY * entity.speed.value;
+}
+
+export function MoveAwayFrom(entity: Entity, unitX: number, unitY: number) {
+    entity.velocity.VX = -unitX * entity.velocity.VX;
+    entity.velocity.VY = -unitY * entity.velocity.VX;
 }

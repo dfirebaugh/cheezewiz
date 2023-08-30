@@ -9,8 +9,6 @@ export function DropJellyBean(world: World, dropper: Entity) {
     jb.position = dropper.position
     jb.sprite.sprite?.setPipeline('Light2D');
 
-    MoveAway(jb, world.wiz, 0.4)
-
     world.loot.push(jb)
 }
 

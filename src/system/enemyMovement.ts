@@ -1,5 +1,6 @@
 import { State } from "../component/state";
 import { Entity } from "../entities/entity";
+import { MoveAway, MoveTo, MoveToward } from "./movement";
 
 const MAP_WIDTH = 800;
 const MAP_HEIGHT = 600;
@@ -46,7 +47,7 @@ function moveToMap(entity: Entity) {
     const unitX = dirXToCenter / distanceToCenter;
     const unitY = dirYToCenter / distanceToCenter;
 
-    moveTo(entity, unitX, unitY);
+    MoveTo(entity, unitX, unitY);
 }
 
 function defaultMovement(entity: Entity, player: Entity) {
@@ -58,7 +59,7 @@ function defaultMovement(entity: Entity, player: Entity) {
         const unitX = dirXToPlayer / distanceToPlayer;
         const unitY = dirYToPlayer / distanceToPlayer;
 
-        moveTo(entity, unitX, unitY);
+        MoveToward(entity, player, entity.speed.value)
         return;
     }
 
@@ -73,16 +74,14 @@ function defaultMovement(entity: Entity, player: Entity) {
     const dirXToCenter = center.X - entity.position.X;
     const dirYToCenter = center.Y - entity.position.Y;
     const distanceToCenter = Math.sqrt(dirXToCenter * dirXToCenter + dirYToCenter * dirYToCenter);
-    const unitX = dirXToCenter / distanceToCenter;
-    const unitY = dirYToCenter / distanceToCenter;
 
     if (distanceToCenter > 400) {
-        moveTo(entity, unitX, unitY);
+        MoveToward(entity, player, entity.speed.value)
         return;
     }
 
     if (distanceToCenter < 100) {
-        moveAwayFrom(entity, player.position.X, player.position.Y);
+        MoveAway(entity, player, entity.speed.value)
         return;
     }
 
@@ -91,17 +90,6 @@ function defaultMovement(entity: Entity, player: Entity) {
         entity.velocity.VY = 0;
         return;
     }
-}
-
-
-function moveTo(entity: Entity, unitX: number, unitY: number) {
-    entity.velocity.VX = unitX * entity.speed.value;
-    entity.velocity.VY = unitY * entity.speed.value;
-}
-
-function moveAwayFrom(entity: Entity, unitX: number, unitY: number) {
-    entity.velocity.VX = -unitX * entity.velocity.VX;
-    entity.velocity.VY = -unitY * entity.velocity.VX;
 }
 
 export default function EnemyMovementSystem(entity: Entity, player: Entity) {

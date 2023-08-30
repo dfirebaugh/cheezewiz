@@ -28,5 +28,17 @@ export default class SpriteComponent {
 
         this.sprite?.anims.create(animationConfig);
     }
+
+    flash(duration: number = 250, repeat: number = 4) {
+        if (this.sprite) {
+            this.world.scene.tweens.add({
+                targets: this.sprite,
+                alpha: { from: 1, to: 0 },
+                duration: duration / (2 * repeat),
+                yoyo: true,
+                repeat: repeat - 1
+            });
+        }
+    }
 }
 

@@ -3,6 +3,7 @@ import { Entity } from "../entities";
 import World from "../world";
 import { displayDamage, displayHealthGain } from "./combatText";
 import { DropJellyBean } from "./loot";
+import { MoveAway } from "./movement";
 
 function mitigateDamage(entity: Entity, damage: number): number {
     if (!entity.defense) {
@@ -22,6 +23,7 @@ function takeDamage(world: World, entity: Entity) {
     entity.health.current -= damage;
 
     entity.state.setState(State.Hurt);
+    entity.sprite.flash()
 
     const currentTime = world.scene.time.now;
 
@@ -70,5 +72,6 @@ export default function CombatSystem(world: World, attacker: Entity, defender: E
 
     if (!defender.health.invulnerable) {
         takeDamage(world, defender);
+        MoveAway(defender, attacker, defender.speed?.value)
     }
 }
