@@ -1,14 +1,15 @@
+import World from "../world";
 
 
 export default class LightComponent {
-    scene: Phaser.Scene;
+    world: World;
     light: Phaser.GameObjects.Light;
 
-    constructor(scene: Phaser.Scene, public intensity: number, public color: number, public radius: number){
-        this.scene = scene;
+    constructor(world: World, public intensity: number, public color: number, public radius: number) {
+        this.world = world;
 
-        scene.lights.enable();
-        scene.lights.setAmbientColor(color);
-        this.light = scene.lights.addLight(0, 0, radius).setIntensity(intensity);
+        world.scene.lights.enable();
+        world.scene.lights.setAmbientColor(color);
+        this.light = world.scene.lights.addLight(0, 0, radius).setIntensity(intensity);
     }
 }

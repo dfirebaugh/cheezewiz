@@ -12,9 +12,11 @@ import {
     DefenseComponent,
     Condition,
     WeaponComponent,
+    XPComponent,
 } from "../component";
 import LightComponent from "../component/light";
 import { StateMapping } from "../component/state";
+import World from "../world";
 // import WeaponComponent from "../component/weapon";
 
 export class Entity {
@@ -37,6 +39,8 @@ export class Entity {
     destroyable?: boolean;
     isDestroyed: boolean = false;
     rotation?: number;
+    xp?: XPComponent;
+    dropsLoot?: boolean;
 
     constructor(tag: string) {
         this.tag = tag;
@@ -45,25 +49,10 @@ export class Entity {
 
     destroy() {
         this.isDestroyed = true
-        // this.position = null
-        // this.velocity = null
-        // this.rigidBody = null
-        // this.health = null
-        // this.size = null
-        // this.state = null
-        // this.sprite = null
-        // this.speed = null
-        // this.healthBar = null
-        // this.light = null
-        // this.defense = null
-        // this.conditions = null
-        // this.weapon = null
-        // this.weapons  = null
-        // this.destroyable = null
     }
 }
 
-export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
+export function EntityFactory(world: World, fileData: any): Entity {
     const entity = new Entity(fileData.tag)
 
     if (fileData.position?.X && fileData.position?.Y)
@@ -76,7 +65,7 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
         entity.rigidBody = new RigidBodyComponent(fileData.rigidBody?.X, fileData.rigidBody?.Y, fileData.rigidBody?.W, fileData.rigidBody?.H);
 
     if (fileData.health?.max, fileData.health?.hp) {
-        entity.health = new HealthComponent(scene, entity, fileData.health?.max, fileData.health?.hp, fileData.health?.regenRate);
+        entity.health = new HealthComponent(world, entity, fileData.health?.max, fileData.health?.hp, fileData.health?.regenRate);
         entity.health.invulnerabilityDuration = fileData.health?.invulnerabilityDuration
         entity.health.disableHealthBar = fileData.health?.disableHealthBar
     }
@@ -91,14 +80,14 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
         entity.speed = new SpeedComponent(fileData.speed)
 
     if (fileData.light)
-        entity.light = new LightComponent(scene, fileData.light?.intensity, fileData.light?.color, fileData.light?.radius)
+        entity.light = new LightComponent(world, fileData.light?.intensity, fileData.light?.color, fileData.light?.radius)
 
     if (fileData.animations) {
         const states = fileData.animations?.map(e => StateMapping[e.name])
         if (states.length > 0)
             entity.state = new StateComponent(states, StateMapping[states[0]])
 
-        entity.sprite = new SpriteComponent(scene, fileData.tag)
+        entity.sprite = new SpriteComponent(world, fileData.tag)
 
         fileData.animations?.forEach(e => {
             if (entity.sprite.sprite.anims.exists(e.name)) return;
@@ -125,6 +114,10 @@ export function EntityFactory(scene: Phaser.Scene, fileData: any): Entity {
 
     if (fileData.destroyable) {
         entity.destroyable = fileData.destroyable
+    }
+
+    if (fileData.xp) {
+        entity.xp = new XPComponent(world, fileData.xp)
     }
 
     return entity

@@ -1,12 +1,13 @@
 import * as Phaser from 'phaser';
+import World from '../world';
 
 export default class SpriteComponent {
     sprite: Phaser.GameObjects.Sprite;
-    scene: Phaser.Scene;
+    world: World;
 
-    constructor(scene: Phaser.Scene, label: string) {
-        this.scene = scene;
-        this.sprite = scene.add.sprite(0, 0, label);
+    constructor(world: World, label: string) {
+        this.world = world;
+        this.sprite = world.scene.add.sprite(0, 0, label);
     }
 
     addAnimation(config: Phaser.Types.Animations.Animation) {
@@ -15,7 +16,7 @@ export default class SpriteComponent {
             return;
         }
 
-        if (this.scene.anims.exists(config.key)) {
+        if (this.world.scene.anims.exists(config.key)) {
             console.error("Animation already exists.", config.key);
             return;
         }

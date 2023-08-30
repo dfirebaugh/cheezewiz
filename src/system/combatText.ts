@@ -1,11 +1,11 @@
 import * as Phaser from "phaser";
 import { Entity } from "../entities";
+import World from "../world";
 
-export function displayDamage(scene: Phaser.Scene, entity: Entity, damage: number) {
+export function displayDamage(world: World, entity: Entity, damage: number) {
     if (entity.health.disableHealthBar) return;
 
-    // Create a text object to display the damage
-    const damageText = scene.add.text(entity.position.X, entity.position.Y, `-${damage}`, {
+    const damageText = world.scene.add.text(entity.position.X, entity.position.Y, `-${damage}`, {
         fontSize: '12px',
         color: '#ff0000',
         stroke: '#000',
@@ -18,7 +18,7 @@ export function displayDamage(scene: Phaser.Scene, entity: Entity, damage: numbe
     const offsetY = 30 * Math.sin(randomAngle);
 
 
-    scene.tweens.add({
+    world.scene.tweens.add({
         targets: damageText,
         x: damageText.x + offsetX,
         y: damageText.y + offsetY,
@@ -30,11 +30,10 @@ export function displayDamage(scene: Phaser.Scene, entity: Entity, damage: numbe
     });
 }
 
-export function displayHealthGain(scene: Phaser.Scene, entity: Entity, gain: number) {
-    // Create a text object to display the health gain
-    const healthGainText = scene.add.text(entity.position.X, entity.position.Y, `+${gain}`, {
+export function displayHealthGain(world: World, entity: Entity, gain: number) {
+    const healthGainText = world.scene.add.text(entity.position.X, entity.position.Y, `+${gain}`, {
         fontSize: '12px',
-        color: '#00ff00', // Green color
+        color: '#00ff00',
         stroke: '#000',
         strokeThickness: 2
     });
@@ -44,7 +43,7 @@ export function displayHealthGain(scene: Phaser.Scene, entity: Entity, gain: num
     const offsetX = 30 * Math.cos(randomAngle);
     const offsetY = 30 * Math.sin(randomAngle);
 
-    scene.tweens.add({
+    world.scene.tweens.add({
         targets: healthGainText,
         x: healthGainText.x + offsetX,
         y: healthGainText.y + offsetY,

@@ -1,22 +1,23 @@
 import { State } from "../component/state";
 import { WeaponType } from "../component/weapon";
 import { Entity, EntityFactory, NachoMissileData } from "../entities";
+import World from "../world";
 
 let current = 0
 
-function spawnMissile(scene: Phaser.Scene & { missiles: Array<Entity> }, caster: Entity, label: string, speed: number, power: number, weaponType: WeaponType) {
+function spawnMissile(world: World, caster: Entity, label: string, speed: number, power: number, weaponType: WeaponType) {
     if (!speed) return;
 
     const startTick = () => {
         const interval = setInterval(() => {
             current += speed
-            const missile = EntityFactory(scene, NachoMissileData)
+            const missile = EntityFactory(world, NachoMissileData)
             missile.position.X = caster.position.X
             missile.position.Y = caster.position.Y
 
             missile.state.setState(State.Walking)
 
-            scene.missiles.push(missile)
+            world.missiles.push(missile)
         }, speed * 100);
 
         return interval;
@@ -25,6 +26,6 @@ function spawnMissile(scene: Phaser.Scene & { missiles: Array<Entity> }, caster:
     startTick();
 }
 
-export default function MissileSpawner(scene: Phaser.Scene & { missiles: Array<Entity> }, caster: Entity, label: string, speed: number, power: number, weaponType: WeaponType) {
-    spawnMissile(scene, caster, label, speed, power, weaponType)
+export default function MissileSpawner(world: World, caster: Entity, label: string, speed: number, power: number, weaponType: WeaponType) {
+    spawnMissile(world, caster, label, speed, power, weaponType)
 }

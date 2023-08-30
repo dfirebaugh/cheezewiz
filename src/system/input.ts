@@ -1,15 +1,17 @@
 import * as Phaser from 'phaser';
 import { Entity } from "../entities/entity";
 import { State } from '../component/state';
+import { XPComponent } from '../component';
+import World from '../world';
 
-export default function InputSystem(scene: Phaser.Scene, entity: Entity) {
+export default function InputSystem(world: World, entity: Entity) {
     const keys = {
-        up: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-        left: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-        down: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-        right: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-        space: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
-        shift: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT)
+        up: world.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+        left: world.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        down: world.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        right: world.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+        space: world.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+        shift: world.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT)
     };
 
     if (entity.health?.current <= 0) {
@@ -18,6 +20,13 @@ export default function InputSystem(scene: Phaser.Scene, entity: Entity) {
     }
 
     const speed = 1
+    if (keys.space.isDown) {
+        if (!entity.xp) {
+            entity.xp = new XPComponent(world, 1)
+        }
+        entity.xp.xp++;
+    }
+
     if (keys.left.isDown) {
         entity.position.X -= speed
         entity.state.setState(State.Walking);
@@ -41,5 +50,9 @@ export default function InputSystem(scene: Phaser.Scene, entity: Entity) {
     if (keys.down.isDown) {
         entity.state.setState(State.Walking);
         entity.position.Y += speed
+    }
+
+    if (!keys.up.isDown && !keys.down.isDown && !keys.left.isDown && !keys.right.isDown && entity.state.current !== State.Dead) {
+        entity.state.setState(State.Idle);
     }
 }

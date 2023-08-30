@@ -1,16 +1,61 @@
 {
-    "enemyTag": "",
-    "animations": {
-        "idle": "radishblue.png",
-        "walk": "radishblue.png",
-        "hurt": "radishblue.png",
-        "attack": "radishblue.png",
-        "death": "radishblue.png"
-    },
-    "actorState": "idle",
+    "tag": "radishblue",
+    "animations": [
+        {
+            "name": "idle",
+            "textureName": "radishblue",
+            "path": "./assets/radishblue.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "walk",
+            "textureName": "radishblue",
+            "path": "./assets/radishblue.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "hurt",
+            "textureName": "radishblue",
+            "path": "./assets/radishblue.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "attack",
+            "textureName": "radishblue",
+            "path": "./assets/radishblue.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 3
+        },
+        {
+            "name": "dead",
+            "textureName": "radishblue",
+            "path": "./assets/radishblue.png",
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "frameCount": 1
+        }
+    ],
+    "destroyable": true,
     "position": {
-        "cx": 16,
-        "cy": 16
+        "X": 400,
+        "Y": 200
+    },
+    "size": {
+        "height": 32,
+        "width": 32
+    },
+    "defense": 0,
+    "speed": 0.3,
+    "velocity": {
+        "VX": 1,
+        "VY": 1
     },
     "rigidBody": {
         "r": 32,
@@ -20,7 +65,8 @@
         "collisionLabel": "enemy"
     },
     "health": {
-        "hp": 100,
-        "max": 100
+        "hp": 20,
+        "max": 20,
+        "regenRate": 0
     }
 }

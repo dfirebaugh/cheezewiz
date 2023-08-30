@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { Entity } from '../entities';
+import World from '../world';
 
 export class HealthBar {
     barWidth = 32;
@@ -25,7 +26,7 @@ export class HealthBar {
 
 export default class HealthComponent {
     graphics?: Phaser.GameObjects.Graphics;
-    scene?: Phaser.Scene;
+    world?: World;
     entity?: Entity;
     disableHealthBar?: boolean;
 
@@ -33,10 +34,10 @@ export default class HealthComponent {
     invulnerable: boolean = false;
     lastHitTime: number = 0;
 
-    constructor(scene: Phaser.Scene, entity: Entity, public max: number, public current: number, public regenRate: number) {
-        this.scene = scene;
+    constructor(world: World, entity: Entity, public max: number, public current: number, public regenRate: number) {
+        this.world = world;
         this.entity = entity;
-        this.graphics = new Phaser.GameObjects.Graphics(scene);
-        scene.add.existing(this.graphics);
+        this.graphics = new Phaser.GameObjects.Graphics(world.scene);
+        world.scene.add.existing(this.graphics);
     }
 }

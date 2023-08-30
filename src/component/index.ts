@@ -11,6 +11,7 @@ import SpeedComponent from "./speed";
 import DefenseComponent from "./defense";
 import { Condition } from "./condition";
 import WeaponComponent from "./weapon";
+import XPComponent from "./xp";
 
 export {
     IDComponent,
@@ -26,4 +27,5 @@ export {
     DefenseComponent,
     Condition,
     WeaponComponent,
+    XPComponent,
 }

@@ -4,8 +4,6 @@ import {
     Entity,
     EntityFactory,
     WizData,
-    RadishRedData,
-    NachoMissileData,
 } from './entities/'
 
 import {
@@ -22,6 +20,8 @@ import MissileSpawner from './system/missileSpawner';
 import { WeaponType } from './component/weapon';
 import { HealthRegen } from './system/combat';
 import EnemySpawner from './system/enemySpawner';
+import World from './world';
+import { DropJellyBean, LootMovement, LootSystem } from './system/loot';
 
 const ScreenWidth = 640;
 const ScreenHeight = 512;
@@ -29,56 +29,70 @@ const SceneWidth = 5088
 const SceneHeight = 512
 
 export default class Demo extends Phaser.Scene {
+    world: World;
+
     constructor() {
         super('GameScene');
+        this.world = new World(this)
     }
-
-    wiz: Entity;
-    enemies: Array<Entity>;
-    missiles: Array<Entity>;
 
     preload() {
         LoadAssets(this)
     }
 
-    create() {
+    setupCamera() {
+        this.cameras.main.startFollow(this.world.wiz.sprite.sprite);
+        this.cameras.main.setLerp(0.1, 0.1);
+        this.cameras.main.setBounds(0, 0, SceneWidth, ScreenHeight);
+    }
+
+    setupMap() {
         const map = this.make.tilemap({ key: 'kitchen' })
         const tileset = map.addTilesetImage('kitchen floor', 'kitchen_tiles')
         map.createLayer('Tile Layer 1', tileset, 0, 0).setPipeline('Light2D');
+    }
 
-        this.wiz = EntityFactory(this, WizData)
-        HealthRegen(this, this.wiz)
-
-        this.missiles = []
-        MissileSpawner(this, this.wiz, 'nachomissile', 20, 20, WeaponType.EXPLOSIVE)
-
-        this.cameras.main.startFollow(this.wiz.sprite.sprite);
-        this.cameras.main.setLerp(0.1, 0.1);
-        this.cameras.main.setBounds(0, 0, SceneWidth, ScreenHeight);
-
-        this.enemies = [];
-        EnemySpawner(this, this.wiz, .2)
+    create() {
+        this.setupMap();
+        this.world.wiz = EntityFactory(this.world, WizData)
+        this.setupCamera();
+        HealthRegen(this.world, this.world.wiz)
+        MissileSpawner(this.world, this.world.wiz, 'nachomissile', 20, 20, WeaponType.EXPLOSIVE)
+        EnemySpawner(this.world, this.world.wiz, .2)
     }
 
     update() {
-        LightSystem(this.wiz)
-        this.enemies.forEach(e => {
-            EnemyMovementSystem(e, this.wiz)
+        LightSystem(this.world.wiz)
+
+        CollisionSystem(this.world, this.world.wiz, this.world.enemies)
+        InputSystem(this.world, this.world.wiz)
+        RenderSystem(this.world.wiz)
+
+        this.world.enemies.forEach(e => {
+            EnemyMovementSystem(e, this.world.wiz)
             RenderSystem(e)
+
+            if (e.isDestroyed) {
+                DropJellyBean(this.world, e)
+            }
         })
+        this.world.enemies = this.world.enemies.filter(e => !e.isDestroyed)
 
-        CollisionSystem(this, this.wiz, this.enemies)
-        InputSystem(this, this.wiz)
-        RenderSystem(this.wiz)
-
-        this.missiles.forEach(missile => {
+        this.world.missiles.forEach(missile => {
             if (missile?.isDestroyed) return;
 
-            CollisionSystem(this, missile, this.enemies)
-            MissileTrackingSystem(missile, this.enemies)
+            CollisionSystem(this.world, missile, this.world.enemies)
+            MissileTrackingSystem(missile, this.world.enemies)
             LightSystem(missile)
             RenderSystem(missile)
         })
+
+        this.world.loot.forEach(loot => {
+            LootSystem(this.world, loot)
+            LightSystem(loot)
+            RenderSystem(loot)
+        })
+        this.world.loot = this.world.loot.filter(e => !e.isDestroyed)
     }
 }
 

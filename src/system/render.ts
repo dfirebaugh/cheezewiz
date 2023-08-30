@@ -15,8 +15,16 @@ function renderHealthBar(entity: Entity) {
     entity.healthBar.draw(entity)
 }
 
+function renderXPBar(entity: Entity) {
+    if (!entity.xp || !entity.xp.bar) return;
+
+    entity.xp.bar.draw(entity)
+}
+
 export default function RenderSystem(entity: Entity) {
     renderHealthBar(entity);
+    renderXPBar(entity);
+
     entity.sprite?.sprite?.setPosition(entity.position.X, entity.position.Y);
 
     if (entity.rotation !== undefined && entity.sprite?.sprite) {
