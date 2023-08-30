@@ -11,7 +11,11 @@ function spawnEnemy(world: World, player: Entity) {
     const spawnX = player.position.X + distance * Math.cos(angle);
     const spawnY = player.position.Y + distance * Math.sin(angle);
 
-    const enemyDataTypes = [RadishRedData, RadishBlueData, RadishYellowData];
+    const enemyDataTypes = [
+        RadishRedData, RadishRedData, 
+        RadishBlueData, 
+        RadishYellowData, RadishYellowData
+    ];
 
     const randomEnemyData = Phaser.Math.RND.pick(enemyDataTypes);
 

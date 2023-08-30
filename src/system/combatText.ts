@@ -7,6 +7,7 @@ export function displayDamage(world: World, entity: Entity, damage: number) {
 
     const damageText = world.scene.add.text(entity.position.X, entity.position.Y, `-${damage}`, {
         fontSize: '12px',
+        fontFamily: 'Arial, sans-serif',
         color: '#ff0000',
         stroke: '#000',
         strokeThickness: 2
@@ -33,6 +34,7 @@ export function displayDamage(world: World, entity: Entity, damage: number) {
 export function displayHealthGain(world: World, entity: Entity, gain: number) {
     const healthGainText = world.scene.add.text(entity.position.X, entity.position.Y, `+${gain}`, {
         fontSize: '12px',
+        fontFamily: 'Arial, sans-serif',
         color: '#00ff00',
         stroke: '#000',
         strokeThickness: 2

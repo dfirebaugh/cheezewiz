@@ -52,17 +52,10 @@
         "width": 32
     },
     "defense": 0,
-    "speed": 0.5,
+    "speed": 0.4,
     "velocity": {
         "VX": 1,
         "VY": 1
-    },
-    "rigidBody": {
-        "r": 32,
-        "l": 32,
-        "t": 32,
-        "b": 32,
-        "collisionLabel": "enemy"
     },
     "health": {
         "hp": 20,

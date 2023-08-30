@@ -2,14 +2,14 @@ import * as Phaser from 'phaser';
 import { Entity } from "../entities";
 import World from '../world';
 
-
 export class XPBar {
     barWidth: number;
-    barHeight = 1;
+    barHeight = 10;
     screen: { width: number, height: number };
     gradientTextureKey: string = 'gradientTexture';
     xpBarSprite: Phaser.GameObjects.Sprite;
     xpBarShadowSprite: Phaser.GameObjects.Sprite;
+    xpBarBackground: Phaser.GameObjects.Rectangle;
     levelText: Phaser.GameObjects.Text;
 
     constructor(world: World, screenWidth: number, screenHeight: number) {
@@ -32,17 +32,23 @@ export class XPBar {
         ctx.fillRect(0, 0, this.barWidth, this.barHeight);
         world.scene.textures.addCanvas(this.gradientTextureKey, canvas);
 
-        this.xpBarSprite = world.scene.add.sprite((this.screen.width - this.barWidth) / 2, this.screen.height - this.barHeight - 10, this.gradientTextureKey);
+        this.xpBarBackground = world.scene.add.rectangle((this.screen.width - this.barWidth) / 2, 10, this.barWidth, this.barHeight, 0x000000);
+        this.xpBarBackground.setOrigin(0, 0);
+        this.xpBarBackground.setScrollFactor(0);
+        this.xpBarBackground.setStrokeStyle(2, 0xFFFFFF);
+
+        this.xpBarSprite = world.scene.add.sprite((this.screen.width - this.barWidth) / 2, 10, this.gradientTextureKey);
         this.xpBarSprite.setOrigin(0, 0);
         this.xpBarSprite.setScrollFactor(0);
-        this.xpBarShadowSprite = world.scene.add.sprite((this.screen.width - this.barWidth) / 2 + 2, this.screen.height - this.barHeight - 8, this.gradientTextureKey);
+
+        this.xpBarShadowSprite = world.scene.add.sprite((this.screen.width - this.barWidth) / 2 + 2, 12, this.gradientTextureKey);
         this.xpBarShadowSprite.setOrigin(0, 0);
         this.xpBarShadowSprite.setScrollFactor(0);
         this.xpBarShadowSprite.setTint(0xD3D3D3);
         this.xpBarShadowSprite.setAlpha(0.5);
         this.xpBarShadowSprite.setDepth(999);
 
-        this.levelText = world.scene.add.text((this.screen.width - this.barWidth) / 2 - 3, this.screen.height - this.barHeight - 15, `Level: 0`, {
+        this.levelText = world.scene.add.text((this.screen.width - this.barWidth) / 2 - 3, 10, `Level: 0`, {
             fontSize: '10px',
             color: '#fff',
             shadow: {
@@ -55,8 +61,11 @@ export class XPBar {
         });
         this.levelText.setOrigin(1, 0);
         this.levelText.setScrollFactor(0);
-        this.xpBarSprite.setDepth(1000);
-        this.levelText.setDepth(1001);
+
+        this.xpBarShadowSprite.setDepth(1000);
+        this.xpBarBackground.setDepth(1001);
+        this.xpBarSprite.setDepth(1002);
+        this.levelText.setDepth(1003);
     }
 
     draw(entity: Entity) {
